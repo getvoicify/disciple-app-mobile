@@ -1,0 +1,162 @@
+default_platform(:android)
+
+platform :android do
+  desc "Deploy to Play Store"
+  lane :deploy_to_play_store do |options|
+    track = options[:track] || "internal"
+    aab_path = options[:aab_path]
+    version_name = options[:version_name]
+    version_code = options[:version_code]
+    
+    # Validate parameters
+    UI.user_error!("AAB path is required") unless aab_path
+    UI.user_error!("Version name is required") unless version_name
+    UI.user_error!("Version code is required") unless version_code
+    
+    # Upload to Play Store
+    upload_to_play_store(
+      track: track,
+      aab: aab_path,
+      json_key: ENV["SUPPLY_JSON_KEY"] || "play-store-credentials.json",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_apk: true,
+      version_name: version_name,
+      version_code: version_code,
+      release_status: track == "production" ? "completed" : "draft",
+      rollout: track == "production" ? "0.1" : nil,
+      changes_not_sent_for_review: track != "production",
+      mapping: "../build/app/outputs/mapping/release/mapping.txt" if File.exist?("../build/app/outputs/mapping/release/mapping.txt")
+    )
+    
+    UI.success("Successfully uploaded to #{track} track")
+  end
+  
+  desc "Promote track to track"
+  lane :promote_track do |options|
+    source_track = options[:source_track]
+    target_track = options[:target_track]
+    rollout_fraction = options[:rollout_fraction]
+    
+    # Validate parameters
+    UI.user_error!("Source track is required") unless source_track
+    UI.user_error!("Target track is required") unless target_track
+    
+    # Promote the release
+    if target_track == "production" && rollout_fraction
+      # Staged rollout for production
+      upload_to_play_store(
+        track: source_track,
+        track_promote_to: target_track,
+        rollout: rollout_fraction.to_s,
+        json_key: ENV["SUPPLY_JSON_KEY"] || "play-store-credentials.json",
+        skip_upload_metadata: true,
+        skip_upload_images: true,
+        skip_upload_screenshots: true,
+        skip_upload_apk: true,
+        skip_upload_aab: true
+      )
+    else
+      # Full promotion
+      upload_to_play_store(
+        track: source_track,
+        track_promote_to: target_track,
+        json_key: ENV["SUPPLY_JSON_KEY"] || "play-store-credentials.json",
+        skip_upload_metadata: true,
+        skip_upload_images: true,
+        skip_upload_screenshots: true,
+        skip_upload_apk: true,
+        skip_upload_aab: true
+      )
+    end
+    
+    UI.success("Successfully promoted from #{source_track} to #{target_track}")
+  end
+  
+  desc "Update rollout percentage"
+  lane :update_rollout do |options|
+    track = options[:track] || "production"
+    rollout_fraction = options[:rollout_fraction]
+    
+    UI.user_error!("Rollout fraction is required") unless rollout_fraction
+    
+    upload_to_play_store(
+      track: track,
+      rollout: rollout_fraction.to_s,
+      json_key: ENV["SUPPLY_JSON_KEY"] || "play-store-credentials.json",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_apk: true,
+      skip_upload_aab: true
+    )
+    
+    UI.success("Updated rollout to #{(rollout_fraction.to_f * 100).to_i}%")
+  end
+  
+  desc "Halt rollout"
+  lane :halt_rollout do |options|
+    track = options[:track] || "production"
+    
+    upload_to_play_store(
+      track: track,
+      release_status: "halted",
+      json_key: ENV["SUPPLY_JSON_KEY"] || "play-store-credentials.json",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_apk: true,
+      skip_upload_aab: true
+    )
+    
+    UI.important("Rollout halted for #{track} track")
+  end
+  
+  desc "Complete rollout"
+  lane :complete_rollout do |options|
+    track = options[:track] || "production"
+    
+    upload_to_play_store(
+      track: track,
+      rollout: "1.0",
+      release_status: "completed",
+      json_key: ENV["SUPPLY_JSON_KEY"] || "play-store-credentials.json",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_apk: true,
+      skip_upload_aab: true
+    )
+    
+    UI.success("Rollout completed for #{track} track (100%)")
+  end
+  
+  desc "Get track release status"
+  lane :track_status do |options|
+    track = options[:track] || "internal"
+    
+    require 'supply'
+    require 'supply/client'
+    
+    Supply.config = {
+      json_key: ENV["SUPPLY_JSON_KEY"] || "play-store-credentials.json",
+      package_name: CredentialsManager::AppfileConfig.try_fetch_value(:package_name)
+    }
+    
+    client = Supply::Client.make_from_config
+    
+    track_releases = client.track_releases(track)
+    
+    if track_releases.empty?
+      UI.message("No releases found in #{track} track")
+    else
+      track_releases.each do |release|
+        UI.message("Track: #{track}")
+        UI.message("Version: #{release.version_codes.join(', ')}")
+        UI.message("Status: #{release.status}")
+        UI.message("User fraction: #{release.user_fraction}" ) if release.user_fraction
+      end
+    end
+  end
+end

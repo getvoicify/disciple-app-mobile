@@ -1,0 +1,248 @@
+name: Promote Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: 'Version tag to promote (e.g., v1.2.3)'
+        required: true
+        type: string
+      source_track:
+        description: 'Source track'
+        required: true
+        default: 'internal'
+        type: choice
+        options:
+          - internal
+          - alpha
+          - beta
+      target_track:
+        description: 'Target track'
+        required: true
+        default: 'beta'
+        type: choice
+        options:
+          - alpha
+          - beta
+          - production
+      rollout_percentage:
+        description: 'Rollout percentage (for production only)'
+        required: false
+        default: '10'
+        type: string
+
+env:
+  RUBY_VERSION: '3.2'
+
+jobs:
+  validate:
+    name: Validate Promotion
+    runs-on: ubuntu-latest
+    outputs:
+      can_promote: ${{ steps.validate.outputs.can_promote }}
+      artifact_exists: ${{ steps.check.outputs.exists }}
+    
+    steps:
+      - name: Validate track promotion
+        id: validate
+        run: |
+          SOURCE="${{ github.event.inputs.source_track }}"
+          TARGET="${{ github.event.inputs.target_track }}"
+          
+          # Define valid promotion paths
+          if [[ "$SOURCE" == "internal" && ("$TARGET" == "alpha" || "$TARGET" == "beta") ]]; then
+            echo "can_promote=true" >> $GITHUB_OUTPUT
+          elif [[ "$SOURCE" == "alpha" && "$TARGET" == "beta" ]]; then
+            echo "can_promote=true" >> $GITHUB_OUTPUT
+          elif [[ "$SOURCE" == "beta" && "$TARGET" == "production" ]]; then
+            echo "can_promote=true" >> $GITHUB_OUTPUT
+          else
+            echo "Invalid promotion path: $SOURCE -> $TARGET"
+            echo "can_promote=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Check artifact exists
+        id: check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const artifacts = await github.rest.actions.listArtifactsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: `release-aab-${{ github.event.inputs.version_tag }}`
+            });
+            
+            if (artifacts.data.artifacts.length > 0) {
+              core.setOutput('exists', 'true');
+              core.setOutput('artifact_id', artifacts.data.artifacts[0].id);
+            } else {
+              core.setOutput('exists', 'false');
+              core.setFailed(`No artifact found for version ${{ github.event.inputs.version_tag }}`);
+            }
+
+  promote:
+    name: Promote to ${{ github.event.inputs.target_track }}
+    runs-on: ubuntu-latest
+    needs: validate
+    if: needs.validate.outputs.can_promote == 'true' && needs.validate.outputs.artifact_exists == 'true'
+    environment:
+      name: play-store-${{ github.event.inputs.target_track }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
+          bundler-cache: true
+
+      - name: Download release AAB
+        uses: actions/download-artifact@v4
+        with:
+          name: release-aab-${{ github.event.inputs.version_tag }}
+          path: build/app/outputs/bundle/release
+
+      - name: Setup Fastlane
+        run: |
+          cd android
+          bundle install
+
+      - name: Decode Play Store credentials
+        run: |
+          echo "${{ secrets.PLAY_STORE_CONFIG_JSON }}" | base64 --decode > android/play-store-credentials.json
+
+      - name: Promote release
+        run: |
+          cd android
+          
+          if [ "${{ github.event.inputs.target_track }}" == "production" ]; then
+            # Staged rollout for production
+            bundle exec fastlane promote_track \
+              source_track:${{ github.event.inputs.source_track }} \
+              target_track:production \
+              rollout_fraction:0.${{ github.event.inputs.rollout_percentage }}
+          else
+            # Full promotion for non-production tracks
+            bundle exec fastlane promote_track \
+              source_track:${{ github.event.inputs.source_track }} \
+              target_track:${{ github.event.inputs.target_track }}
+          fi
+        env:
+          SUPPLY_JSON_KEY: play-store-credentials.json
+
+      - name: Update GitHub Release
+        if: github.event.inputs.target_track == 'production'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const tag = '${{ github.event.inputs.version_tag }}';
+            
+            try {
+              const release = await github.rest.repos.getReleaseByTag({
+                owner,
+                repo,
+                tag
+              });
+              
+              await github.rest.repos.updateRelease({
+                owner,
+                repo,
+                release_id: release.data.id,
+                prerelease: false,
+                body: release.data.body + '\n\n### Production Release\nPromoted to production with ${{ github.event.inputs.rollout_percentage }}% rollout'
+              });
+            } catch (error) {
+              console.log('Release not found or already updated');
+            }
+
+      - name: Create promotion record
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const promotion = {
+              version: '${{ github.event.inputs.version_tag }}',
+              source_track: '${{ github.event.inputs.source_track }}',
+              target_track: '${{ github.event.inputs.target_track }}',
+              rollout_percentage: '${{ github.event.inputs.rollout_percentage }}',
+              promoted_by: '${{ github.actor }}',
+              promoted_at: new Date().toISOString()
+            };
+            
+            // Add deployment status
+            await github.rest.repos.createDeploymentStatus({
+              owner,
+              repo,
+              deployment_id: context.payload.deployment.id,
+              state: 'success',
+              environment: 'play-store-${{ github.event.inputs.target_track }}',
+              description: `Promoted from ${{ github.event.inputs.source_track }} to ${{ github.event.inputs.target_track }}`
+            });
+
+      - name: Notify promotion
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: |
+            Release Promotion
+            Version: ${{ github.event.inputs.version_tag }}
+            Path: ${{ github.event.inputs.source_track }} → ${{ github.event.inputs.target_track }}
+            Rollout: ${{ github.event.inputs.rollout_percentage }}%
+            Status: ${{ job.status }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        continue-on-error: true
+
+  rollout-control:
+    name: Rollout Control
+    runs-on: ubuntu-latest
+    needs: promote
+    if: github.event.inputs.target_track == 'production'
+    
+    steps:
+      - name: Create rollout issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const version = '${{ github.event.inputs.version_tag }}';
+            const rollout = '${{ github.event.inputs.rollout_percentage }}';
+            
+            const issue = await github.rest.issues.create({
+              owner,
+              repo,
+              title: `Production Rollout: ${version} (${rollout}%)`,
+              body: `## Production Rollout Control
+              
+              Version: **${version}**
+              Initial rollout: **${rollout}%**
+              Started: ${new Date().toISOString()}
+              
+              ### Rollout Stages
+              - [ ] ${rollout}% - Initial rollout
+              - [ ] 25% - After 24 hours if stable
+              - [ ] 50% - After 48 hours if stable
+              - [ ] 100% - After 72 hours if stable
+              
+              ### Monitoring Checklist
+              - [ ] Crash rate acceptable (<1% increase)
+              - [ ] ANR rate acceptable (<0.5% increase)
+              - [ ] User ratings stable (>4.0 stars)
+              - [ ] No critical bugs reported
+              - [ ] Performance metrics within bounds
+              
+              ### Actions
+              - To increase rollout: Run "Promote Release" workflow with higher percentage
+              - To halt rollout: Run "Halt Rollout" workflow
+              - To rollback: Run "Rollback Release" workflow
+              
+              cc @${{ github.actor }}`,
+              labels: ['production', 'rollout', 'release'],
+              assignees: ['${{ github.actor }}']
+            });
+            
+            console.log(`Created rollout control issue: #${issue.data.number}`);

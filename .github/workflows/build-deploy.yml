@@ -1,0 +1,362 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+    inputs:
+      track:
+        description: 'Deployment track'
+        required: true
+        default: 'internal'
+        type: choice
+        options:
+          - internal
+          - alpha
+          - beta
+      version_bump:
+        description: 'Version bump type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+          - none
+
+env:
+  FLUTTER_VERSION: '3.19.0'
+  JAVA_VERSION: '17'
+  RUBY_VERSION: '3.2'
+
+jobs:
+  version:
+    name: Bump Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      version_code: ${{ steps.version.outputs.version_code }}
+      tag: ${{ steps.version.outputs.tag }}
+      release_notes: ${{ steps.notes.outputs.release_notes }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Determine version bump
+        id: bump_type
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "type=${{ github.event.inputs.version_bump }}" >> $GITHUB_OUTPUT
+          else
+            # Analyze commit messages to determine bump type
+            LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+            COMMITS=$(git log ${LAST_TAG}..HEAD --pretty=format:"%s")
+            
+            if echo "$COMMITS" | grep -qE "^(feat!|fix!|BREAKING CHANGE)"; then
+              echo "type=major" >> $GITHUB_OUTPUT
+            elif echo "$COMMITS" | grep -qE "^feat"; then
+              echo "type=minor" >> $GITHUB_OUTPUT
+            else
+              echo "type=patch" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Bump version
+        id: version
+        run: |
+          # Read current version from pubspec.yaml
+          CURRENT_VERSION=$(grep "^version:" pubspec.yaml | cut -d' ' -f2 | cut -d'+' -f1)
+          CURRENT_BUILD=$(grep "^version:" pubspec.yaml | cut -d'+' -f2)
+          
+          # Increment version based on bump type
+          IFS='.' read -r -a VERSION_PARTS <<< "$CURRENT_VERSION"
+          MAJOR=${VERSION_PARTS[0]}
+          MINOR=${VERSION_PARTS[1]}
+          PATCH=${VERSION_PARTS[2]}
+          
+          BUMP_TYPE="${{ steps.bump_type.outputs.type }}"
+          
+          if [ "$BUMP_TYPE" != "none" ]; then
+            case "$BUMP_TYPE" in
+              major)
+                MAJOR=$((MAJOR + 1))
+                MINOR=0
+                PATCH=0
+                ;;
+              minor)
+                MINOR=$((MINOR + 1))
+                PATCH=0
+                ;;
+              patch)
+                PATCH=$((PATCH + 1))
+                ;;
+            esac
+          fi
+          
+          NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+          NEW_BUILD=$((CURRENT_BUILD + 1))
+          NEW_VERSION_STRING="${NEW_VERSION}+${NEW_BUILD}"
+          
+          # Update pubspec.yaml
+          sed -i "s/^version: .*/version: ${NEW_VERSION_STRING}/" pubspec.yaml
+          
+          echo "version=${NEW_VERSION}" >> $GITHUB_OUTPUT
+          echo "version_code=${NEW_BUILD}" >> $GITHUB_OUTPUT
+          echo "tag=v${NEW_VERSION}" >> $GITHUB_OUTPUT
+          echo "full_version=${NEW_VERSION_STRING}" >> $GITHUB_OUTPUT
+
+      - name: Generate release notes
+        id: notes
+        run: |
+          # Get the last tag
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          
+          # Generate release notes
+          if [ -z "$LAST_TAG" ]; then
+            NOTES=$(git log --pretty=format:"- %s (%h)" --no-merges)
+          else
+            NOTES=$(git log ${LAST_TAG}..HEAD --pretty=format:"- %s (%h)" --no-merges)
+          fi
+          
+          # Group by type
+          FEATURES=$(echo "$NOTES" | grep -E "^- feat" || true)
+          FIXES=$(echo "$NOTES" | grep -E "^- fix" || true)
+          OTHER=$(echo "$NOTES" | grep -vE "^- (feat|fix)" || true)
+          
+          RELEASE_NOTES=""
+          
+          if [ -n "$FEATURES" ]; then
+            RELEASE_NOTES="${RELEASE_NOTES}### Features\n${FEATURES}\n\n"
+          fi
+          
+          if [ -n "$FIXES" ]; then
+            RELEASE_NOTES="${RELEASE_NOTES}### Bug Fixes\n${FIXES}\n\n"
+          fi
+          
+          if [ -n "$OTHER" ]; then
+            RELEASE_NOTES="${RELEASE_NOTES}### Other Changes\n${OTHER}\n\n"
+          fi
+          
+          # Save to file for later use
+          echo -e "$RELEASE_NOTES" > release_notes.md
+          
+          # Output for use in other jobs
+          echo "release_notes<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$RELEASE_NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Commit version bump
+        if: steps.bump_type.outputs.type != 'none'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add pubspec.yaml
+          git commit -m "chore: bump version to ${{ steps.version.outputs.version }} [skip ci]"
+          git tag ${{ steps.version.outputs.tag }}
+
+      - name: Push changes
+        if: steps.bump_type.outputs.type != 'none'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+          tags: true
+
+      - name: Upload release notes
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-notes
+          path: release_notes.md
+
+  build:
+    name: Build Release
+    runs-on: ubuntu-latest
+    needs: version
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Decode Android keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+          echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" > android/key.properties
+          echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
+          echo "storeFile=upload-keystore.jks" >> android/key.properties
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build AAB
+        run: |
+          flutter build appbundle \
+            --release \
+            --build-number=${{ needs.version.outputs.version_code }} \
+            --build-name=${{ needs.version.outputs.version }}
+
+      - name: Build APK
+        run: |
+          flutter build apk \
+            --release \
+            --split-per-abi \
+            --build-number=${{ needs.version.outputs.version_code }} \
+            --build-name=${{ needs.version.outputs.version }}
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-aab-${{ needs.version.outputs.tag }}
+          path: build/app/outputs/bundle/release/app-release.aab
+          retention-days: 90
+
+      - name: Upload APK artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apks-${{ needs.version.outputs.tag }}
+          path: build/app/outputs/flutter-apk/app-*-release.apk
+          retention-days: 90
+
+      - name: Calculate checksums
+        run: |
+          cd build/app/outputs/bundle/release
+          sha256sum app-release.aab > app-release.aab.sha256
+          cd ../../../flutter-apk
+          sha256sum app-*-release.apk > checksums.sha256
+
+      - name: Upload checksums
+        uses: actions/upload-artifact@v4
+        with:
+          name: checksums-${{ needs.version.outputs.tag }}
+          path: |
+            build/app/outputs/bundle/release/*.sha256
+            build/app/outputs/flutter-apk/checksums.sha256
+
+  deploy:
+    name: Deploy to Play Store
+    runs-on: ubuntu-latest
+    needs: [version, build]
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    environment:
+      name: play-store-${{ github.event.inputs.track || 'internal' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
+          bundler-cache: true
+
+      - name: Download AAB artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-aab-${{ needs.version.outputs.tag }}
+          path: build/app/outputs/bundle/release
+
+      - name: Download release notes
+        uses: actions/download-artifact@v4
+        with:
+          name: release-notes
+          path: .
+
+      - name: Setup Fastlane
+        run: |
+          cd android
+          bundle install
+
+      - name: Decode Play Store credentials
+        run: |
+          echo "${{ secrets.PLAY_STORE_CONFIG_JSON }}" | base64 --decode > android/play-store-credentials.json
+
+      - name: Deploy to Play Store
+        run: |
+          cd android
+          TRACK="${{ github.event.inputs.track || 'internal' }}"
+          bundle exec fastlane deploy_to_play_store \
+            track:$TRACK \
+            aab_path:../build/app/outputs/bundle/release/app-release.aab \
+            version_name:${{ needs.version.outputs.version }} \
+            version_code:${{ needs.version.outputs.version_code }}
+        env:
+          SUPPLY_JSON_KEY: play-store-credentials.json
+
+      - name: Create GitHub Release
+        if: github.event.inputs.track == 'production' || github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.version.outputs.tag }}
+          name: Release ${{ needs.version.outputs.version }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: ${{ github.event.inputs.track != 'production' }}
+          files: |
+            build/app/outputs/bundle/release/app-release.aab
+            build/app/outputs/flutter-apk/app-*-release.apk
+            build/app/outputs/bundle/release/*.sha256
+            build/app/outputs/flutter-apk/checksums.sha256
+
+      - name: Notify deployment
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: |
+            Deployment to ${{ github.event.inputs.track || 'internal' }} track
+            Version: ${{ needs.version.outputs.version }}
+            Status: ${{ job.status }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        continue-on-error: true
