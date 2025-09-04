@@ -263,15 +263,15 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: release-apks-${{ needs.version.outputs.tag }}
-          path: build/app/outputs/apk/release/app-*-release.apk
+          path: build/app/outputs/apk/release/*.apk
           retention-days: 90
 
       - name: Calculate checksums
         run: |
           cd build/app/outputs/bundle/release
           sha256sum app-release.aab > app-release.aab.sha256
-          cd ../../../apk/release
-          sha256sum app-*-release.apk > checksums.sha256
+          cd ../../apk/release
+          sha256sum *.apk > checksums.sha256
 
       - name: Upload checksums
         uses: actions/upload-artifact@v4
@@ -345,7 +345,7 @@ jobs:
           prerelease: ${{ github.event.inputs.track != 'production' }}
           files: |
             build/app/outputs/bundle/release/app-release.aab
-            build/app/outputs/apk/release/app-*-release.apk
+            build/app/outputs/apk/release/*.apk
             build/app/outputs/bundle/release/*.sha256
             build/app/outputs/apk/release/checksums.sha256
 
