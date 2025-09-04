@@ -1,2 +1,2 @@
 json_key_file("play-store-credentials.json")
-package_name("church.pottersville.disciple") # Update this with your actual package name
+package_name("church.pottersville.disciple_mobile")
