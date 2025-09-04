@@ -1,4 +1,4 @@
-YYouTheI<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="church.pottersville.disciple_mobile">
    <application
         android:label="disciple_mobile"
