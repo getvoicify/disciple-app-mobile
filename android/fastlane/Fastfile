@@ -14,7 +14,7 @@ platform :android do
     UI.user_error!("Version code is required") unless version_code
     
     # Upload to Play Store
-    upload_to_play_store(
+    upload_params = {
       track: track,
       aab: aab_path,
       json_key: ENV["SUPPLY_JSON_KEY"] || "play-store-credentials.json",
@@ -26,9 +26,14 @@ platform :android do
       version_code: version_code,
       release_status: track == "production" ? "completed" : "draft",
       rollout: track == "production" ? "0.1" : nil,
-      changes_not_sent_for_review: track != "production",
-      mapping: "../build/app/outputs/mapping/release/mapping.txt" if File.exist?("../build/app/outputs/mapping/release/mapping.txt")
-    )
+      changes_not_sent_for_review: track != "production"
+    }
+    
+    # Add mapping file if it exists
+    mapping_path = "../build/app/outputs/mapping/release/mapping.txt"
+    upload_params[:mapping] = mapping_path if File.exist?(mapping_path)
+    
+    upload_to_play_store(upload_params)
     
     UI.success("Successfully uploaded to #{track} track")
   end
