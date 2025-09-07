@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       designSize: const Size(430, 932),
       minTextAdapt: true,
       builder: (context, child) => MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Disciple',
         theme: lightTheme,
         darkTheme: darkTheme,
         debugShowCheckedModeBanner: false,
