@@ -17,67 +17,62 @@ class BibleView extends StatefulWidget {
 
 class _BibleViewState extends State<BibleView> {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Bible'),
-        actions: [
-          ImageWidget(imageUrl: AppImage.menuIcon),
-          SizedBox(width: 16.w),
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: const Text('Bible'),
+      actions: [
+        const ImageWidget(imageUrl: AppImage.menuIcon),
+        SizedBox(width: 16.w),
+      ],
+    ),
+    body: SafeArea(
+      minimum: EdgeInsets.symmetric(horizontal: 16.w),
+      child: Stack(
+        children: [
+          ListView(
+            children: [
+              const EditTextFieldWidget(
+                prefix: ImageWidget(
+                  imageUrl: AppImage.searchIcon,
+                  fit: BoxFit.none,
+                ),
+                label: 'Search scripture by words',
+              ),
+              SizedBox(height: 20.h),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 49.w, vertical: 20.h),
+                decoration: BoxDecoration(
+                  color: AppColors.grey50,
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const BuildDropdownWidget(title: 'KJV'),
+                    SizedBox(height: 16.h),
+
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        BuildDropdownWidget(title: 'Book'),
+                        BuildDropdownWidget(title: 'Chapter'),
+                        BuildDropdownWidget(title: 'Verse'),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 31.h),
+              ...List.generate(10, (index) {
+                final bool isFirst = index == 0;
+                final bool isLast = index == 9;
+                return BuildChapterWidget(isFirst: isFirst, isLast: isLast);
+              }),
+            ],
+          ),
+          const BuildAudioControllerWidget(),
         ],
       ),
-      body: SafeArea(
-        minimum: EdgeInsets.symmetric(horizontal: 16.w),
-        child: Stack(
-          children: [
-            ListView(
-              children: [
-                EditTextFieldWidget(
-                  prefix: ImageWidget(
-                    imageUrl: AppImage.searchIcon,
-                    fit: BoxFit.none,
-                  ),
-                  label: 'Search scripture by words',
-                ),
-                SizedBox(height: 20.h),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 49.w,
-                    vertical: 20.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.grey50,
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      BuildDropdownWidget(title: 'KJV'),
-                      SizedBox(height: 16.h),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          BuildDropdownWidget(title: 'Book'),
-                          BuildDropdownWidget(title: 'Chapter'),
-                          BuildDropdownWidget(title: 'Verse'),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 31.h),
-                ...List.generate(10, (index) {
-                  final bool isFirst = index == 0;
-                  final bool isLast = index == 9;
-                  return BuildChapterWidget(isFirst: isFirst, isLast: isLast);
-                }),
-              ],
-            ),
-            BuildAudioControllerWidget(),
-          ],
-        ),
-      ),
-    );
-  }
+    ),
+  );
 }

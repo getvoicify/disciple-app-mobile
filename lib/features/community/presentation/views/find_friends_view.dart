@@ -15,43 +15,41 @@ class FindFriendsView extends StatefulWidget {
 
 class _FindFriendsViewState extends State<FindFriendsView> {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: ImageWidget(imageUrl: AppImage.backIcon, fit: BoxFit.none),
-      ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Column(
-                children: [
-                  EditTextFieldWidget(
-                    prefix: ImageWidget(
-                      imageUrl: AppImage.searchIcon,
-                      fit: BoxFit.none,
-                    ),
-                    label: 'Search friends',
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      leading: const ImageWidget(imageUrl: AppImage.backIcon, fit: BoxFit.none),
+    ),
+    body: SafeArea(
+      child: Stack(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            child: Column(
+              children: [
+                const EditTextFieldWidget(
+                  prefix: ImageWidget(
+                    imageUrl: AppImage.searchIcon,
+                    fit: BoxFit.none,
                   ),
-                  SizedBox(height: 20.h),
+                  label: 'Search friends',
+                ),
+                SizedBox(height: 20.h),
 
-                  Expanded(
-                    child: ListView.separated(
-                      itemCount: 20,
-                      itemBuilder: (_, __) => BuildFriendsTileWidget(),
-                      separatorBuilder: (context, index) =>
-                          SizedBox(height: 12.h),
-                    ),
+                Expanded(
+                  child: ListView.separated(
+                    itemCount: 20,
+                    itemBuilder: (_, __) => const BuildFriendsTileWidget(),
+                    separatorBuilder: (context, index) =>
+                        SizedBox(height: 12.h),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
+          ),
 
-            FloatingSideButtonWidget(title: 'Invite friends'),
-          ],
-        ),
+          const FloatingSideButtonWidget(title: 'Invite friends'),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }

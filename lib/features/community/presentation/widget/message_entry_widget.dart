@@ -9,51 +9,52 @@ class MessageEntryWidget extends StatelessWidget {
   const MessageEntryWidget({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(20.w),
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.grey300, width: .5.w),
-        borderRadius: BorderRadius.circular(8.r),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: EditTextFieldWidget(
-                  titleWidget: SizedBox.shrink(),
-                  fillColor: Colors.transparent,
-                  maxLines: 2,
-                  label: 'Message',
-                  alignLabelWithHint: true,
-                ),
+  Widget build(BuildContext context) => Container(
+    padding: EdgeInsets.all(20.w),
+    decoration: BoxDecoration(
+      border: Border.all(color: AppColors.grey300, width: .5.w),
+      borderRadius: BorderRadius.circular(8.r),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Expanded(
+              child: EditTextFieldWidget(
+                titleWidget: SizedBox.shrink(),
+                fillColor: Colors.transparent,
+                maxLines: 2,
+                label: 'Message',
+                alignLabelWithHint: true,
               ),
-              SizedBox(width: 12.w),
-              Container(
-                height: 50.h,
-                width: 50.w,
-                decoration: BoxDecoration(
-                  color: AppColors.purple,
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: ImageWidget(imageUrl: AppImage.send, fit: BoxFit.none),
+            ),
+            SizedBox(width: 12.w),
+            Container(
+              height: 50.h,
+              width: 50.w,
+              decoration: BoxDecoration(
+                color: AppColors.purple,
+                borderRadius: BorderRadius.circular(8.r),
               ),
-            ],
-          ),
+              child: const ImageWidget(
+                imageUrl: AppImage.send,
+                fit: BoxFit.none,
+              ),
+            ),
+          ],
+        ),
 
-          SizedBox(height: 12.h),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ImageWidget(imageUrl: AppImage.add2),
-              SizedBox(width: 13.w),
-              ImageWidget(imageUrl: AppImage.emoji),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+        SizedBox(height: 12.h),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const ImageWidget(imageUrl: AppImage.add2),
+            SizedBox(width: 13.w),
+            const ImageWidget(imageUrl: AppImage.emoji),
+          ],
+        ),
+      ],
+    ),
+  );
 }

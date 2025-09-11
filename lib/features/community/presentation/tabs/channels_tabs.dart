@@ -27,48 +27,46 @@ class _ChannelsTabsState extends State<ChannelsTabs>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          SizedBox(height: 28.h),
-          TabBar(
+  Widget build(BuildContext context) => Scaffold(
+    body: Column(
+      children: [
+        SizedBox(height: 28.h),
+        TabBar(
+          controller: _tabController,
+          labelStyle: context.bodyLarge,
+          labelColor: AppColors.black,
+          unselectedLabelStyle: context.bodyLarge?.copyWith(
+            color: AppColors.grey500,
+          ),
+          indicator: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: AppColors.purple, width: 2.w),
+            ),
+          ),
+          tabs: [
+            'Prayer Wall',
+            'Personal',
+            'Friends',
+          ].map((element) => Tab(text: element)).toList(),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: const EditTextFieldWidget(
+            prefix: ImageWidget(
+              imageUrl: AppImage.searchIcon,
+              fit: BoxFit.none,
+            ),
+            label: 'Search by title or church',
+          ),
+        ),
+        SizedBox(height: 16.h),
+        Expanded(
+          child: TabBarView(
             controller: _tabController,
-            labelStyle: context.bodyLarge,
-            labelColor: AppColors.black,
-            unselectedLabelStyle: context.bodyLarge?.copyWith(
-              color: AppColors.grey500,
-            ),
-            indicator: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: AppColors.purple, width: 2.w),
-              ),
-            ),
-            tabs: [
-              'Prayer Wall',
-              'Personal',
-              'Friends',
-            ].map((element) => Tab(text: element)).toList(),
+            children: const [PrayerWallTabs(), PersonalTabs(), FriendsTabs()],
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: EditTextFieldWidget(
-              prefix: ImageWidget(
-                imageUrl: AppImage.searchIcon,
-                fit: BoxFit.none,
-              ),
-              label: 'Search by title or church',
-            ),
-          ),
-          SizedBox(height: 16.h),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [PrayerWallTabs(), PersonalTabs(), FriendsTabs()],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 }

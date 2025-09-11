@@ -1,7 +1,7 @@
 import 'package:disciple/app/common/app_strings.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import '../core/constants/app_constants.dart';
+import 'package:disciple/app/core/constants/app_constants.dart';
 
 enum AppEnv { development, production, test }
 

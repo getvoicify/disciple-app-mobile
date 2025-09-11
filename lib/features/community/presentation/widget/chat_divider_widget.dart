@@ -8,15 +8,13 @@ class ChatDividerWidget extends StatelessWidget {
   final String title;
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(child: Divider()),
-        SizedBox(width: 8.w),
-        Text(title, style: context.bodyMedium),
-        SizedBox(width: 8.w),
-        Expanded(child: Divider()),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => Row(
+    children: [
+      const Expanded(child: Divider()),
+      SizedBox(width: 8.w),
+      Text(title, style: context.bodyMedium),
+      SizedBox(width: 8.w),
+      const Expanded(child: Divider()),
+    ],
+  );
 }

@@ -28,98 +28,99 @@ class _ChurchViewState extends State<ChurchView>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: ImageWidget(imageUrl: AppImage.backIcon, fit: BoxFit.none),
-        actions: [
-          Container(
-            margin: EdgeInsets.only(top: 20.h),
-            child: ElevatedButtonIconWidget(
-              height: 26.h,
-              width: null,
-              backgroundColor: AppColors.purple50,
-              textStyle: context.headlineLarge?.copyWith(
-                color: AppColors.purple,
-                fontSize: 12.sp,
-              ),
-              title: 'Follow Church',
-              onPressed: () {},
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      leading: const ImageWidget(imageUrl: AppImage.backIcon, fit: BoxFit.none),
+      actions: [
+        Container(
+          margin: EdgeInsets.only(top: 20.h),
+          child: ElevatedButtonIconWidget(
+            height: 26.h,
+            width: null,
+            backgroundColor: AppColors.purple50,
+            textStyle: context.headlineLarge?.copyWith(
+              color: AppColors.purple,
+              fontSize: 12.sp,
             ),
+            title: 'Follow Church',
+            onPressed: () {},
           ),
-          SizedBox(width: 16.w),
-        ],
-      ),
-      body: NestedScrollView(
-        headerSliverBuilder: (_, __) => [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(top: 16.h),
-                    height: 538.h,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12.r),
-                      color: Colors.red,
-                    ),
+        ),
+        SizedBox(width: 16.w),
+      ],
+    ),
+    body: NestedScrollView(
+      headerSliverBuilder: (_, __) => [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(top: 16.h),
+                  height: 538.h,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12.r),
+                    color: Colors.red,
                   ),
-                  SizedBox(height: 20.h),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: List.generate(
-                        3,
-                        (index) => Container(
-                          width: 84.w,
-                          height: 67.h,
-                          margin: EdgeInsets.only(right: 8.w),
-                          decoration: BoxDecoration(
-                            color: Colors.primaries[index],
-                            borderRadius: BorderRadius.circular(8.r),
-                          ),
+                ),
+                SizedBox(height: 20.h),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: List.generate(
+                      3,
+                      (index) => Container(
+                        width: 84.w,
+                        height: 67.h,
+                        margin: EdgeInsets.only(right: 8.w),
+                        decoration: BoxDecoration(
+                          color: Colors.primaries[index],
+                          borderRadius: BorderRadius.circular(8.r),
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(height: 24.h),
-                ],
-              ),
-            ),
-          ),
-          SliverPersistentHeader(
-            pinned: true,
-            delegate: SliverAppBarDelegate(
-              child: TabBar(
-                controller: _tabController,
-                isScrollable: true,
-                indicatorSize: TabBarIndicatorSize.label,
-                indicator: const BoxDecoration(
-                  borderRadius: BorderRadius.zero,
-                  border: Border(
-                    bottom: BorderSide(color: AppColors.purple, width: 2.0),
-                  ),
                 ),
-                indicatorPadding: EdgeInsets.only(bottom: 10.h, top: 10.h),
-                tabs: [
-                  'Overview',
-                  'Posts',
-                  'Prayer Wall',
-                ].map((element) => Tab(text: element)).toList(),
-              ),
+                SizedBox(height: 24.h),
+              ],
             ),
           ),
-        ],
-        body: TabBarView(
-          controller: _tabController,
-          children: [OverviewTab(), PostTab(), PrayerWallTabs()],
         ),
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: SliverAppBarDelegate(
+            child: TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              indicatorSize: TabBarIndicatorSize.label,
+              indicator: const BoxDecoration(
+                borderRadius: BorderRadius.zero,
+                border: Border(
+                  bottom: BorderSide(color: AppColors.purple, width: 2.0),
+                ),
+              ),
+              indicatorPadding: EdgeInsets.only(bottom: 10.h, top: 10.h),
+              tabs: [
+                'Overview',
+                'Posts',
+                'Prayer Wall',
+              ].map((element) => Tab(text: element)).toList(),
+            ),
+          ),
+        ),
+      ],
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          const OverviewTab(),
+          const PostTab(),
+          const PrayerWallTabs(),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }

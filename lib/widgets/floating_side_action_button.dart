@@ -10,38 +10,36 @@ class FloatingSideButtonWidget extends StatelessWidget {
   final String title;
 
   @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.bottomRight,
-      child: Container(
-        padding: EdgeInsets.only(
-          right: 24.w,
-          top: 13.h,
-          left: 24.w,
-          bottom: 13.h,
-        ),
-        margin: EdgeInsets.only(bottom: 70.h),
-        decoration: BoxDecoration(
-          color: AppColors.purple,
-          borderRadius: BorderRadius.horizontal(left: Radius.circular(24.r)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ImageWidget(imageUrl: AppImage.addIcon),
-            SizedBox(width: 4.w),
-            Flexible(
-              child: Text(
-                title,
-                style: context.headlineMedium?.copyWith(
-                  color: AppColors.white,
-                  fontSize: 14.sp,
-                ),
+  Widget build(BuildContext context) => Align(
+    alignment: Alignment.bottomRight,
+    child: Container(
+      padding: EdgeInsets.only(
+        right: 24.w,
+        top: 13.h,
+        left: 24.w,
+        bottom: 13.h,
+      ),
+      margin: EdgeInsets.only(bottom: 70.h),
+      decoration: BoxDecoration(
+        color: AppColors.purple,
+        borderRadius: BorderRadius.horizontal(left: Radius.circular(24.r)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const ImageWidget(imageUrl: AppImage.addIcon),
+          SizedBox(width: 4.w),
+          Flexible(
+            child: Text(
+              title,
+              style: context.headlineMedium?.copyWith(
+                color: AppColors.white,
+                fontSize: 14.sp,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }

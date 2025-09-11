@@ -17,66 +17,64 @@ class NotesView extends StatefulWidget {
 
 class _NotesViewState extends State<NotesView> {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Notes'),
-        actions: [
-          ImageWidget(imageUrl: AppImage.menuIcon),
-          SizedBox(width: 16.w),
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: const Text('Notes'),
+      actions: [
+        const ImageWidget(imageUrl: AppImage.menuIcon),
+        SizedBox(width: 16.w),
+      ],
+    ),
+    body: SafeArea(
+      child: Stack(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            child: Column(
+              children: [
+                const EditTextFieldWidget(
+                  prefix: ImageWidget(
+                    imageUrl: AppImage.searchIcon,
+                    fit: BoxFit.none,
+                  ),
+                  label: 'Search notes by title',
+                ),
+                SizedBox(height: 20.h),
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 20.w,
+                    vertical: 6.h,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.grey50,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Text(
+                    'All',
+                    style: context.headlineLarge?.copyWith(
+                      fontSize: 20.sp,
+                      color: AppColors.purple,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 32.h),
+
+                Expanded(
+                  child: ListView.separated(
+                    itemCount: 20,
+                    itemBuilder: (_, __) => const BuildTileWidget(),
+                    separatorBuilder: (context, index) =>
+                        SizedBox(height: 12.h),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const FloatingSideButtonWidget(title: 'Add Note'),
         ],
       ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Column(
-                children: [
-                  EditTextFieldWidget(
-                    prefix: ImageWidget(
-                      imageUrl: AppImage.searchIcon,
-                      fit: BoxFit.none,
-                    ),
-                    label: 'Search notes by title',
-                  ),
-                  SizedBox(height: 20.h),
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 20.w,
-                      vertical: 6.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.grey50,
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    child: Text(
-                      'All',
-                      style: context.headlineLarge?.copyWith(
-                        fontSize: 20.sp,
-                        color: AppColors.purple,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 32.h),
-
-                  Expanded(
-                    child: ListView.separated(
-                      itemCount: 20,
-                      itemBuilder: (_, __) => BuildTileWidget(),
-                      separatorBuilder: (context, index) =>
-                          SizedBox(height: 12.h),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            FloatingSideButtonWidget(title: 'Add Note'),
-          ],
-        ),
-      ),
-    );
-  }
+    ),
+  );
 }

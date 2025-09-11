@@ -24,33 +24,31 @@ class BuildDropdownWidget extends StatelessWidget {
   final Color? textColor;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: padding ?? EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-      decoration: BoxDecoration(
-        color: color ?? AppColors.grey50,
-        borderRadius: BorderRadius.circular(4.r),
-        border: Border.all(color: borderColor ?? AppColors.grey200, width: 1.w),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            child: Text(
-              title,
-              style: context.headlineLarge?.copyWith(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w500,
-                color: textColor,
-              ),
+  Widget build(BuildContext context) => Container(
+    padding: padding ?? EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+    decoration: BoxDecoration(
+      color: color ?? AppColors.grey50,
+      borderRadius: BorderRadius.circular(4.r),
+      border: Border.all(color: borderColor ?? AppColors.grey200, width: 1.w),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          child: Text(
+            title,
+            style: context.headlineLarge?.copyWith(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w500,
+              color: textColor,
             ),
           ),
-          if (dropdown) ...[
-            SizedBox(width: 8.w),
-            ImageWidget(imageUrl: AppImage.arrowDownIcon),
-          ],
+        ),
+        if (dropdown) ...[
+          SizedBox(width: 8.w),
+          const ImageWidget(imageUrl: AppImage.arrowDownIcon),
         ],
-      ),
-    );
-  }
+      ],
+    ),
+  );
 }

@@ -6,7 +6,7 @@ import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../widget/reminder_tile_widget.dart';
+import 'package:disciple/features/reminder/presentation/widget/reminder_tile_widget.dart';
 
 class AllRemindersView extends StatefulWidget {
   const AllRemindersView({super.key});
@@ -34,81 +34,77 @@ class _AllRemindersViewState extends State<AllRemindersView>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: ImageWidget(imageUrl: AppImage.backIcon, fit: BoxFit.none),
-        elevation: 0,
-        title: Text('Reminders'),
-      ),
-      body: Padding(
-        padding: EdgeInsetsGeometry.symmetric(horizontal: 16.w),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 16.h),
-            // Search Bar
-            EditTextFieldWidget(
-              prefix: ImageWidget(
-                imageUrl: AppImage.searchIcon,
-                fit: BoxFit.none,
-              ),
-              label: 'Search Reminder',
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      leading: const ImageWidget(imageUrl: AppImage.backIcon, fit: BoxFit.none),
+      elevation: 0,
+      title: const Text('Reminders'),
+    ),
+    body: Padding(
+      padding: EdgeInsetsGeometry.symmetric(horizontal: 16.w),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: 16.h),
+          // Search Bar
+          const EditTextFieldWidget(
+            prefix: ImageWidget(
+              imageUrl: AppImage.searchIcon,
+              fit: BoxFit.none,
             ),
-            SizedBox(height: 20.h),
-            // Tab Bar
-            TabBar(
+            label: 'Search Reminder',
+          ),
+          SizedBox(height: 20.h),
+          // Tab Bar
+          TabBar(
+            controller: _tabController,
+            indicator: const BoxDecoration(
+              border: Border(bottom: BorderSide(color: AppColors.purple)),
+            ),
+            tabAlignment: TabAlignment.start,
+            isScrollable: true,
+            tabs: const [
+              Tab(text: 'All'),
+              Tab(text: 'Active'),
+              Tab(text: 'Inactive'),
+            ],
+            onTap: (index) {
+              // Handle tab selection
+              setState(() {});
+            },
+          ),
+          SizedBox(height: 16.h),
+
+          Expanded(
+            child: TabBarView(
               controller: _tabController,
-              indicator: BoxDecoration(
-                border: Border(bottom: BorderSide(color: AppColors.purple)),
-              ),
-              tabAlignment: TabAlignment.start,
-              isScrollable: true,
-              tabs: const [
-                Tab(text: 'All'),
-                Tab(text: 'Active'),
-                Tab(text: 'Inactive'),
+              children: [
+                // All Reminders Tab
+                _buildRemindersList(),
+
+                // Active Reminders Tab
+                _buildRemindersList(isActive: true),
+
+                // Inactive Reminders Tab
+                _buildRemindersList(isActive: false),
               ],
-              onTap: (index) {
-                // Handle tab selection
-                setState(() {});
-              },
             ),
-            SizedBox(height: 16.h),
-
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  // All Reminders Tab
-                  _buildRemindersList(),
-
-                  // Active Reminders Tab
-                  _buildRemindersList(isActive: true),
-
-                  // Inactive Reminders Tab
-                  _buildRemindersList(isActive: false),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
 
-  Widget _buildRemindersList({bool? isActive}) {
-    return Stack(
-      children: [
-        ListView.separated(
-          itemCount: Colors.primaries.length,
-          shrinkWrap: true,
-          itemBuilder: (_, index) => ReminderTileWidget(),
-          separatorBuilder: (context, index) => SizedBox(height: 12.h),
-        ),
-        FloatingSideButtonWidget(title: 'Create New'),
-      ],
-    );
-  }
+  Widget _buildRemindersList({bool? isActive}) => Stack(
+    children: [
+      ListView.separated(
+        itemCount: Colors.primaries.length,
+        shrinkWrap: true,
+        itemBuilder: (_, index) => const ReminderTileWidget(),
+        separatorBuilder: (context, index) => SizedBox(height: 12.h),
+      ),
+      const FloatingSideButtonWidget(title: 'Create New'),
+    ],
+  );
 }

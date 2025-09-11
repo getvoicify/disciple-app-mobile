@@ -16,43 +16,41 @@ class ChatsView extends StatefulWidget {
 
 class _ChatsViewState extends State<ChatsView> {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Becky'),
-        centerTitle: false,
-        leadingWidth: 100.w,
-        leading: Row(
-          children: [
-            SizedBox(width: 16.w),
-            ImageWidget(imageUrl: AppImage.backIcon, fit: BoxFit.none),
-            SizedBox(width: 16.w),
-            CircleAvatar(),
-          ],
-        ),
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: const Text('Becky'),
+      centerTitle: false,
+      leadingWidth: 100.w,
+      leading: Row(
+        children: [
+          SizedBox(width: 16.w),
+          const ImageWidget(imageUrl: AppImage.backIcon, fit: BoxFit.none),
+          SizedBox(width: 16.w),
+          const CircleAvatar(),
+        ],
       ),
-      body: SafeArea(
-        minimum: EdgeInsets.symmetric(horizontal: 16.w),
-        child: Column(
-          children: [
-            SizedBox(height: 16.h),
-            ChatDividerWidget(title: 'Yesterday'),
-            SizedBox(height: 16.h),
-            Expanded(
-              child: ListView.separated(
-                separatorBuilder: (_, __) => SizedBox(height: 16.h),
-                itemBuilder: (context, index) {
-                  if (index.isEven) return ReceiverChatBubleWidget();
-                  return SenderChatBubleWidget();
-                },
-                itemCount: 20,
-              ),
+    ),
+    body: SafeArea(
+      minimum: EdgeInsets.symmetric(horizontal: 16.w),
+      child: Column(
+        children: [
+          SizedBox(height: 16.h),
+          const ChatDividerWidget(title: 'Yesterday'),
+          SizedBox(height: 16.h),
+          Expanded(
+            child: ListView.separated(
+              separatorBuilder: (_, __) => SizedBox(height: 16.h),
+              itemBuilder: (context, index) {
+                if (index.isEven) return const ReceiverChatBubleWidget();
+                return const SenderChatBubleWidget();
+              },
+              itemCount: 20,
             ),
-            SizedBox(height: 16.h),
-            MessageEntryWidget(),
-          ],
-        ),
+          ),
+          SizedBox(height: 16.h),
+          const MessageEntryWidget(),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }

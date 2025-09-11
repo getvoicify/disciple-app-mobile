@@ -12,22 +12,20 @@ class DecoratedTabBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => tabBar.preferredSize * 1.5;
 
   @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: Container(
-            margin: EdgeInsets.symmetric(horizontal: 16.w),
-            decoration:
-                decoration ??
-                BoxDecoration(
-                  color: AppColors.purple50,
-                  borderRadius: BorderRadius.circular(7.r),
-                ),
-          ),
+  Widget build(BuildContext context) => Stack(
+    children: [
+      Positioned.fill(
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 16.w),
+          decoration:
+              decoration ??
+              BoxDecoration(
+                color: AppColors.purple50,
+                borderRadius: BorderRadius.circular(7.r),
+              ),
         ),
-        tabBar,
-      ],
-    );
-  }
+      ),
+      tabBar,
+    ],
+  );
 }

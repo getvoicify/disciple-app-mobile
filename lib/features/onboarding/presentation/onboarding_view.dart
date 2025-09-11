@@ -27,55 +27,50 @@ class _HomeboardingViewState extends State<HomeboardingView> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Stack(
-        children: [
-          PageView.builder(
-            itemCount: _images.length,
-            itemBuilder: (context, index) {
-              return Container(
-                margin: EdgeInsets.only(left: 66.w),
-                alignment: Alignment.bottomRight,
-                child: ImageWidget(imageUrl: _images[index]),
-              );
-            },
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(),
+    body: Stack(
+      children: [
+        PageView.builder(
+          itemCount: _images.length,
+          itemBuilder: (context, index) => Container(
+            margin: EdgeInsets.only(left: 66.w),
+            alignment: Alignment.bottomRight,
+            child: ImageWidget(imageUrl: _images[index]),
           ),
+        ),
 
-          Padding(
-            padding: EdgeInsets.all(24.w),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildRichText(title: "Grow ", subtitle: "deeper."),
-                SizedBox(height: 8.h),
-                _buildRichText(title: "Connect ", subtitle: "stronger."),
-                SizedBox(height: 8.h),
-                _buildRichText(title: "Live ", subtitle: "intentionally."),
-                SizedBox(height: 12.h),
-                Text(
-                  'Discover faith-building tools, devotionals, and a thriving community—all in one place.',
-                  style: context.bodyLarge,
-                ),
-                SizedBox(height: 30.h),
-                MiniButtonWidget(title: AppString.getStarted),
-              ],
-            ),
+        Padding(
+          padding: EdgeInsets.all(24.w),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildRichText(title: "Grow ", subtitle: "deeper."),
+              SizedBox(height: 8.h),
+              _buildRichText(title: "Connect ", subtitle: "stronger."),
+              SizedBox(height: 8.h),
+              _buildRichText(title: "Live ", subtitle: "intentionally."),
+              SizedBox(height: 12.h),
+              Text(
+                'Discover faith-building tools, devotionals, and a thriving community—all in one place.',
+                style: context.bodyLarge,
+              ),
+              SizedBox(height: 30.h),
+              MiniButtonWidget(title: AppString.getStarted),
+            ],
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 
-  RichText _buildRichText({required String title, required String subtitle}) {
-    return RichText(
-      text: TextSpan(
-        text: title,
-        style: context.headlineLarge,
-        children: [TextSpan(text: subtitle, style: context.headlineMedium)],
-      ),
-    );
-  }
+  RichText _buildRichText({required String title, required String subtitle}) =>
+      RichText(
+        text: TextSpan(
+          text: title,
+          style: context.headlineLarge,
+          children: [TextSpan(text: subtitle, style: context.headlineMedium)],
+        ),
+      );
 }

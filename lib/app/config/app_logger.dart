@@ -27,12 +27,12 @@ class SimpleLogPrinter extends LogPrinter {
   };
 
   static final Map<Level, AnsiColor> levelColors = {
-    Level.trace: AnsiColor.fg(45),
-    Level.debug: AnsiColor.fg(46),
-    Level.info: AnsiColor.fg(51),
-    Level.warning: AnsiColor.fg(220),
-    Level.error: AnsiColor.fg(202),
-    Level.fatal: AnsiColor.fg(129),
+    Level.trace: const AnsiColor.fg(45),
+    Level.debug: const AnsiColor.fg(46),
+    Level.info: const AnsiColor.fg(51),
+    Level.warning: const AnsiColor.fg(220),
+    Level.error: const AnsiColor.fg(202),
+    Level.fatal: const AnsiColor.fg(129),
   };
   @override
   List<String> log(LogEvent event) {
@@ -60,7 +60,7 @@ class SimpleLogPrinter extends LogPrinter {
     final pattern = RegExp('.{1,800}');
     final List<String> result = [];
 
-    for (var line in output.split('\n')) {
+    for (final line in output.split('\n')) {
       result.addAll(
         pattern.allMatches(line).map((match) {
           if (kReleaseMode) {
@@ -134,7 +134,7 @@ List<String>? _formatStackTrace(StackTrace stackTrace, int methodCount) {
 
   final formatted = <String>[];
   var count = 0;
-  for (var line in lines) {
+  for (final line in lines) {
     final match = stackTraceRegex.matchAsPrefix(line);
     if (match != null) {
       if (match.group(2)!.startsWith('package:logger')) {

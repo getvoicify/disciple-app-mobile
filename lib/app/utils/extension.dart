@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
-import '../core/theme/provider/theme_provider.dart';
+import 'package:disciple/app/core/theme/provider/theme_provider.dart';
 
 enum InputType { none, email, phone }
 

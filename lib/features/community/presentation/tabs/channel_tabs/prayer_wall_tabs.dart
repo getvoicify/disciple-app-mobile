@@ -11,12 +11,10 @@ class PrayerWallTabs extends StatefulWidget {
 
 class _PrayerWallTabsState extends State<PrayerWallTabs> {
   @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      itemCount: 3,
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      itemBuilder: (_, __) => CommuityTIleWidget(isJoined: true),
-      separatorBuilder: (context, index) => SizedBox(height: 12.h),
-    );
-  }
+  Widget build(BuildContext context) => ListView.separated(
+    itemCount: 3,
+    padding: EdgeInsets.symmetric(horizontal: 16.w),
+    itemBuilder: (_, __) => const CommuityTIleWidget(isJoined: true),
+    separatorBuilder: (context, index) => SizedBox(height: 12.h),
+  );
 }

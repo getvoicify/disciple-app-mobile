@@ -27,7 +27,7 @@ class MiniButtonWidget extends StatelessWidget {
           ),
         ),
         SizedBox(width: 13.w),
-        ImageWidget(imageUrl: AppImage.forwardIcon),
+        const ImageWidget(imageUrl: AppImage.forwardIcon),
       ],
     ),
   );

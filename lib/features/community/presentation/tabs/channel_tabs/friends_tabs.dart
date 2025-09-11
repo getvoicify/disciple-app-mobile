@@ -12,17 +12,15 @@ class FriendsTabs extends StatefulWidget {
 
 class _FriendsTabsState extends State<FriendsTabs> {
   @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        ListView.separated(
-          itemCount: 20,
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
-          itemBuilder: (_, __) => FriendsTileWidget(),
-          separatorBuilder: (context, index) => SizedBox(height: 12.h),
-        ),
-        FloatingSideButtonWidget(title: 'Add Friends '),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => Stack(
+    children: [
+      ListView.separated(
+        itemCount: 20,
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        itemBuilder: (_, __) => const FriendsTileWidget(),
+        separatorBuilder: (context, index) => SizedBox(height: 12.h),
+      ),
+      const FloatingSideButtonWidget(title: 'Add Friends '),
+    ],
+  );
 }

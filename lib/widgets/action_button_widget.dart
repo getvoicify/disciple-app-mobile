@@ -9,14 +9,12 @@ class ActionButtonWidget extends StatelessWidget {
   final String icon;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(3.w),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: AppColors.purple,
-      ),
-      child: ImageWidget(imageUrl: icon, height: 17.h, width: 17.w),
-    );
-  }
+  Widget build(BuildContext context) => Container(
+    padding: EdgeInsets.all(3.w),
+    decoration: const BoxDecoration(
+      shape: BoxShape.circle,
+      color: AppColors.purple,
+    ),
+    child: ImageWidget(imageUrl: icon, height: 17.h, width: 17.w),
+  );
 }
