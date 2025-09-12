@@ -185,10 +185,14 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
             title: _titleContoller.text,
             content: _detailContoller.text,
             scriptureReferences: const [
-              ScriptureReference(book: 'Genesis', chapter: 1, verse: 1),
-              ScriptureReference(book: 'Genesis', chapter: 2, verse: 2),
+              ScriptureReference(book: 'Genesis'),
+              ScriptureReference(book: 'Exodus'),
+              ScriptureReference(book: 'Titus'),
+              ScriptureReference(book: 'Proverbs'),
+              ScriptureReference(book: 'Timothy'),
             ],
             images: const [
+              'https://via.placeholder.com/150',
               'https://via.placeholder.com/150',
               'https://via.placeholder.com/150',
             ],

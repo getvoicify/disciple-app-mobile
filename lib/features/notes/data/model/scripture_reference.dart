@@ -6,10 +6,10 @@ part 'scripture_reference.g.dart';
 @freezed
 abstract class ScriptureReference with _$ScriptureReference {
   const factory ScriptureReference({
-    String? book,
-    int? chapter,
-    int? verse,
-    int? endVerse,
+    @Default('') String? book,
+    @Default(1) int? chapter,
+    @Default(1) int? verse,
+    @Default(1) int? endVerse,
   }) = _ScriptureReference;
 
   factory ScriptureReference.fromJson(Map<String, dynamic> json) =>

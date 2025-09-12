@@ -1,6 +1,7 @@
 import 'package:disciple/app/config/app_logger.dart';
 import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/features/notes/domain/entity/note_entity.dart';
+import 'package:disciple/features/notes/domain/entity/parsed_note_data.dart';
 import 'package:disciple/features/notes/domain/repository/note_repository.dart';
 import 'package:disciple/features/notes/domain/service/note_service.dart';
 
@@ -29,4 +30,20 @@ class NoteServiceImpl implements NoteService {
         limit: entity?.limit ?? 20,
         offset: entity?.offset ?? 0,
       );
+
+  @override
+  Future<ParsedNoteData?> getNoteById({required String id}) async {
+    ParsedNoteData? note;
+
+    try {
+      final noteData = await _repository.getNoteById(id: id);
+
+      note = ParsedNoteData(noteData);
+      _logger.i('Note retrieved successfully with id: $id');
+    } catch (e) {
+      _logger.e('An error occurred retrieving note: $e');
+      rethrow;
+    }
+    return note;
+  }
 }

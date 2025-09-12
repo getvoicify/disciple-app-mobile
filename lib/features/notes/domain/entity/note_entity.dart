@@ -74,35 +74,4 @@ class NoteEntity {
 
   // Helper method to encode images to JSON string
   String _encodeImages() => json.encode(images);
-
-  // Helper method to decode scriptureReferences from JSON string
-  static List<ScriptureReference> _decodeScriptureReferences(
-    String jsonString,
-  ) {
-    if (jsonString.isEmpty) return [];
-    final List<dynamic> jsonList = json.decode(jsonString);
-    return jsonList
-        .map(
-          (item) => ScriptureReference.fromJson(item as Map<String, dynamic>),
-        )
-        .toList();
-  }
-
-  // Helper method to decode images from JSON string
-  static List<String> _decodeImages(String jsonString) {
-    if (jsonString.isEmpty) return [];
-    final List<dynamic> jsonList = json.decode(jsonString);
-    return jsonList.map((item) => item as String).toList();
-  }
-
-  // Create NoteEntity from NoteData
-  static NoteEntity fromNoteData(NoteData data) => NoteEntity(
-    id: data.id,
-    title: data.title,
-    content: data.content,
-    scriptureReferences: _decodeScriptureReferences(data.scriptureReferences),
-    images: _decodeImages(data.images),
-    createdAt: data.createdAt,
-    updatedAt: data.updatedAt,
-  );
 }

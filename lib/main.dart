@@ -1,7 +1,6 @@
 import 'package:disciple/app/core/theme/dark_theme.dart';
 import 'package:disciple/app/core/theme/light_theme.dart';
-import 'package:disciple/features/notes/presentation/views/new_notes_view.dart';
-import 'package:disciple/features/notes/presentation/views/notes_view.dart';
+import 'package:disciple/features/notes/presentation/views/note_details_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -23,7 +22,7 @@ class MyApp extends StatelessWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       debugShowCheckedModeBanner: false,
-      home: const NotesView(),
+      home: const NoteDetailsView(),
     ),
   );
 }
