@@ -45,3 +45,12 @@ abstract class DiscipleUseCaseWithInputParameter<TInput, TReturn> {
   /// [cancelToken] Optional token to cancel the operation if needed.
   TReturn execute({required TInput parameter, CancelToken? cancelToken});
 }
+
+/// Base class for use cases that require an input parameter and return a Stream.
+abstract class DiscipleStreamUseCaseWithRequiredParam<TInput, TReturn> {
+  /// Executes the use case with a required parameter and returns a stream.
+  ///
+  /// [parameter] Required input parameter for the use case.
+  /// [cancelToken] Optional token to cancel the operation if needed.
+  Stream<TReturn> execute({required TInput parameter});
+}

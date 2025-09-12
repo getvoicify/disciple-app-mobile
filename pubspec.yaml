@@ -52,6 +52,10 @@ dependencies:
   path_provider: ^2.1.5
   json_annotation: ^4.9.0
   analyzer: ^7.6.0
+  path: ^1.9.1
+  sqlite3: ^2.9.0
+  sqlite3_flutter_libs: ^0.5.39
+  uuid: ^4.3.3
 
 dev_dependencies:
   flutter_test:

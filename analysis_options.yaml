@@ -6,8 +6,12 @@ analyzer:
       build/**,
       lib/**.freezed.dart,
       lib/**.g.dart,
+      lib/**.form.dart,
       lib/**.generated.dart,
       lib/**.gr.dart,
+      lib/**.locator.dart,
+      lib/**.logger.dart,
+      lib/**.router.dart,
       lib/**.mocks.dart,
     ]
   errors:

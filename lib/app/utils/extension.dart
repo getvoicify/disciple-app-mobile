@@ -9,223 +9,28 @@ import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:disciple/app/core/theme/provider/theme_provider.dart';
 
-enum InputType { none, email, phone }
-
-extension StringExtensions on String {
-  String get tenWords => split(' ').take(10).join(' ');
-
-  int parseAmount() => int.parse(replaceAll(',', '').replaceAll('.00', ''));
-
-  bool get isNull => toLowerCase() == 'null';
-
-  String get capitalizeFirst => isEmpty ? '' : this[0].toUpperCase();
-
-  String get toCapitalized =>
-      length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
-
-  String get titleCase => replaceAll(
-    RegExp(' +'),
-    ' ',
-  ).split(' ').map((str) => str.toCapitalized).join(' ');
-
-  String get removeUnderscore => replaceAll('_', ' ');
-  String get removeDoubleZeros => replaceAll('.00', ' ');
-
-  String get removeHyphen => replaceAll('-', ' ');
-
-  String get removeAtcharacter => replaceAll('@', '');
-
-  String _formatPhoneNumber(num phoneNumber) {
-    final String phoneNumberStr = phoneNumber.toString();
-
-    if (phoneNumberStr.length != 10) {
-      throw ArgumentError("Phone number must have 10 digits");
-    }
-
-    return "(${phoneNumberStr.substring(0, 3)}) ${phoneNumberStr.substring(3, 6)} - ${phoneNumberStr.substring(6)}";
-  }
-
-  String get formattedPhoneNumber => _formatPhoneNumber(num.parse(this));
-
-  String _reverseFormatPhoneNumber(String formattedPhoneNumber) {
-    final String phoneNumberDigits = formattedPhoneNumber.replaceAll(
-      RegExp(r'\D'),
-      '',
-    );
-
-    if (phoneNumberDigits.length != 10) {
-      throw ArgumentError("Invalid formatted phone number");
-    }
-
-    return phoneNumberDigits;
-  }
-
-  String get reversedFormattedPhoneNumber => _reverseFormatPhoneNumber(this);
-
-  String get naira => _formatMoney('\u20A6');
-  String get dollar => _formatMoney('\$');
-
-  String _formatMoney(String symbol) {
-    final double amount = double.tryParse(replaceAll('.', '')) ?? 0.0;
-
-    final NumberFormat formatter = NumberFormat.currency(
-      locale: 'en_US',
-      symbol: symbol,
-    );
-
-    final String formattedAmount = formatter.format(amount / 100);
-
-    return formattedAmount;
-  }
-
-  String get formatCountryCode => replaceAll('+234', '0').replaceAll(' ', '');
-
-  num get replaceComma => num.tryParse(replaceAll(',', '')) ?? 0;
-
-  num get toNum => num.tryParse(this) ?? 0;
-
-  InputType get inputType {
-    final RegExp emailRegExp = RegExp(
-      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-    );
-
-    final RegExp phoneRegExp = RegExp(r'^\+?[\d\s]{3,}$');
-
-    if (emailRegExp.hasMatch(this)) {
-      return InputType.email;
-    } else if (phoneRegExp.hasMatch(this)) {
-      return InputType.phone;
-    } else {
-      return InputType.none;
-    }
-  }
-}
-
-extension CurrencyExtensions on num {
-  String get toNaira => NumberFormat.simpleCurrency(name: 'NGN').format(this);
-  String get toDirham => 'AED ${NumberFormat('#,##0.00').format(this)}';
-
-  String get toNairaWithOutSymbol =>
-      NumberFormat.simpleCurrency(name: '', decimalDigits: 2).format(this);
-  String get ordinals => _getJustOrdinalIndicator(this);
-
-  String _getJustOrdinalIndicator(num number) {
-    String suffix = 'th';
-    final num digit = number % 10;
-    if ((digit > 0 && digit < 4) && (number < 11 || number > 13)) {
-      suffix = <String>['st', 'nd', 'rd'][int.parse(digit.toString()) - 1];
-    }
-    return '$number$suffix';
-  }
-
-  String pluralize(String text) => Intl.plural(
-    this,
-    zero: text,
-    one: '$this $text',
-    other: '$this ${text}s',
-  );
-}
-
 extension DateTimeExtensions on DateTime {
-  String get toTime => DateFormat('hh:mm a').format(this);
-  DateTime get dateOnly => DateTime(year, month, day);
-
-  String get dateFormatter => 'MMMM dd, y';
-  String get monthYear => DateFormat('MMMM yyyy').format(this);
-
-  String get dateAndMonth => DateFormat('dd MMM').format(this);
-
-  String get dow => DateFormat('EEE').format(this);
-
-  DateTime get firstDayOfMonth => DateTime(year, month);
-
-  DateTime get lastDayOfMonth => DateTime(year, month + 1, 0);
-
-  int get getTotalDays {
-    // Get the last day of the month
-    final int totalDays = DateTime(year, month + 1, 0).day;
-    // Nights are one less than the total days
-    return totalDays;
-  }
-
-  String formatDate() {
-    final formatter = DateFormat(dateFormatter);
-    return formatter.format(this);
-  }
-
-  bool isSameDate(DateTime other) =>
-      year == other.year && month == other.month && day == other.day;
-
-  int getDifferenceInDaysWithNow() {
-    final now = DateTime.now();
-    return now.difference(this).inDays;
-  }
-
-  bool get isToday {
-    final now = DateTime.now();
-    return now.year == year && now.month == month && now.day == day;
-  }
-
-  String get months => DateFormat('MMMM').format(this);
-
-  String get dateMonth => DateFormat('dd MMM').format(this);
-  String get monthDate => DateFormat('MMM dd').format(this);
-
   String get monthTime => DateFormat('MMM dd, yyyy | hh:mm a').format(this);
 
-  String get monthDateYear => DateFormat('MMM dd, yyyy').format(this);
-  String get monthDateYearTime =>
-      DateFormat('MMM dd, yyyy - hh:mm a').format(this);
+  String get timeAgo {
+    final now = DateTime.now();
+    final difference = now.difference(this);
 
-  String get dayMonthYear => DateFormat('dd MMM yyyy').format(this);
-  String get dayMonthYearWithSlash => DateFormat('dd/MM/yyyy').format(this);
-
-  String get yearMonthDay => DateFormat('yyyy-MM-dd').format(this);
-  String get yearMonthDayTime =>
-      DateFormat('yyyy-MM-dd - hh:mm a').format(this);
-  String get dateMonthYearHyphen => DateFormat('dd-MM-yyyy').format(this);
-
-  String get timeAloneWithMeridian12 => DateFormat('hh:mm a').format(this);
-
-  String get timeAloneWithMeridian24 => DateFormat('HH:mm a').format(this);
-
-  String get getWeekday => DateFormat('EEE').format(this);
-
-  String get countTime =>
-      DateFormat('EEE, dd MMM, yyyy - hh:mm a').format(this);
-
-  String get dayMonthTime => DateFormat('dd MMM, hh:mm a').format(this);
-  String get dayMonthTime1 => DateFormat('hh:mm a, MMM dd, yyyy').format(this);
-
-  String get monthDayYear => DateFormat('MMM, dd, yyyy').format(this);
-  String get dateMonthYear => DateFormat('dd MMM yyyy').format(this);
-  String get dateMonthYearTime =>
-      DateFormat('dd MMM yyyy - hh:mm a').format(this);
-
-  DateTime get toDateOnly => DateTime(year, month, day);
-
-  String get dateMonthYearTime1 =>
-      DateFormat("MMM dd, yyyy 'at' hh:mm a").format(this);
-
-  String get monthDayTime => DateFormat('MMM dd, hh:mm a').format(this);
-
-  String get getFullMonth => DateFormat('MMMM').format(this);
-
-  String get getAbbrMonth => DateFormat('MMM').format(this);
-
-  String get getFullYear => DateFormat('yyyy').format(this);
-
-  String get dateWithHyphen => DateFormat('yyyy-MM-dd').format(this);
-
-  String get monthDateYearOrdinals => _getOrdinalIndicator(this);
-
-  String _getOrdinalIndicator(DateTime dateTime) {
-    String suffix = 'th';
-    final int digit = dateTime.day % 10;
-    if ((digit > 0 && digit < 4) && (dateTime.day < 11 || dateTime.day > 13)) {
-      suffix = <String>['st', 'nd', 'rd'][digit - 1];
+    if (difference.inDays > 365) {
+      return DateFormat('dd/MM/yyyy').format(this);
+    } else if (difference.inDays >= 30) {
+      return '${(difference.inDays / 30).floor()}mo ago';
+    } else if (difference.inDays >= 7) {
+      return '${(difference.inDays / 7).floor()}w ago';
+    } else if (difference.inDays > 0) {
+      return '${difference.inDays}d ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours}h ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes}m ago';
+    } else {
+      return 'just now';
     }
-    return DateFormat("MMMM d'$suffix' y").format(dateTime);
   }
 }
 
@@ -244,22 +49,6 @@ extension FileExtensions on File {
 }
 
 extension ContextExtensions on BuildContext {
-  bool get isMobile => MediaQuery.of(this).size.width <= 500.0;
-
-  bool get isTablet =>
-      MediaQuery.of(this).size.width < 1024.0 &&
-      MediaQuery.of(this).size.width >= 650.0;
-
-  bool get isSmallTablet =>
-      MediaQuery.of(this).size.width < 650.0 &&
-      MediaQuery.of(this).size.width > 500.0;
-
-  bool get isDesktop => MediaQuery.of(this).size.width >= 1024.0;
-
-  bool get isSmall =>
-      MediaQuery.of(this).size.width < 850.0 &&
-      MediaQuery.of(this).size.width >= 560.0;
-
   bool get isKeyboardUp => MediaQuery.of(this).viewInsets.bottom > 0;
 
   double get width => MediaQuery.of(this).size.width;
@@ -375,22 +164,6 @@ extension ContextExtensions on BuildContext {
   void replaceNamed(String route, {Object? arguments}) {}
 }
 
-extension DynamicMapExtension on Map<dynamic, dynamic> {
-  Map<String, dynamic> convertToTypedMap() {
-    final Map<String, dynamic> typedMap = {};
-
-    forEach((key, value) {
-      if (key is String) {
-        typedMap[key] = value;
-      } else {
-        typedMap[key.toString()] = value;
-      }
-    });
-
-    return typedMap;
-  }
-}
-
 extension RefExtension on WidgetRef {
   // Get system brightness using SchedulerBinding
   Brightness get _brightness =>
@@ -410,18 +183,4 @@ extension RefExtension on WidgetRef {
       (_themeMode == ThemeMode.system && _brightness == Brightness.dark);
 
   void reset() {}
-}
-
-extension MapConverter on Map<String, dynamic>? {
-  Map<String, Object>? toObjectMap() {
-    if (this == null) return null;
-
-    return Map<String, Object>.fromEntries(
-      this!.entries
-          .where((entry) => entry.value is Object)
-          .map(
-            (entry) => MapEntry(entry.key.toString(), entry.value.toString()),
-          ),
-    );
-  }
 }
