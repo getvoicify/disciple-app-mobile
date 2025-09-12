@@ -9,23 +9,36 @@ class ImageWidget extends StatelessWidget {
     this.width,
     this.height,
     this.fit = BoxFit.contain,
+    this.onTap,
   });
 
   final String imageUrl;
   final double? width;
   final double? height;
   final BoxFit fit;
+  final Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
     final bool isAsset = imageUrl.startsWith(AppImage.imagePath);
 
     if (isAsset && imageUrl.endsWith(".svg")) {
-      return SvgPicture.asset(imageUrl, width: width, height: height, fit: fit);
+      return InkWell(
+        onTap: onTap,
+        child: SvgPicture.asset(
+          imageUrl,
+          width: width,
+          height: height,
+          fit: fit,
+        ),
+      );
     }
 
     if (isAsset && imageUrl.endsWith('.png')) {
-      return Image.asset(imageUrl, width: width, height: height, fit: fit);
+      return InkWell(
+        onTap: onTap,
+        child: Image.asset(imageUrl, width: width, height: height, fit: fit),
+      );
     }
 
     return const Placeholder();

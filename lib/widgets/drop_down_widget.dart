@@ -14,6 +14,9 @@ class BuildDropdownWidget extends StatelessWidget {
     this.color,
     this.borderColor,
     this.textColor,
+    this.onTap,
+    this.icon = AppImage.arrowDownIcon,
+    this.onIconTap,
   });
 
   final String title;
@@ -22,33 +25,39 @@ class BuildDropdownWidget extends StatelessWidget {
   final Color? color;
   final Color? borderColor;
   final Color? textColor;
+  final Function()? onTap;
+  final String icon;
+  final Function()? onIconTap;
 
   @override
-  Widget build(BuildContext context) => Container(
-    padding: padding ?? EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-    decoration: BoxDecoration(
-      color: color ?? AppColors.grey50,
-      borderRadius: BorderRadius.circular(4.r),
-      border: Border.all(color: borderColor ?? AppColors.grey200, width: 1.w),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Flexible(
-          child: Text(
-            title,
-            style: context.headlineLarge?.copyWith(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w500,
-              color: textColor,
+  Widget build(BuildContext context) => InkWell(
+    onTap: onTap,
+    child: Container(
+      padding: padding ?? EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+      decoration: BoxDecoration(
+        color: color ?? AppColors.grey50,
+        borderRadius: BorderRadius.circular(4.r),
+        border: Border.all(color: borderColor ?? AppColors.grey200, width: 1.w),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            child: Text(
+              title,
+              style: context.headlineLarge?.copyWith(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w500,
+                color: textColor,
+              ),
             ),
           ),
-        ),
-        if (dropdown) ...[
-          SizedBox(width: 8.w),
-          const ImageWidget(imageUrl: AppImage.arrowDownIcon),
+          if (dropdown) ...[
+            SizedBox(width: 8.w),
+            ImageWidget(imageUrl: icon, onTap: onIconTap),
+          ],
         ],
-      ],
+      ),
     ),
   );
 }

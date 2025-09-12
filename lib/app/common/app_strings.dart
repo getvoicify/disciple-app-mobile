@@ -40,4 +40,7 @@ class AppString {
       ' or drag and drop\nSVG, PNG, JPG or GIF (max. 800x400px)';
   static String addNote = 'Add Note';
   static String newNote = 'New Note';
+  static String save = 'Save';
+  static String searchNotesByTitle = 'Search notes by title';
+  static String all = 'All';
 }

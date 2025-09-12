@@ -56,7 +56,7 @@ class _BookmarksViewState extends State<BookmarksView> {
           Expanded(
             child: ListView.separated(
               itemCount: 20,
-              itemBuilder: (_, __) => const BuildTileWidget(),
+              itemBuilder: (_, _) => const BuildTileWidget(),
               separatorBuilder: (context, index) => SizedBox(height: 12.h),
             ),
           ),

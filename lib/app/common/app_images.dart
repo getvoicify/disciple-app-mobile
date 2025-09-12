@@ -14,6 +14,7 @@ class AppImage {
   static const String clockIcon =
       "${_imagePath}fluent_clock-alarm-32-light.svg";
   static const String cancelIcon = "${_imagePath}hugeicons_cancel-01.svg";
+  static const String cancelIcon2 = "${_imagePath}hugeicons_cancel-02.svg";
   static const String arrowRightIcon = "${_imagePath}arrow-right.svg";
   static const String menuIcon = "${_imagePath}hugeicons_menu-02.svg";
   static const String arrowDownIcon = "${_imagePath}ep_arrow-down.svg";

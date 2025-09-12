@@ -15,7 +15,10 @@ import 'package:disciple/widgets/floating_side_action_button.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+final searchQueryProvider = StateProvider<String>((_) => '');
 
 @RoutePage()
 class NotesView extends ConsumerStatefulWidget {
@@ -28,7 +31,6 @@ class NotesView extends ConsumerStatefulWidget {
 class _NotesViewState extends ConsumerState<NotesView> {
   final _searchController = TextEditingController();
   Timer? _debounce;
-  String _searchQuery = '';
 
   @override
   void initState() {
@@ -47,31 +49,31 @@ class _NotesViewState extends ConsumerState<NotesView> {
 
   void _onSearchChanged() {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
+    _debounce = Timer(const Duration(milliseconds: 400), () {
       if (mounted) {
-        setState(() {
-          _searchQuery = _searchController.text;
-        });
+        ref.read(searchQueryProvider.notifier).state = _searchController.text
+            .trim();
       }
     });
   }
 
   @override
-  Widget build(BuildContext context) {
-    final notesStream = ref
-        .watch(noteProvider.notifier)
-        .watchNotes(query: _searchQuery);
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: Text(AppString.notes),
+      actions: const [
+        ImageWidget(imageUrl: AppImage.menuIcon),
+        SizedBox(width: 16),
+      ],
+    ),
+    body: Consumer(
+      builder: (context, ref, _) {
+        final searchQuery = ref.watch(searchQueryProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notes'),
-        actions: [
-          const ImageWidget(imageUrl: AppImage.menuIcon),
-          SizedBox(width: 16.w),
-        ],
-      ),
-      body: SafeArea(
-        child: Stack(
+        final notesStream = ref
+            .watch(noteProvider.notifier)
+            .watchNotes(query: searchQuery);
+        return Stack(
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -83,7 +85,7 @@ class _NotesViewState extends ConsumerState<NotesView> {
                       imageUrl: AppImage.searchIcon,
                       fit: BoxFit.none,
                     ),
-                    label: 'Search notes by title',
+                    label: AppString.searchNotesByTitle,
                   ),
                   SizedBox(height: 20.h),
                   Container(
@@ -97,7 +99,7 @@ class _NotesViewState extends ConsumerState<NotesView> {
                       borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Text(
-                      'All',
+                      AppString.all,
                       style: context.headlineLarge?.copyWith(
                         fontSize: 20.sp,
                         color: AppColors.purple,
@@ -116,17 +118,15 @@ class _NotesViewState extends ConsumerState<NotesView> {
                           );
                         }
 
-                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        final notes = snapshot.data ?? [];
+                        if (notes.isEmpty) {
                           return const Center(child: Text('No notes found.'));
                         }
-
-                        final notes = snapshot.data ?? [];
 
                         return ListView.separated(
                           itemCount: notes.length,
                           itemBuilder: (_, index) {
                             final note = notes[index];
-
                             final model = BuildTileModel(
                               title: note.title,
                               content: note.content,
@@ -139,8 +139,8 @@ class _NotesViewState extends ConsumerState<NotesView> {
                               ),
                             );
                           },
-                          separatorBuilder: (context, index) =>
-                              SizedBox(height: 12.h),
+                          separatorBuilder: (_, _) =>
+                              const SizedBox(height: 12),
                         );
                       },
                     ),
@@ -153,8 +153,8 @@ class _NotesViewState extends ConsumerState<NotesView> {
               onTap: () => PageNavigator.pushRoute(const NewNotesRoute()),
             ),
           ],
-        ),
-      ),
-    );
-  }
+        );
+      },
+    ),
+  );
 }

@@ -1,17 +1,16 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:disciple/app/common/app_colors.dart';
-import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/app/common/app_strings.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/app/utils/field_validator.dart';
 import 'package:disciple/features/notes/data/model/scripture_reference.dart';
 import 'package:disciple/features/notes/domain/entity/note_entity.dart';
 import 'package:disciple/features/notes/presentation/notifier/note_notifier.dart';
+import 'package:disciple/features/notes/presentation/widget/add_scripture_section.dart';
+import 'package:disciple/features/notes/presentation/widget/scripture_chips.dart';
+import 'package:disciple/features/notes/presentation/widget/upload_image_section.dart';
 import 'package:disciple/widgets/back_arrow_widget.dart';
-import 'package:disciple/widgets/drop_down_widget.dart';
 import 'package:disciple/widgets/edit_text_field_with.dart';
 import 'package:disciple/widgets/elevated_button_widget.dart';
-import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -25,18 +24,15 @@ class NewNotesView extends ConsumerStatefulWidget {
 }
 
 class _NewNotesViewState extends ConsumerState<NewNotesView> {
-  final TextEditingController _titleContoller = TextEditingController();
-  final TextEditingController _detailContoller = TextEditingController();
+  final _titleContoller = TextEditingController();
+  final _detailContoller = TextEditingController();
 
-  final FocusNode _titleFocusNode = FocusNode();
-  final FocusNode _detailFocusNode = FocusNode();
+  final _titleFocusNode = FocusNode();
+  final _detailFocusNode = FocusNode();
 
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
-  @override
-  void initState() {
-    super.initState();
-  }
+  final Set<ScriptureReference> _scriptures = {};
 
   @override
   void dispose() {
@@ -45,6 +41,32 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
     _titleFocusNode.dispose();
     _detailFocusNode.dispose();
     super.dispose();
+  }
+
+  void _toggleScripture(ScriptureReference scripture) {
+    setState(() {
+      if (!_scriptures.add(scripture)) {
+        _scriptures.remove(scripture);
+      }
+    });
+  }
+
+  Future<void> _addNote() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final entity = NoteEntity(
+      title: _titleContoller.text.trim(),
+      content: _detailContoller.text.trim(),
+      scriptureReferences: _scriptures.toList(),
+      images: const [
+        'https://via.placeholder.com/150',
+        'https://via.placeholder.com/150',
+      ],
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    await ref.read(noteProvider.notifier).addNote(entity: entity);
   }
 
   @override
@@ -66,6 +88,7 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
               validator: FieldValidator.validateString(),
             ),
             SizedBox(height: 14.h),
+
             Text(
               AppString.addScripture,
               style: context.headlineLarge?.copyWith(
@@ -73,43 +96,20 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
                 fontWeight: FontWeight.w600,
               ),
             ),
+            if (_scriptures.isNotEmpty) ...[
+              SizedBox(height: 8.h),
+              ScriptureChips(
+                scriptures: _scriptures.toList(),
+                onRemove: _toggleScripture,
+              ),
+            ],
+
             SizedBox(height: 8.h),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-              decoration: BoxDecoration(
-                color: AppColors.grey50,
-                border: BoxBorder.all(color: AppColors.grey200, width: 1.w),
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  BuildDropdownWidget(title: AppString.kjv),
-                  SizedBox(height: 16.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const BuildDropdownWidget(title: 'Book'),
-                      const BuildDropdownWidget(title: 'Chapter'),
-                      const BuildDropdownWidget(title: 'Verse'),
-                      BuildDropdownWidget(
-                        title: 'Add',
-                        dropdown: false,
-                        color: AppColors.purple,
-                        borderColor: AppColors.purple,
-                        textColor: AppColors.white,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 16.w,
-                          vertical: 4.h,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+
+            AddScriptureSection(onAdd: _toggleScripture),
+
             SizedBox(height: 14.h),
+
             EditTextFieldWidget(
               title: AppString.noteDetails,
               maxLines: 20,
@@ -119,89 +119,20 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
               textInputAction: TextInputAction.newline,
               validator: FieldValidator.validateString(),
             ),
+
             SizedBox(height: 14.h),
 
-            RichText(
-              text: TextSpan(
-                text: AppString.addImages,
-                style: context.headlineLarge?.copyWith(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-                children: [
-                  TextSpan(
-                    text: ' (optional)',
-                    style: context.headlineLarge?.copyWith(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 8.h),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-              decoration: BoxDecoration(
-                border: BoxBorder.all(color: AppColors.grey200, width: 1.w),
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const ImageWidget(imageUrl: AppImage.uploadIcon),
-                  SizedBox(height: 8.h),
-                  RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      text: AppString.clickToUpload,
-                      style: context.headlineMedium?.copyWith(
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.purple,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: AppString.dragAndDrop,
-                          style: context.titleSmall?.copyWith(fontSize: 10.sp),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            const UploadImageSection(),
+
             SizedBox(height: 56.h),
-            ElevatedButtonIconWidget(title: 'Save', onPressed: _addNote),
+
+            ElevatedButtonIconWidget(
+              title: AppString.save,
+              onPressed: _addNote,
+            ),
           ],
         ),
       ),
     ),
   );
-
-  Future<void> _addNote() async {
-    if (!_formKey.currentState!.validate()) return;
-    await ref
-        .read(noteProvider.notifier)
-        .addNote(
-          entity: NoteEntity(
-            title: _titleContoller.text,
-            content: _detailContoller.text,
-            scriptureReferences: const [
-              ScriptureReference(book: 'Genesis'),
-              ScriptureReference(book: 'Exodus'),
-              ScriptureReference(book: 'Titus'),
-              ScriptureReference(book: 'Proverbs'),
-              ScriptureReference(book: 'Timothy'),
-            ],
-            images: const [
-              'https://via.placeholder.com/150',
-              'https://via.placeholder.com/150',
-              'https://via.placeholder.com/150',
-            ],
-            createdAt: DateTime.now(),
-            updatedAt: DateTime.now(),
-          ),
-        );
-  }
 }

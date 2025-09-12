@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+final appRouter = AppRouter();
+
 void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -14,18 +16,15 @@ class MyApp extends StatelessWidget {
 
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
-    final appRouter = AppRouter();
-    return ScreenUtilInit(
-      designSize: const Size(430, 932),
-      minTextAdapt: true,
-      builder: (context, child) => MaterialApp.router(
-        title: 'Disciple',
-        theme: lightTheme,
-        darkTheme: darkTheme,
-        debugShowCheckedModeBanner: false,
-        routerConfig: appRouter.config(),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => ScreenUtilInit(
+    designSize: const Size(430, 932),
+    minTextAdapt: true,
+    builder: (context, child) => MaterialApp.router(
+      title: 'Disciple',
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      debugShowCheckedModeBanner: false,
+      routerConfig: appRouter.config(),
+    ),
+  );
 }
