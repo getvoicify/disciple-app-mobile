@@ -50,7 +50,7 @@ class _ChurchViewState extends State<ChurchView>
       ],
     ),
     body: NestedScrollView(
-      headerSliverBuilder: (_, __) => [
+      headerSliverBuilder: (_, _) => [
         SliverToBoxAdapter(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),

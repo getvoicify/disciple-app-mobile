@@ -19,7 +19,7 @@ class _PostTabState extends State<PostTab> {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: 20,
-      itemBuilder: (_, __) => const PostTileWidget(),
+      itemBuilder: (_, _) => const PostTileWidget(),
       separatorBuilder: (context, index) => SizedBox(height: 26.h),
     ),
   );

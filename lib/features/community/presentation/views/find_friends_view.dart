@@ -38,7 +38,7 @@ class _FindFriendsViewState extends State<FindFriendsView> {
                 Expanded(
                   child: ListView.separated(
                     itemCount: 20,
-                    itemBuilder: (_, __) => const BuildFriendsTileWidget(),
+                    itemBuilder: (_, _) => const BuildFriendsTileWidget(),
                     separatorBuilder: (context, index) =>
                         SizedBox(height: 12.h),
                   ),

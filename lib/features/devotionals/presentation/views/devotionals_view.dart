@@ -69,7 +69,7 @@ class _DevotionalsViewState extends State<DevotionalsView> {
           Expanded(
             child: ListView.separated(
               itemCount: 20,
-              itemBuilder: (_, __) => Row(
+              itemBuilder: (_, _) => Row(
                 children: [
                   Container(
                     height: 126.h,

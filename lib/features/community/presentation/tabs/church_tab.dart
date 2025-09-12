@@ -65,7 +65,7 @@ class _ChurchState extends State<ChurchTab> {
         Expanded(
           child: ListView.separated(
             itemCount: 20,
-            itemBuilder: (_, __) => Container(
+            itemBuilder: (_, _) => Container(
               padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8.r),
@@ -100,7 +100,9 @@ class _ChurchState extends State<ChurchTab> {
                               ),
                             ),
                             SizedBox(width: 16.w),
-                            const ImageWidget(imageUrl: AppImage.pinAngleFillIcon),
+                            const ImageWidget(
+                              imageUrl: AppImage.pinAngleFillIcon,
+                            ),
                           ],
                         ),
                         SizedBox(height: 4.h),

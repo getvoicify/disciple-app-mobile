@@ -157,7 +157,7 @@ class _DevotionalsDetailsViewState extends State<DevotionalsDetailsView> {
                     itemCount: 20,
                     padding: EdgeInsets.zero,
                     shrinkWrap: true,
-                    itemBuilder: (_, __) => const BuildTileWidget(),
+                    itemBuilder: (_, _) => const BuildTileWidget(),
                     separatorBuilder: (context, index) =>
                         SizedBox(height: 12.h),
                   ),
