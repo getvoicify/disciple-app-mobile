@@ -2,6 +2,7 @@ import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/features/notes/domain/entity/note_entity.dart';
 import 'package:disciple/features/notes/domain/entity/parsed_note_data.dart';
 import 'package:disciple/features/notes/domain/usecase/module/module.dart';
+import 'package:disciple/features/notes/domain/usecase/watch_notes_usecase.dart';
 import 'package:disciple/features/notes/presentation/state/note_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -24,8 +25,12 @@ class NoteNotifier extends _$NoteNotifier {
     }
   }
 
-  Stream<List<NoteData>> watchNotes({NoteEntity? entity}) =>
-      ref.watch(watchNotesUseCaseImpl).execute(parameter: entity)
+  Stream<List<NoteData>> watchNotes({String? query, int offset = 0}) =>
+      ref
+              .watch(watchNotesUseCaseImpl)
+              .execute(
+                parameter: WatchNotesParams(query: query, offset: offset),
+              )
           as Stream<List<NoteData>>;
 
   Future<void> getNoteById({required String id}) async {

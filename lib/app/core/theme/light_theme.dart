@@ -123,7 +123,6 @@ ThemeData lightTheme = ThemeData.light(useMaterial3: false).copyWith(
       fontWeight: FontWeight.w600,
     ),
   ),
-
   switchTheme: SwitchThemeData(
     thumbColor: WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
@@ -143,5 +142,10 @@ ThemeData lightTheme = ThemeData.light(useMaterial3: false).copyWith(
       }
       return null;
     }),
+  ),
+  popupMenuTheme: PopupMenuThemeData(
+    color: AppColors.grey50,
+    textStyle: bodyMedium.copyWith(fontWeight: FontWeight.w500),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
   ),
 );

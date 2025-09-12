@@ -33,10 +33,22 @@ class NoteRepoImpl implements NoteRepository {
       )..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
 
   @override
-  Stream<List<NoteData>> watchNotes({int limit = 20, int offset = 0}) {
-    final query = _database.select(_database.note)
+  Stream<List<NoteData>> watchNotes({
+    int limit = 20,
+    int offset = 0,
+    String? query,
+  }) {
+    final select = _database.select(_database.note);
+
+    if (query != null && query.isNotEmpty) {
+      // Starts with (uses index on title if created)
+      select.where((tbl) => tbl.title.like('$query%'));
+    }
+
+    select
       ..orderBy([(tbl) => OrderingTerm.desc(tbl.updatedAt)])
       ..limit(limit, offset: offset);
-    return query.watch();
+
+    return select.watch();
   }
 }

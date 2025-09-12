@@ -1,8 +1,9 @@
+import 'dart:async';
+
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/utils/extension.dart';
-import 'package:disciple/features/notes/domain/entity/note_entity.dart';
 import 'package:disciple/features/notes/presentation/notifier/note_notifier.dart';
 import 'package:disciple/widgets/build_tile_widget.dart';
 import 'package:disciple/widgets/edit_text_field_with.dart';
@@ -12,14 +13,49 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class NotesView extends ConsumerWidget {
+class NotesView extends ConsumerStatefulWidget {
   const NotesView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NotesView> createState() => _NotesViewState();
+}
+
+class _NotesViewState extends ConsumerState<NotesView> {
+  final _searchController = TextEditingController();
+  Timer? _debounce;
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController
+      ..removeListener(_onSearchChanged)
+      ..dispose();
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        setState(() {
+          _searchQuery = _searchController.text;
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final notesStream = ref
         .watch(noteProvider.notifier)
-        .watchNotes(entity: NoteEntity());
+        .watchNotes(query: _searchQuery);
 
     return Scaffold(
       appBar: AppBar(
@@ -36,8 +72,9 @@ class NotesView extends ConsumerWidget {
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: Column(
                 children: [
-                  const EditTextFieldWidget(
-                    prefix: ImageWidget(
+                  EditTextFieldWidget(
+                    controller: _searchController,
+                    prefix: const ImageWidget(
                       imageUrl: AppImage.searchIcon,
                       fit: BoxFit.none,
                     ),

@@ -4,6 +4,7 @@ import 'package:disciple/features/notes/domain/entity/note_entity.dart';
 import 'package:disciple/features/notes/domain/entity/parsed_note_data.dart';
 import 'package:disciple/features/notes/domain/repository/note_repository.dart';
 import 'package:disciple/features/notes/domain/service/note_service.dart';
+import 'package:disciple/features/notes/domain/usecase/watch_notes_usecase.dart';
 
 class NoteServiceImpl implements NoteService {
   final _logger = getLogger('NoteServiceImpl');
@@ -25,10 +26,11 @@ class NoteServiceImpl implements NoteService {
   }
 
   @override
-  Stream<List<NoteData>> watchNotes({required NoteEntity? entity}) =>
+  Stream<List<NoteData>> watchNotes({WatchNotesParams? parameter}) =>
       _repository.watchNotes(
-        limit: entity?.limit ?? 20,
-        offset: entity?.offset ?? 0,
+        limit: parameter?.limit ?? 20,
+        offset: parameter?.offset ?? 0,
+        query: parameter?.query,
       );
 
   @override

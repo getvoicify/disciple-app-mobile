@@ -73,4 +73,6 @@ class AppImage {
       "${_imagePath}iconamoon_notification-thin.svg";
   static const String darkThemeIcon =
       "${_imagePath}fluent_dark-theme-24-regular.svg";
+  static const String downloadIcon = "${_imagePath}proicons_arrow-download.svg";
+  static const String deleteIcon = "${_imagePath}fluent_delete-20-regular.svg";
 }

@@ -13,9 +13,6 @@ class NoteEntity {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  final int? limit;
-  final int? offset;
-
   NoteEntity({
     this.id,
     this.title,
@@ -24,8 +21,6 @@ class NoteEntity {
     this.images = const [],
     this.createdAt,
     this.updatedAt,
-    this.limit,
-    this.offset,
   });
 
   // copyWith for immutability

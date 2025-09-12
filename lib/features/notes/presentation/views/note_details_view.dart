@@ -6,6 +6,7 @@ import 'package:disciple/features/notes/domain/entity/parsed_note_data.dart';
 import 'package:disciple/features/notes/presentation/notifier/note_notifier.dart';
 import 'package:disciple/features/notes/presentation/state/note_state.dart';
 import 'package:disciple/widgets/image_widget.dart';
+import 'package:disciple/widgets/popup_menu_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,6 +19,12 @@ class NoteDetailsView extends ConsumerStatefulWidget {
 }
 
 class _NoteDetailsViewState extends ConsumerState<NoteDetailsView> {
+  final List<Map> menus = [
+    {"icon": AppImage.penIcon, "title": "Edit Note", "value": "edit"},
+    {"icon": AppImage.downloadIcon, "title": "Download", "value": "download"},
+    {"icon": AppImage.deleteIcon, "title": "Delete", "value": "delete"},
+  ];
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -42,8 +49,19 @@ class _NoteDetailsViewState extends ConsumerState<NoteDetailsView> {
           fit: BoxFit.none,
         ),
         actions: [
-          const ImageWidget(imageUrl: AppImage.dotsIcon),
-          SizedBox(width: 16.w),
+          PopupMenuWidget<String>(
+            items: menus
+                .map(
+                  (menu) => PopupMenuItemData(
+                    icon: menu['icon'] as String?,
+                    value: menu['value'] as String,
+                    label: menu['title'] as String,
+                  ),
+                )
+                .toList(),
+            onSelected: _handleMenuSelection,
+            icon: AppImage.dotsIcon,
+          ),
         ],
       ),
       body: Column(
@@ -141,5 +159,8 @@ class _NoteDetailsViewState extends ConsumerState<NoteDetailsView> {
         ],
       ),
     );
+  }
+
+  void _handleMenuSelection(String option) {
   }
 }

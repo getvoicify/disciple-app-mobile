@@ -8,6 +8,10 @@ abstract class NoteRepository {
     required NoteEntity entity,
   });
   Future<bool> deleteNote({required String id});
-  Stream<List<NoteData>> watchNotes({int limit = 20, int offset = 0});
+  Stream<List<NoteData>> watchNotes({
+    int limit = 20,
+    int offset = 0,
+    String? query,
+  });
   Future<NoteData?> getNoteById({required String id});
 }
