@@ -62,8 +62,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  auto_route_generator: ^9.0.0
-  flutter_lints: ^5.0.0
+  auto_route_generator: ^10.2.4
+  flutter_lints: ^6.0.0
   drift_dev: ^2.28.2
   build_runner: ^2.7.1
   riverpod_generator: ^3.0.0

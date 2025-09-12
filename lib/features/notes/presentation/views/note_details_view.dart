@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/app/utils/extension.dart';
@@ -5,14 +6,18 @@ import 'package:disciple/features/notes/data/model/scripture_reference.dart';
 import 'package:disciple/features/notes/domain/entity/parsed_note_data.dart';
 import 'package:disciple/features/notes/presentation/notifier/note_notifier.dart';
 import 'package:disciple/features/notes/presentation/state/note_state.dart';
+import 'package:disciple/widgets/back_arrow_widget.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:disciple/widgets/popup_menu_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+@RoutePage()
 class NoteDetailsView extends ConsumerStatefulWidget {
-  const NoteDetailsView({super.key});
+  const NoteDetailsView({super.key, required this.id});
+
+  final String id;
 
   @override
   ConsumerState<NoteDetailsView> createState() => _NoteDetailsViewState();
@@ -24,13 +29,14 @@ class _NoteDetailsViewState extends ConsumerState<NoteDetailsView> {
     {"icon": AppImage.downloadIcon, "title": "Download", "value": "download"},
     {"icon": AppImage.deleteIcon, "title": "Delete", "value": "delete"},
   ];
+  late String _id;
 
   @override
   void initState() {
+    _id = widget.id;
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await ref
-          .read(noteProvider.notifier)
-          .getNoteById(id: '4fe934d6-9a37-40e3-b9fa-7b21deeb117b');
+      await ref.read(noteProvider.notifier).getNoteById(id: _id);
     });
     super.initState();
   }
@@ -44,10 +50,7 @@ class _NoteDetailsViewState extends ConsumerState<NoteDetailsView> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: const ImageWidget(
-          imageUrl: AppImage.backIcon,
-          fit: BoxFit.none,
-        ),
+        leading: const BackArrowWidget(),
         actions: [
           PopupMenuWidget<String>(
             items: menus
@@ -161,5 +164,11 @@ class _NoteDetailsViewState extends ConsumerState<NoteDetailsView> {
     );
   }
 
-  void _handleMenuSelection(String option) {}
+  Future<void> _handleMenuSelection(String option) async {
+    if (option == 'edit') {}
+    if (option == 'download') {}
+    if (option == 'delete') {
+      await ref.read(noteProvider.notifier).deleteNote(id: _id);
+    }
+  }
 }

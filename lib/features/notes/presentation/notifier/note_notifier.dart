@@ -1,4 +1,5 @@
 import 'package:disciple/app/core/database/app_database.dart';
+import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/features/notes/domain/entity/note_entity.dart';
 import 'package:disciple/features/notes/domain/entity/parsed_note_data.dart';
 import 'package:disciple/features/notes/domain/usecase/module/module.dart';
@@ -19,6 +20,7 @@ class NoteNotifier extends _$NoteNotifier {
     state = state.copyWith(isAddingNote: true);
     try {
       await ref.read(addNoteUseCaseImpl).execute(parameter: entity);
+      PageNavigator.pop();
     } catch (_) {
     } finally {
       state = state.copyWith(isAddingNote: false);
@@ -47,6 +49,7 @@ class NoteNotifier extends _$NoteNotifier {
     state = state.copyWith(isDeletingNote: true);
     try {
       await ref.read(deleteNoteUseCaseImpl).execute(parameter: id);
+      PageNavigator.pop();
     } catch (_) {
     } finally {
       state = state.copyWith(isDeletingNote: false);

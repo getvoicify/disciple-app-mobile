@@ -38,4 +38,6 @@ class AppString {
   static String clickToUpload = 'Click to upload';
   static String dragAndDrop =
       ' or drag and drop\nSVG, PNG, JPG or GIF (max. 800x400px)';
+  static String addNote = 'Add Note';
+  static String newNote = 'New Note';
 }

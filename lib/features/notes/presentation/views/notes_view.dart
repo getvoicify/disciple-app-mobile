@@ -1,8 +1,12 @@
 import 'dart:async';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
+import 'package:disciple/app/common/app_strings.dart';
 import 'package:disciple/app/core/database/app_database.dart';
+import 'package:disciple/app/core/routes/app_router.gr.dart';
+import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/features/notes/presentation/notifier/note_notifier.dart';
 import 'package:disciple/widgets/build_tile_widget.dart';
@@ -13,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+@RoutePage()
 class NotesView extends ConsumerStatefulWidget {
   const NotesView({super.key});
 
@@ -127,7 +132,12 @@ class _NotesViewState extends ConsumerState<NotesView> {
                               content: note.content,
                               date: note.updatedAt,
                             );
-                            return BuildTileWidget(model: model, onTap: () {});
+                            return BuildTileWidget(
+                              model: model,
+                              onTap: () => PageNavigator.pushRoute(
+                                NoteDetailsRoute(id: note.id),
+                              ),
+                            );
                           },
                           separatorBuilder: (context, index) =>
                               SizedBox(height: 12.h),
@@ -138,7 +148,10 @@ class _NotesViewState extends ConsumerState<NotesView> {
                 ],
               ),
             ),
-            const FloatingSideButtonWidget(title: 'Add Note'),
+            FloatingSideButtonWidget(
+              title: AppString.addNote,
+              onTap: () => PageNavigator.pushRoute(const NewNotesRoute()),
+            ),
           ],
         ),
       ),
