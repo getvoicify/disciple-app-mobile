@@ -161,6 +161,5 @@ class _NoteDetailsViewState extends ConsumerState<NoteDetailsView> {
     );
   }
 
-  void _handleMenuSelection(String option) {
-  }
+  void _handleMenuSelection(String option) {}
 }

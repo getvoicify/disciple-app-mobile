@@ -9,6 +9,7 @@ abstract class NoteState with _$NoteState {
   const factory NoteState({
     @Default(false) bool isAddingNote,
     @Default(false) bool isLoadingNote,
+    @Default(false) bool isDeletingNote,
     @JsonKey(includeFromJson: false, includeToJson: false) ParsedNoteData? note,
   }) = _NoteState;
 }

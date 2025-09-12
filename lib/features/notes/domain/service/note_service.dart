@@ -7,4 +7,5 @@ abstract class NoteService {
   Future<void> addNote({required NoteEntity entity});
   Stream<List<NoteData>> watchNotes({WatchNotesParams? parameter});
   Future<ParsedNoteData?> getNoteById({required String id});
+  Future<bool> deleteNote({required String id});
 }

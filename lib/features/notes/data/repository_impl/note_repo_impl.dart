@@ -23,8 +23,12 @@ class NoteRepoImpl implements NoteRepository {
   }) async => null;
 
   @override
-  Future<bool> deleteNote({required String id}) async =>
-      await _source.deleteNote(id: id);
+  Future<bool> deleteNote({required String id}) async {
+    final count = await (_database.delete(
+      _database.note,
+    )..where((tbl) => tbl.id.equals(id))).go();
+    return count > 0;
+  }
 
   @override
   Future<NoteData?> getNoteById({required String id}) async =>

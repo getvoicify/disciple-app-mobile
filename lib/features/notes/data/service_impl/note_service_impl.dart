@@ -48,4 +48,17 @@ class NoteServiceImpl implements NoteService {
     }
     return note;
   }
+
+  @override
+  Future<bool> deleteNote({required String id}) async {
+    bool result = false;
+    try {
+      result = await _repository.deleteNote(id: id);
+      _logger.i('Note with id: $id deleted successfully');
+    } catch (e) {
+      _logger.e('An error occurred deleting note: $e');
+      rethrow;
+    }
+    return result;
+  }
 }

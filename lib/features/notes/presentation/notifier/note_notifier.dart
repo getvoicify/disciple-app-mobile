@@ -42,4 +42,14 @@ class NoteNotifier extends _$NoteNotifier {
       state = state.copyWith(isLoadingNote: false, note: _noteData);
     }
   }
+
+  Future<void> deleteNote({required String id}) async {
+    state = state.copyWith(isDeletingNote: true);
+    try {
+      await ref.read(deleteNoteUseCaseImpl).execute(parameter: id);
+    } catch (_) {
+    } finally {
+      state = state.copyWith(isDeletingNote: false);
+    }
+  }
 }
