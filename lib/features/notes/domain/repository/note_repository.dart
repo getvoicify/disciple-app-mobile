@@ -3,10 +3,7 @@ import 'package:disciple/features/notes/domain/entity/note_entity.dart';
 
 abstract class NoteRepository {
   Future<int> addNote({required NoteEntity entity});
-  Future<NoteData?> updateNote({
-    required String id,
-    required NoteEntity entity,
-  });
+  Future<bool> updateNote({required NoteEntity entity});
   Future<bool> deleteNote({required String id});
   Stream<List<NoteData>> watchNotes({
     int limit = 20,

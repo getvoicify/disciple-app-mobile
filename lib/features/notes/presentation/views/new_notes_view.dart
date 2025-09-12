@@ -4,6 +4,7 @@ import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/app/utils/field_validator.dart';
 import 'package:disciple/features/notes/data/model/scripture_reference.dart';
 import 'package:disciple/features/notes/domain/entity/note_entity.dart';
+import 'package:disciple/features/notes/domain/entity/parsed_note_data.dart';
 import 'package:disciple/features/notes/presentation/notifier/note_notifier.dart';
 import 'package:disciple/features/notes/presentation/widget/add_scripture_section.dart';
 import 'package:disciple/features/notes/presentation/widget/scripture_chips.dart';
@@ -15,9 +16,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+/// TODO: Implement functionalities for getting Scriptures to be added
+/// TODO: Implement functionalities for image uploading
+
 @RoutePage()
 class NewNotesView extends ConsumerStatefulWidget {
-  const NewNotesView({super.key});
+  const NewNotesView({super.key, this.existingNote});
+
+  final ParsedNoteData? existingNote;
 
   @override
   ConsumerState<NewNotesView> createState() => _NewNotesViewState();
@@ -33,6 +39,19 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
   final _formKey = GlobalKey<FormState>();
 
   final Set<ScriptureReference> _scriptures = {};
+
+  bool get _isUpdating => widget.existingNote != null;
+
+  @override
+  void initState() {
+    super.initState();
+    if (_isUpdating) {
+      final note = widget.existingNote;
+      _titleContoller.text = note?.title ?? '';
+      _detailContoller.text = note?.content ?? '';
+      _scriptures.addAll(note?.scriptureReferences ?? []);
+    }
+  }
 
   @override
   void dispose() {
@@ -51,7 +70,7 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
     });
   }
 
-  Future<void> _addNote() async {
+  Future<void> _saveNote() async {
     if (!_formKey.currentState!.validate()) return;
 
     final entity = NoteEntity(
@@ -66,13 +85,21 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
       updatedAt: DateTime.now(),
     );
 
-    await ref.read(noteProvider.notifier).addNote(entity: entity);
+    final provider = ref.read(noteProvider.notifier);
+
+    if (_isUpdating) {
+      await provider.updateNote(
+        entity: entity.copyWith(id: widget.existingNote?.id),
+      );
+    } else {
+      await provider.addNote(entity: entity);
+    }
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: Text(AppString.newNote),
+      title: Text(_isUpdating ? AppString.editNote : AppString.newNote),
       leading: const BackArrowWidget(),
     ),
     body: SafeArea(
@@ -128,7 +155,7 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
 
             ElevatedButtonIconWidget(
               title: AppString.save,
-              onPressed: _addNote,
+              onPressed: _saveNote,
             ),
           ],
         ),

@@ -17,10 +17,15 @@ class NoteRepoImpl implements NoteRepository {
       await _database.into(_database.note).insert(entity.toCompanion());
 
   @override
-  Future<NoteData?> updateNote({
-    required String id,
-    required NoteEntity entity,
-  }) async => null;
+  Future<bool> updateNote({required NoteEntity entity}) async {
+    final companion = entity.toUpdateCompanion();
+
+    final updatedCount = await (_database.update(
+      _database.note,
+    )..where((tbl) => tbl.id.equals(entity.id ?? ''))).write(companion);
+
+    return updatedCount > 0;
+  }
 
   @override
   Future<bool> deleteNote({required String id}) async {

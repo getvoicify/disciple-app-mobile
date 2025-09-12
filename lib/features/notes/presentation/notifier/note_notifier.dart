@@ -55,4 +55,15 @@ class NoteNotifier extends _$NoteNotifier {
       state = state.copyWith(isDeletingNote: false);
     }
   }
+
+  Future<void> updateNote({required NoteEntity entity}) async {
+    state = state.copyWith(isUpdatingNote: true);
+    try {
+      await ref.read(updateNoteUseCaseImpl).execute(parameter: entity);
+      PageNavigator.pop();
+    } catch (_) {
+    } finally {
+      state = state.copyWith(isUpdatingNote: false);
+    }
+  }
 }

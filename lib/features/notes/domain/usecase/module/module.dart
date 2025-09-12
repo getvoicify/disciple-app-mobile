@@ -3,6 +3,7 @@ import 'package:disciple/features/notes/data/service_impl/module/module.dart';
 import 'package:disciple/features/notes/domain/usecase/delete_note_by_id_usecase.dart';
 import 'package:disciple/features/notes/domain/usecase/get_note_by_id_usecase.dart';
 import 'package:disciple/features/notes/domain/usecase/note_usecases.dart';
+import 'package:disciple/features/notes/domain/usecase/update_note_by_id_usecase.dart';
 import 'package:disciple/features/notes/domain/usecase/watch_notes_usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -20,4 +21,8 @@ final getNoteByIdUseCaseImpl = Provider<DiscipleUseCaseWithRequiredParam>(
 
 final deleteNoteUseCaseImpl = Provider<DiscipleUseCaseWithRequiredParam>(
   (ref) => DeleteNoteUseCaseImpl(service: ref.read(noteServiceModule)),
+);
+
+final updateNoteUseCaseImpl = Provider<DiscipleUseCaseWithRequiredParam>(
+  (ref) => UpdateNoteByIdUseCaseImpl(service: ref.read(noteServiceModule)),
 );

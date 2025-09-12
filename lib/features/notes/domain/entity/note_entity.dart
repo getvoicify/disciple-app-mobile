@@ -59,6 +59,15 @@ class NoteEntity {
     );
   }
 
+  /// For updating existing notes (⚠️ no id, no createdAt)
+  NoteCompanion toUpdateCompanion() => NoteCompanion(
+    title: title != null ? Value(title!) : const Value.absent(),
+    content: content != null ? Value(content!) : const Value.absent(),
+    scriptureReferences: Value(_encodeScriptureReferences()),
+    images: Value(_encodeImages()),
+    updatedAt: Value(DateTime.now()),
+  );
+
   // Helper method to encode scriptureReferences to JSON string
   String _encodeScriptureReferences() {
     final List<Map<String, dynamic>> jsonList = scriptureReferences

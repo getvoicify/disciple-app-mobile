@@ -150,7 +150,7 @@ class _NotesViewState extends ConsumerState<NotesView> {
             ),
             FloatingSideButtonWidget(
               title: AppString.addNote,
-              onTap: () => PageNavigator.pushRoute(const NewNotesRoute()),
+              onTap: () => PageNavigator.pushRoute(NewNotesRoute()),
             ),
           ],
         );

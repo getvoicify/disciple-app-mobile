@@ -43,4 +43,5 @@ class AppString {
   static String save = 'Save';
   static String searchNotesByTitle = 'Search notes by title';
   static String all = 'All';
+  static String editNote = 'Edit Note';
 }

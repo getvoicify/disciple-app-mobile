@@ -61,4 +61,17 @@ class NoteServiceImpl implements NoteService {
     }
     return result;
   }
+
+  @override
+  Future<bool> updateNote({required NoteEntity entity}) async {
+    bool result = false;
+    try {
+      result = await _repository.updateNote(entity: entity);
+      _logger.i('Note with id: ${entity.id} updated successfully');
+    } catch (e) {
+      _logger.e('An error occurred updating note: $e');
+      rethrow;
+    }
+    return result;
+  }
 }
