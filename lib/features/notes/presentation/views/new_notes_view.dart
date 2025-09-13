@@ -42,6 +42,8 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
 
   bool get _isUpdating => widget.existingNote != null;
 
+  bool _hasScriptures = false;
+
   @override
   void initState() {
     super.initState();
@@ -67,11 +69,22 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
       if (!_scriptures.add(scripture)) {
         _scriptures.remove(scripture);
       }
+      _hasScriptures = false;
     });
   }
 
   Future<void> _saveNote() async {
-    if (!_formKey.currentState!.validate()) return;
+    // Run both validation checks to show all errors at once.
+    final isFormValid = _formKey.currentState!.validate();
+    final hasScriptures = _scriptures.isNotEmpty;
+
+    // Update state for scripture error if necessary.
+    if (!hasScriptures) {
+      setState(() => _hasScriptures = true);
+    }
+
+    // If either check fails, do not proceed.
+    if (!isFormValid || !hasScriptures) return;
 
     final entity = NoteEntity(
       title: _titleContoller.text.trim(),
@@ -133,7 +146,10 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
 
             SizedBox(height: 8.h),
 
-            AddScriptureSection(onAdd: _toggleScripture),
+            AddScriptureSection(
+              onAdd: _toggleScripture,
+              hasError: _hasScriptures,
+            ),
 
             SizedBox(height: 14.h),
 

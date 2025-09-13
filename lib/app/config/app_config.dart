@@ -25,6 +25,9 @@ class AppConfig {
   static String get apiUrl =>
       dotenv.env[AppConstants.apiUrl] ?? '${AppConstants.apiUrl} $_notFound';
 
+  static String get appName =>
+      dotenv.env[AppConstants.appName] ?? '${AppConstants.appName} $_notFound';
+
   static String _getFileName() {
     if (_isDevelopment) return AppConstants.developmentEnv;
     if (_isTest) return AppConstants.testEnv;

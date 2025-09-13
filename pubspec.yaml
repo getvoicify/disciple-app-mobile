@@ -122,6 +122,8 @@ flutter:
 
   assets:
     - assets/images/
+    - .env
+    - .env_development
 
 # analysis_options.yaml
 analyzer:

@@ -7,15 +7,23 @@ import 'package:disciple/widgets/drop_down_widget.dart';
 
 class AddScriptureSection extends StatelessWidget {
   final ValueChanged<ScriptureReference> onAdd;
+  final bool hasError;
 
-  const AddScriptureSection({super.key, required this.onAdd});
+  const AddScriptureSection({
+    super.key,
+    required this.onAdd,
+    required this.hasError,
+  });
 
   @override
   Widget build(BuildContext context) => Container(
     padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
     decoration: BoxDecoration(
       color: AppColors.grey50,
-      border: Border.all(color: AppColors.grey200, width: 1.w),
+      border: Border.all(
+        color: hasError ? Colors.red : AppColors.grey200,
+        width: 1.w,
+      ),
       borderRadius: BorderRadius.circular(8.r),
     ),
     child: Column(
