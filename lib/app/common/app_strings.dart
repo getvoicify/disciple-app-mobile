@@ -44,4 +44,14 @@ class AppString {
   static String searchNotesByTitle = 'Search notes by title';
   static String all = 'All';
   static String editNote = 'Edit Note';
+
+  /// Network responses
+  static String sessionTimeout = 'Session Timeout';
+  static String serviceUnavailable = 'Service Unavailable';
+  static String connectionFailed = 'Connection Failed';
+  static String connectionTimeout = 'Connection Timeout';
+  static String internalFailure = 'Internal Failure';
+  static String requestCancelled = 'Request Cancelled';
+  static String unknownError = 'Unknown Error';
+  static String badResponse = 'Bad Response';
 }

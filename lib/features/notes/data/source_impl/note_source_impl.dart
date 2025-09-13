@@ -1,34 +1,34 @@
-import 'package:disciple/features/notes/data/model/note.dart';
+import 'package:disciple/app/core/network/api_wrapper.dart';
+import 'package:disciple/features/notes/data/api/note_api.dart';
+import 'package:disciple/features/notes/data/model/note_model.dart';
+import 'package:disciple/features/notes/data/model/single_note_model.dart';
 import 'package:disciple/features/notes/domain/entity/note_entity.dart';
 import 'package:disciple/features/notes/domain/source/note_source.dart';
 
 class NoteSourceImpl implements NoteSource {
-  @override
-  Future<Note> addNote({required NoteEntity entity}) {
-    throw UnimplementedError();
-  }
+  final NoteApi _api;
+
+  NoteSourceImpl({required NoteApi api}) : _api = api;
 
   @override
-  Future<bool> deleteNote({required String id}) {
-    // TODO: implement deleteNote
-    throw UnimplementedError();
-  }
+  Future<NoteModel> addNote({required NoteEntity entity}) async =>
+      await execute(run: () async => await _api.addNote(note: entity));
 
   @override
-  Future<Note?> getNoteById({required String id}) {
-    // TODO: implement getNoteById
-    throw UnimplementedError();
-  }
+  Future<void> deleteNote({required String id}) async =>
+      await execute(run: () async => await _api.deleteNote(id));
 
   @override
-  Future<List<Note>> getNotes() {
-    // TODO: implement getNotes
-    throw UnimplementedError();
-  }
+  Future<SingleNoteModel?> getNoteById({required String id}) async =>
+      await execute(run: () async => await _api.getNoteById(id));
 
   @override
-  Future<Note> updateNote({required String id, required NoteEntity entity}) {
-    // TODO: implement updateNote
-    throw UnimplementedError();
-  }
+  Future<List<NoteModel>> getNotes() async =>
+      await execute(run: () async => await _api.getNotes());
+
+  @override
+  Future<SingleNoteModel> updateNote({
+    required String id,
+    required NoteEntity entity,
+  }) async => await _api.updateNote(id, entity);
 }

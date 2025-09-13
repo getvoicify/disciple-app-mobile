@@ -78,4 +78,13 @@ class NoteEntity {
 
   // Helper method to encode images to JSON string
   String _encodeImages() => json.encode(images);
+
+  Map<String, dynamic> toJson() => {
+    'title': title,
+    'content': content,
+    'scriptureReferences': scriptureReferences
+        .map((ref) => ref.toJson())
+        .toList(),
+    'images': images,
+  };
 }
