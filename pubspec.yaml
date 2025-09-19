@@ -59,6 +59,7 @@ dependencies:
   auto_route: ^10.1.2
   retrofit: ^4.7.2
   pretty_dio_logger: ^1.4.0
+  keycloak_wrapper: ^1.4.6
 
 dev_dependencies:
   flutter_test:

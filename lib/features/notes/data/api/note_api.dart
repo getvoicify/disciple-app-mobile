@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:disciple/features/notes/data/model/add_note_response.dart';
 import 'package:disciple/features/notes/data/model/note_model.dart';
 import 'package:disciple/features/notes/data/model/single_note_model.dart';
 import 'package:disciple/features/notes/domain/entity/note_entity.dart';
@@ -14,7 +15,7 @@ abstract class NoteApi {
   Future<List<NoteModel>> getNotes();
 
   @POST("/api/notes")
-  Future<NoteModel> addNote({@Body() required NoteEntity note});
+  Future<AddNoteResponse> addNote({@Body() required NoteEntity note});
 
   @GET('/api/notes/{noteId}')
   Future<SingleNoteModel> getNoteById(@Path('noteId') String noteId);

@@ -1,4 +1,6 @@
 import 'package:disciple/app/core/database/app_database.dart';
+import 'package:disciple/app/core/manager/network_manager.dart';
+import 'package:disciple/features/notes/data/mapper/note_mapper.dart';
 import 'package:disciple/features/notes/domain/entity/note_entity.dart';
 import 'package:disciple/features/notes/domain/repository/note_repository.dart';
 import 'package:disciple/features/notes/domain/source/note_source.dart';
@@ -7,18 +9,33 @@ import 'package:drift/drift.dart';
 class NoteRepoImpl implements NoteRepository {
   final NoteSource _source;
   final AppDatabase _database;
+  final NetworkManager _networkManager;
+  final NoteToCompanionMapper _noteMapper;
 
-  NoteRepoImpl({required NoteSource source, required AppDatabase database})
-    : _source = source,
-      _database = database;
+  NoteRepoImpl({
+    required NoteSource source,
+    required AppDatabase database,
+    required NetworkManager networkManager,
+    required NoteToCompanionMapper noteMapper,
+  }) : _source = source,
+       _database = database,
+       _networkManager = networkManager,
+       _noteMapper = noteMapper;
 
   @override
-  Future<int> addNote({required NoteEntity entity}) async =>
-      await _database.into(_database.note).insert(entity.toCompanion());
+  Future<int> addNote({required NoteEntity entity}) async {
+    final database = _database.into(_database.note);
+
+    if (_networkManager.isOnline) {
+      final response = await _source.addNote(entity: entity);
+      return await database.insert(_noteMapper.insert(response));
+    }
+    return await database.insert(_noteMapper.insert(entity));
+  }
 
   @override
   Future<bool> updateNote({required NoteEntity entity}) async {
-    final companion = entity.toUpdateCompanion();
+    final companion = _noteMapper.update(entity);
 
     final updatedCount = await (_database.update(
       _database.note,

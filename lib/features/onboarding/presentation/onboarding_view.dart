@@ -1,19 +1,25 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/app/common/app_strings.dart';
+import 'package:disciple/app/core/routes/app_router.gr.dart';
+import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/app/utils/extension.dart';
+import 'package:disciple/features/authentication/services/keycloak_service.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:disciple/widgets/mini_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomeboardingView extends StatefulWidget {
+@RoutePage()
+class HomeboardingView extends ConsumerStatefulWidget {
   const HomeboardingView({super.key});
 
   @override
-  State<HomeboardingView> createState() => _HomeboardingViewState();
+  ConsumerState<HomeboardingView> createState() => _HomeboardingViewState();
 }
 
-class _HomeboardingViewState extends State<HomeboardingView> {
+class _HomeboardingViewState extends ConsumerState<HomeboardingView> {
   late List<String> _images;
 
   @override
@@ -57,7 +63,17 @@ class _HomeboardingViewState extends State<HomeboardingView> {
                 style: context.bodyLarge,
               ),
               SizedBox(height: 30.h),
-              MiniButtonWidget(title: AppString.getStarted),
+              MiniButtonWidget(
+                title: AppString.getStarted,
+                onTap: () async {
+                  final bool isLoggedIn =
+                      await ref.read(keycloakServiceProvider).value?.login() ??
+                      false;
+                  if (isLoggedIn) {
+                    PageNavigator.replace(const NotesRoute());
+                  }
+                },
+              ),
             ],
           ),
         ),

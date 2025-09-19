@@ -57,6 +57,9 @@ android {
         targetSdkVersion Math.max(flutter.targetSdkVersion, 35)
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        manifestPlaceholders += [
+                'appAuthRedirectScheme': 'church.pottersville.disciple_mobile'
+        ]
     }
 
     signingConfigs {

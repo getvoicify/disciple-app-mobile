@@ -12,7 +12,12 @@ class NoteSourceImpl implements NoteSource {
 
   @override
   Future<NoteModel> addNote({required NoteEntity entity}) async =>
-      await execute(run: () async => await _api.addNote(note: entity));
+      await execute(
+        run: () async {
+          final response = await _api.addNote(note: entity);
+          return response.note;
+        },
+      );
 
   @override
   Future<void> deleteNote({required String id}) async =>

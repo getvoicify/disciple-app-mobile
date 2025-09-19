@@ -28,6 +28,22 @@ class AppConfig {
   static String get appName =>
       dotenv.env[AppConstants.appName] ?? '${AppConstants.appName} $_notFound';
 
+  static String get keycloakClientId =>
+      dotenv.env[AppConstants.keycloakClientId] ??
+      '${AppConstants.keycloakClientId} $_notFound';
+
+  static String get keycloakClientRealm =>
+      dotenv.env[AppConstants.keycloakClientRealm] ??
+      '${AppConstants.keycloakClientRealm} $_notFound';
+
+  static String get keycloakBundleIdentifier =>
+      dotenv.env[AppConstants.keycloakBundleIdentifier] ??
+      '${AppConstants.keycloakBundleIdentifier} $_notFound';
+
+  static String get keycloakFrontendUrl =>
+      dotenv.env[AppConstants.keycloakFrontendUrl] ??
+      '${AppConstants.keycloakFrontendUrl} $_notFound';
+
   static String _getFileName() {
     if (_isDevelopment) return AppConstants.developmentEnv;
     if (_isTest) return AppConstants.testEnv;

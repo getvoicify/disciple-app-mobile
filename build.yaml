@@ -5,20 +5,14 @@ targets:
         generate_for:
           - lib/features/**.dart
         options:
-          # Generate fromJson/toJson automatically
-          # (no need to write `factory ...fromJson` manually everywhere)
           from_json: true
           to_json: true
-          # Generate copyWith, equality, hashCode, and toString
           copy_with: true
           equal: true
           map: true
           when: true
-          # Mark generated classes immutable (default, but explicit is good)
           immutable: true
-          # Add diagnostics for better Flutter DevTools support
           add_diagnostics: true
-          # Makes sealed classes stricter (forces exhaustive handling)
           make_sealed: true
 
       json_serializable:
@@ -27,9 +21,7 @@ targets:
         options:
           explicit_to_json: true
           include_if_null: true
-          # Adds `@JsonSerializable(fieldRename: FieldRename.snake)` automatically
           field_rename: snake
-          # Ensures safe enum handling instead of throwing
           checked: true
-          # Allow non-final fields in DTOs if needed
-          disallow_unrecognized_keys: true
+          disallow_unrecognized_keys: false
+          ignore_unannotated: false

@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:disciple/app/config/app_logger.dart';
 import 'package:disciple/app/core/network/api_path.dart';
 import 'package:disciple/app/core/network/error/api_error.dart';
+import 'package:disciple/features/authentication/services/keycloak_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
@@ -27,7 +27,8 @@ final dioProvider = Provider<Dio>((ref) {
     InterceptorsWrapper(
       onRequest: (options, handler) async {
         // Inject auth token if available
-        final token = await _getAccessToken();
+        final token = _getAccessToken(ref);
+
         if (token != null) {
           options.headers["authorization"] = "Bearer $token";
         }
@@ -48,16 +49,14 @@ final dioProvider = Provider<Dio>((ref) {
         if (apiError.statusCode == 401 && !_isRefreshing) {
           _isRefreshing = true;
           try {
-            final newToken = await _refreshToken();
-            if (newToken != null) {
-              e.requestOptions.headers["authorization"] = "Bearer $newToken";
-              e.requestOptions.headers["Content-Type"] = "application/json";
+            final newToken = _refreshToken(ref);
+            e.requestOptions.headers["authorization"] = "Bearer $newToken";
+            e.requestOptions.headers["Content-Type"] = "application/json";
 
-              // retry the original request with new token
-              final cloned = await dio.fetch(e.requestOptions);
-              _isRefreshing = false;
-              return handler.resolve(cloned);
-            }
+            // retry the original request with new token
+            final cloned = await dio.fetch(e.requestOptions);
+            _isRefreshing = false;
+            return handler.resolve(cloned);
           } catch (_) {
             _isRefreshing = false;
             // let it fall through (user must re-login)
@@ -100,15 +99,16 @@ final dioProvider = Provider<Dio>((ref) {
 /// These can be adapted to use secure storage, Hive, SharedPrefs, etc.
 bool _isRefreshing = false;
 
-// TODO: implement reading token from secure storage
-Future<String?> _getAccessToken() async => null;
+String? _getAccessToken(Ref ref) =>
+    ref.read(keycloakServiceProvider).value?.accessToken;
 
-// TODO: implement reading refresh token
-Future<String?> _getRefreshToken() async => null;
+String? _getRefreshToken(Ref ref) =>
+    ref.read(keycloakServiceProvider).value?.refreshToken;
 
-Future<String?> _refreshToken() async {
+/// TODO: Research how refresh token works with keycloak
+Future<String?> _refreshToken(Ref ref) async {
   final dio = Dio(BaseOptions(baseUrl: ApiPath.baseUrl));
-  final refreshToken = await _getRefreshToken();
+  final refreshToken = _getRefreshToken(ref);
 
   if (refreshToken == null) return null;
 
@@ -119,7 +119,6 @@ Future<String?> _refreshToken() async {
     );
 
     if (response.statusCode == 200) {
-      // TODO: persist new token securely
       final newToken = response.data;
       return newToken;
     }
@@ -127,12 +126,4 @@ Future<String?> _refreshToken() async {
     _logger.e("❌ Token refresh failed: ${e.message}");
   }
   return null;
-}
-
-/// --- 🔓 Allow self-signed SSL (only in dev) ---
-class AppHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) =>
-      super.createHttpClient(context)
-        ..badCertificateCallback = (cert, host, port) => true;
 }
