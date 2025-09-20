@@ -22,15 +22,9 @@ class AppRouter extends RootStackRouter {
 
   @override
   List<AutoRoute> get routes => [
-    AutoRoute(
-      page: HomeboardingRoute.page,
-      initial: !keycloakService.isAuthenticated,
-    ),
-    AutoRoute(
-      page: NotesRoute.page,
-      guards: [_authGuard],
-      initial: keycloakService.isAuthenticated,
-    ),
+    AutoRoute(page: HomeboardingRoute.page, guards: [_authGuard]),
+    AutoRoute(page: HomeRoute.page, guards: [_authGuard], initial: true),
+    AutoRoute(page: NotesRoute.page, guards: [_authGuard]),
     AutoRoute(page: NoteDetailsRoute.page, guards: [_authGuard]),
     AutoRoute(page: NewNotesRoute.page, guards: [_authGuard]),
   ];

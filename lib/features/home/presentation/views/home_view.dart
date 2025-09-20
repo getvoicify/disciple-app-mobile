@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_fonts.dart';
 import 'package:disciple/app/common/app_images.dart';
@@ -9,6 +10,7 @@ import 'package:disciple/widgets/mini_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+@RoutePage()
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
 
@@ -20,7 +22,8 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: const Text('Feed'),
+      title: Text(AppString.feed),
+      centerTitle: false,
       actions: [
         const ImageWidget(imageUrl: AppImage.notificationIcon),
         SizedBox(width: 16.w),

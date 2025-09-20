@@ -54,4 +54,5 @@ class AppString {
   static String requestCancelled = 'Request Cancelled';
   static String unknownError = 'Unknown Error';
   static String badResponse = 'Bad Response';
+  static String feed = 'Feed';
 }
