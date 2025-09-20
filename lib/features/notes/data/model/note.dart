@@ -23,6 +23,9 @@ class Note extends Table {
   /// Last update timestamp (nullable until first update)
   DateTimeColumn get updatedAt => dateTime().nullable()();
 
+  /// Indicates whether this note has been successfully synced to the backend
+  BoolColumn get isSynced => boolean().withDefault(const Constant(false))();
+
   @override
   Set<Column> get primaryKey => {id};
 }

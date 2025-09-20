@@ -10,7 +10,7 @@ import 'package:drift/drift.dart';
 class NoteToCompanionMapper<T extends INote>
     implements Mapper<T, NoteCompanion> {
   @override
-  NoteCompanion insert(T input) => NoteCompanion(
+  NoteCompanion insert(T input, {bool isSynced = false}) => NoteCompanion(
     id: Value(DriftUtils.generateId(input.id)),
     title: Value(input.title ?? ''),
     content: Value(input.content ?? ''),
@@ -20,10 +20,11 @@ class NoteToCompanionMapper<T extends INote>
     images: Value(DriftUtils.encodeList(input.images)),
     createdAt: Value(DriftUtils.timestampOrNow(input.createdAt)),
     updatedAt: Value(DriftUtils.timestampOrNow(input.updatedAt)),
+    isSynced: Value(isSynced),
   );
 
   @override
-  NoteCompanion update(T input) => NoteCompanion(
+  NoteCompanion update(T input, {bool isSynced = false}) => NoteCompanion(
     title: Value(input.title ?? ''),
     content: Value(input.content ?? ''),
     scriptureReferences: Value(
@@ -31,5 +32,6 @@ class NoteToCompanionMapper<T extends INote>
     ),
     images: Value(DriftUtils.encodeList(input.images)),
     updatedAt: Value(DriftUtils.timestampOrNow(input.updatedAt)),
+    isSynced: Value(isSynced),
   );
 }

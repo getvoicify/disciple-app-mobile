@@ -129,7 +129,7 @@ class _NotesViewState extends ConsumerState<NotesView> {
                             final note = notes[index];
                             final model = BuildTileModel(
                               title: note.title,
-                              content: note.content,
+                              content: note.isSynced.toString(),
                               date: note.updatedAt,
                             );
                             return BuildTileWidget(

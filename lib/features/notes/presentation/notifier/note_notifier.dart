@@ -20,11 +20,10 @@ class NoteNotifier extends _$NoteNotifier {
     state = state.copyWith(isAddingNote: true);
     try {
       await ref.read(addNoteUseCaseImpl).execute(parameter: entity);
-
-      PageNavigator.pop();
     } catch (_) {
     } finally {
       state = state.copyWith(isAddingNote: false);
+      PageNavigator.pop();
     }
   }
 

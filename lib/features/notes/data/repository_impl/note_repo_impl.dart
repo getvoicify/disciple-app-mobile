@@ -28,7 +28,9 @@ class NoteRepoImpl implements NoteRepository {
 
     if (_networkManager.isOnline) {
       final response = await _source.addNote(entity: entity);
-      return await database.insert(_noteMapper.insert(response));
+      return await database.insert(
+        _noteMapper.insert(response, isSynced: true),
+      );
     }
     return await database.insert(_noteMapper.insert(entity));
   }
