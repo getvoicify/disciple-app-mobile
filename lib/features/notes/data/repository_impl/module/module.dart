@@ -8,9 +8,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final noteRepoModule = Provider<NoteRepository>(
   (ref) => NoteRepoImpl(
-    source: ref.read(noteSourceModule),
-    database: ref.read(appDatabaseProvider),
-    networkManager: ref.read(networkManagerProvider.notifier),
-    noteMapper: ref.read(noteToCompanionMapperProvider),
+    source: ref.watch(noteSourceModule),
+    database: ref.watch(appDatabaseProvider),
+    networkManager: ref.watch(networkManagerProvider.notifier),
+    noteMapper: ref.watch(noteToCompanionMapperProvider),
   ),
 );

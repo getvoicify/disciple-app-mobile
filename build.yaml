@@ -21,7 +21,7 @@ targets:
         options:
           explicit_to_json: true
           include_if_null: true
-          field_rename: snake
+          field_rename: none
           checked: true
           disallow_unrecognized_keys: false
           ignore_unannotated: false

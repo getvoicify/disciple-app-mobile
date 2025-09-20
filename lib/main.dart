@@ -1,9 +1,9 @@
 import 'package:disciple/app/config/app_config.dart';
-import 'package:disciple/app/core/manager/network_manager.dart';
 import 'package:disciple/app/core/routes/app_router.dart';
 import 'package:disciple/app/core/theme/dark_theme.dart';
 import 'package:disciple/app/core/theme/light_theme.dart';
 import 'package:disciple/features/authentication/services/keycloak_service.dart';
+import 'package:disciple/features/notes/data/resync/module/module.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,7 +34,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Eagerly initialize the network manager to start listening on app startup.
-    ref.watch(networkManagerProvider);
+    ref.watch(syncManagerProvider);
 
     final keycloakService = ref.watch(keycloakServiceProvider);
 

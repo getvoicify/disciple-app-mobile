@@ -14,6 +14,7 @@ abstract class NoteModel with _$NoteModel implements INote {
     String? content,
     String? date,
     @JsonKey(
+      name: 'scriptureReferences',
       fromJson: DriftUtils.scriptureReferencesFromJson,
       toJson: DriftUtils.encodeScriptureRefs,
     )
