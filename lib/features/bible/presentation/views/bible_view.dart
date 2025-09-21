@@ -1,28 +1,52 @@
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
+import 'package:disciple/app/core/routes/app_router.gr.dart';
+import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/features/bible/presentation/widget/build_chapter_widget.dart';
 import 'package:disciple/widgets/build_audio_controller_widget.dart';
 import 'package:disciple/widgets/drop_down_widget.dart';
 import 'package:disciple/widgets/edit_text_field_with.dart';
 import 'package:disciple/widgets/image_widget.dart';
+import 'package:disciple/widgets/popup_menu_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:auto_route/auto_route.dart';
 
-class BibleView extends StatefulWidget {
+@RoutePage()
+class BibleView extends ConsumerStatefulWidget {
   const BibleView({super.key});
 
   @override
-  State<BibleView> createState() => _BibleViewState();
+  ConsumerState<BibleView> createState() => _BibleViewState();
 }
 
-class _BibleViewState extends State<BibleView> {
+class _BibleViewState extends ConsumerState<BibleView> {
+  final List<Map> menus = [
+    {"title": "Devotionals", "value": "devotionals"},
+    {"title": "Notes", "value": "notes"},
+    {"title": "Bookmarks", "value": "bookmarks"},
+  ];
+
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: const Text('Bible'),
+      automaticallyImplyLeading: false,
       actions: [
-        const ImageWidget(imageUrl: AppImage.menuIcon),
-        SizedBox(width: 16.w),
+        PopupMenuWidget<String>(
+          items: menus
+              .map(
+                (menu) => PopupMenuItemData(
+                  icon: menu['icon'] as String?,
+                  value: menu['value'] as String,
+                  label: menu['title'] as String,
+                ),
+              )
+              .toList(),
+          onSelected: (value) => _handleMenuSelection(value),
+          icon: AppImage.menuIcon,
+        ),
       ],
     ),
     body: SafeArea(
@@ -75,4 +99,18 @@ class _BibleViewState extends State<BibleView> {
       ),
     ),
   );
+
+  Future<void> _handleMenuSelection(String option) async {
+    if (option == 'devotionals') {
+      await PageNavigator.pushRoute(const DevotionalsRoute());
+    }
+
+    if (option == 'notes') {
+      await PageNavigator.pushRoute(const NotesRoute());
+    }
+
+    if (option == 'bookmarks') {
+      await PageNavigator.pushRoute(const BookmarksRoute());
+    }
+  }
 }

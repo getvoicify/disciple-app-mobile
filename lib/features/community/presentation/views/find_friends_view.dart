@@ -5,15 +5,18 @@ import 'package:disciple/widgets/floating_side_action_button.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class FindFriendsView extends StatefulWidget {
+@RoutePage()
+class FindFriendsView extends ConsumerStatefulWidget {
   const FindFriendsView({super.key});
 
   @override
-  State<FindFriendsView> createState() => _FindFriendsViewState();
+  ConsumerState<FindFriendsView> createState() => _FindFriendsViewState();
 }
 
-class _FindFriendsViewState extends State<FindFriendsView> {
+class _FindFriendsViewState extends ConsumerState<FindFriendsView> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(

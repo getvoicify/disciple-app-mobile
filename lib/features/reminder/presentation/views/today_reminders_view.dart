@@ -6,14 +6,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:disciple/features/reminder/presentation/widget/reminder_tile_widget.dart';
 
-class TodayRemindersView extends StatefulWidget {
+import 'package:auto_route/auto_route.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+@RoutePage()
+class TodayRemindersView extends ConsumerStatefulWidget {
   const TodayRemindersView({super.key});
 
   @override
-  State<TodayRemindersView> createState() => _TodayRemindersViewState();
+  ConsumerState<TodayRemindersView> createState() => _TodayRemindersViewState();
 }
 
-class _TodayRemindersViewState extends State<TodayRemindersView> {
+class _TodayRemindersViewState extends ConsumerState<TodayRemindersView> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(

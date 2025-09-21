@@ -6,15 +6,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:disciple/features/community/presentation/tabs/church_tab.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class CommunityView extends StatefulWidget {
+@RoutePage()
+class CommunityView extends ConsumerStatefulWidget {
   const CommunityView({super.key});
 
   @override
-  State<CommunityView> createState() => _CommunityViewState();
+  ConsumerState<CommunityView> createState() => _CommunityViewState();
 }
 
-class _CommunityViewState extends State<CommunityView>
+class _CommunityViewState extends ConsumerState<CommunityView>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
 

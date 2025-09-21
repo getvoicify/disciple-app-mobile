@@ -6,14 +6,18 @@ import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class MoreView extends StatefulWidget {
+import 'package:auto_route/auto_route.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+@RoutePage()
+class MoreView extends ConsumerStatefulWidget {
   const MoreView({super.key});
 
   @override
-  State<MoreView> createState() => _MoreViewState();
+  ConsumerState<MoreView> createState() => _MoreViewState();
 }
 
-class _MoreViewState extends State<MoreView> {
+class _MoreViewState extends ConsumerState<MoreView> {
   // Data models for menu items
   final List<MenuItemModel> quickLinks = [
     MenuItemModel(

@@ -6,7 +6,10 @@ import 'package:disciple/widgets/edit_text_field_with.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:auto_route/auto_route.dart';
 
+
+@RoutePage()
 class BookmarksView extends StatefulWidget {
   const BookmarksView({super.key});
 

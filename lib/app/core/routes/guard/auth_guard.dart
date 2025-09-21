@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:disciple/app/core/routes/app_router.gr.dart';
 import 'package:disciple/features/authentication/services/keycloak_service.dart';
 
 class AuthGuard implements AutoRouteGuard {
@@ -16,7 +15,7 @@ class AuthGuard implements AutoRouteGuard {
       resolver.next();
     } else {
       /// TODO: fix this to redirect the user to the login section
-      await router.replace(const HomeboardingRoute());
+      // await router.replace(const HomeboardingRoute());
     }
   }
 }

@@ -12,7 +12,9 @@ ThemeData lightTheme = ThemeData.light(useMaterial3: false).copyWith(
     surfaceTintColor: AppColors.white,
     titleTextStyle: headlineLarge.copyWith(fontSize: 24.sp),
     centerTitle: true,
+    iconTheme: const IconThemeData(color: AppColors.black),
   ),
+
   textTheme: TextTheme(
     headlineLarge: headlineLarge,
     headlineMedium: headlineMedium,
@@ -147,5 +149,16 @@ ThemeData lightTheme = ThemeData.light(useMaterial3: false).copyWith(
     color: AppColors.grey50,
     textStyle: bodyMedium.copyWith(fontWeight: FontWeight.w500),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+  ),
+  bottomNavigationBarTheme: BottomNavigationBarThemeData(
+    backgroundColor: AppColors.purple25,
+    elevation: 10,
+    type: BottomNavigationBarType.shifting,
+    selectedLabelStyle: bodyMedium.copyWith(color: AppColors.purple),
+    unselectedLabelStyle: bodyMedium.copyWith(color: AppColors.grey700),
+    showSelectedLabels: true,
+    showUnselectedLabels: false,
+    selectedItemColor: AppColors.purple,
+    unselectedItemColor: AppColors.grey300,
   ),
 );

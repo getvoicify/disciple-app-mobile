@@ -10,6 +10,7 @@ class ImageWidget extends StatelessWidget {
     this.height,
     this.fit = BoxFit.contain,
     this.onTap,
+    this.iconColor,
   });
 
   final String imageUrl;
@@ -17,6 +18,7 @@ class ImageWidget extends StatelessWidget {
   final double? height;
   final BoxFit fit;
   final Function()? onTap;
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +32,9 @@ class ImageWidget extends StatelessWidget {
           width: width,
           height: height,
           fit: fit,
+          colorFilter: iconColor == null
+              ? null
+              : ColorFilter.mode(iconColor!, BlendMode.srcIn),
         ),
       );
     }
@@ -37,7 +42,13 @@ class ImageWidget extends StatelessWidget {
     if (isAsset && imageUrl.endsWith('.png')) {
       return InkWell(
         onTap: onTap,
-        child: Image.asset(imageUrl, width: width, height: height, fit: fit),
+        child: Image.asset(
+          imageUrl,
+          width: width,
+          height: height,
+          fit: fit,
+          color: iconColor,
+        ),
       );
     }
 

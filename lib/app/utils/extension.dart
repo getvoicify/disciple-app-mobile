@@ -159,9 +159,19 @@ extension ContextExtensions on BuildContext {
 
   TextInputFormatter get digitsOnly => FilteringTextInputFormatter.digitsOnly;
 
-  Future<dynamic> navigateTo1(String route) async {}
+  String greetings(String name) {
+    final hour = DateTime.now().hour;
 
-  void replaceNamed(String route, {Object? arguments}) {}
+    if (hour >= 5 && hour < 12) {
+      return "Goodmorning $name";
+    } else if (hour >= 12 && hour < 17) {
+      return "Goodafternoon $name";
+    } else if (hour >= 17 && hour < 21) {
+      return "Goodevening $name";
+    } else {
+      return "Goodnight $name";
+    }
+  }
 }
 
 extension RefExtension on WidgetRef {

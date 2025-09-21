@@ -9,7 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:disciple/features/community/presentation/widget/message_entry_widget.dart';
+import 'package:auto_route/auto_route.dart';
 
+@RoutePage()
 class CommunityChatsView extends StatefulWidget {
   const CommunityChatsView({super.key});
 

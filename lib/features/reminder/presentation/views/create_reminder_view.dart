@@ -7,14 +7,18 @@ import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class CreateReminderView extends StatefulWidget {
+import 'package:auto_route/auto_route.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+@RoutePage()
+class CreateReminderView extends ConsumerStatefulWidget {
   const CreateReminderView({super.key});
 
   @override
-  State<CreateReminderView> createState() => _CreateReminderViewState();
+  ConsumerState<CreateReminderView> createState() => _CreateReminderViewState();
 }
 
-class _CreateReminderViewState extends State<CreateReminderView>
+class _CreateReminderViewState extends ConsumerState<CreateReminderView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();

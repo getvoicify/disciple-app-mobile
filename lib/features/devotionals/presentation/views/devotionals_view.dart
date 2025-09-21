@@ -5,15 +5,18 @@ import 'package:disciple/widgets/edit_text_field_with.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class DevotionalsView extends StatefulWidget {
+@RoutePage()
+class DevotionalsView extends ConsumerStatefulWidget {
   const DevotionalsView({super.key});
 
   @override
-  State<DevotionalsView> createState() => _DevotionalsViewState();
+  ConsumerState<DevotionalsView> createState() => _DevotionalsViewState();
 }
 
-class _DevotionalsViewState extends State<DevotionalsView> {
+class _DevotionalsViewState extends ConsumerState<DevotionalsView> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(

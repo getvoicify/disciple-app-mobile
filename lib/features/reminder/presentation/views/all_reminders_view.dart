@@ -8,14 +8,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:disciple/features/reminder/presentation/widget/reminder_tile_widget.dart';
 
-class AllRemindersView extends StatefulWidget {
+import 'package:auto_route/auto_route.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+@RoutePage()
+class AllRemindersView extends ConsumerStatefulWidget {
   const AllRemindersView({super.key});
 
   @override
-  State<AllRemindersView> createState() => _AllRemindersViewState();
+  ConsumerState<AllRemindersView> createState() => _AllRemindersViewState();
 }
 
-class _AllRemindersViewState extends State<AllRemindersView>
+class _AllRemindersViewState extends ConsumerState<AllRemindersView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();

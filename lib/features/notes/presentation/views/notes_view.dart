@@ -9,6 +9,7 @@ import 'package:disciple/app/core/routes/app_router.gr.dart';
 import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/features/notes/presentation/notifier/note_notifier.dart';
+import 'package:disciple/widgets/back_arrow_widget.dart';
 import 'package:disciple/widgets/build_tile_widget.dart';
 import 'package:disciple/widgets/edit_text_field_with.dart';
 import 'package:disciple/widgets/floating_side_action_button.dart';
@@ -61,6 +62,7 @@ class _NotesViewState extends ConsumerState<NotesView> {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: Text(AppString.notes),
+      leading: const BackArrowWidget(),
       actions: const [
         ImageWidget(imageUrl: AppImage.menuIcon),
         SizedBox(width: 16),
