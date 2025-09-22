@@ -1,10 +1,15 @@
 import 'package:disciple/app/core/database/app_database.dart';
+import 'package:disciple/app/core/database/module/app_database_module.dart';
 import 'package:disciple/app/core/manager/network_manager.dart';
+import 'package:disciple/app/utils/extension.dart';
+import 'package:disciple/features/notes/data/mapper/module/module.dart';
 import 'package:disciple/features/notes/data/mapper/note_mapper.dart';
+import 'package:disciple/features/notes/data/source_impl/module/module.dart';
 import 'package:disciple/features/notes/domain/entity/note_entity.dart';
 import 'package:disciple/features/notes/domain/repository/note_repository.dart';
 import 'package:disciple/features/notes/domain/source/note_source.dart';
 import 'package:drift/drift.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class NoteRepoImpl implements NoteRepository {
   final NoteSource _source;
@@ -12,21 +17,19 @@ class NoteRepoImpl implements NoteRepository {
   final NetworkManager _networkManager;
   final NoteToCompanionMapper _noteMapper;
 
-  NoteRepoImpl({
-    required NoteSource source,
-    required AppDatabase database,
-    required NetworkManager networkManager,
-    required NoteToCompanionMapper noteMapper,
-  }) : _source = source,
-       _database = database,
-       _networkManager = networkManager,
-       _noteMapper = noteMapper;
+  final Ref ref;
+
+  NoteRepoImpl({required this.ref})
+    : _source = ref.watch(noteSourceModule),
+      _database = ref.watch(appDatabaseProvider),
+      _networkManager = ref.watch(networkManagerProvider.notifier),
+      _noteMapper = ref.watch(noteToCompanionMapperProvider);
 
   @override
   Future<int> addNote({required NoteEntity entity}) async {
     final database = _database.into(_database.note);
 
-    if (_networkManager.isOnline) {
+    if (_networkManager.isOnline && ref.isloggedIn) {
       final response = await _source.addNote(entity: entity);
       return await database.insert(
         _noteMapper.insert(response, isSynced: true),

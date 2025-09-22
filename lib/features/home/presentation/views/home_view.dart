@@ -31,7 +31,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
         actions: [
           const ImageWidget(imageUrl: AppImage.notificationIcon),
           SizedBox(width: 16.w),
-          const CircleAvatar(),
+          GestureDetector(
+            onTap: () => ref.read(keycloakServiceProvider).value?.logout(),
+            child: const CircleAvatar(),
+          ),
           SizedBox(width: 16.w),
         ],
       ),
@@ -39,14 +42,17 @@ class _HomeViewState extends ConsumerState<HomeView> {
         minimum: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
         child: ListView(
           children: [
-            Text(
-              context.greetings('James'),
-              style: context.bodyMedium?.copyWith(
-                fontSize: 16.sp,
-                color: AppColors.grey100,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 1.5.sp,
-                fontFamily: AppFonts.literata,
+            GestureDetector(
+              onTap: () => ref.read(keycloakServiceProvider).value?.login(),
+              child: Text(
+                context.greetings('James'),
+                style: context.bodyMedium?.copyWith(
+                  fontSize: 16.sp,
+                  color: AppColors.grey100,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: 1.5.sp,
+                  fontFamily: AppFonts.literata,
+                ),
               ),
             ),
             SizedBox(height: 26.h),

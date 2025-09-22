@@ -4,10 +4,14 @@ import 'package:disciple/app/config/app_logger.dart';
 import 'package:disciple/app/core/background/sync_manager.dart';
 import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/core/database/helpers/drift_helper.dart';
+import 'package:disciple/app/core/database/module/app_database_module.dart';
+import 'package:disciple/features/notes/data/mapper/module/module.dart';
 import 'package:disciple/features/notes/data/mapper/note_mapper.dart';
 import 'package:disciple/features/notes/data/model/scripture_reference.dart';
+import 'package:disciple/features/notes/data/source_impl/module/module.dart';
 import 'package:disciple/features/notes/domain/entity/note_entity.dart';
 import 'package:disciple/features/notes/domain/source/note_source.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class NoteResyncTask implements ResyncTask {
   final _logger = getLogger('NoteResyncTask');
@@ -16,13 +20,12 @@ class NoteResyncTask implements ResyncTask {
   final NoteSource _source;
   final NoteToCompanionMapper _mapper;
 
-  NoteResyncTask({
-    required AppDatabase db,
-    required NoteSource source,
-    required NoteToCompanionMapper mapper,
-  }) : _db = db,
-       _source = source,
-       _mapper = mapper;
+  final Ref ref;
+
+  NoteResyncTask({required this.ref})
+    : _db = ref.watch(appDatabaseProvider),
+      _source = ref.watch(noteSourceModule),
+      _mapper = ref.watch(noteToCompanionMapperProvider);
 
   @override
   Future<void> run() async {

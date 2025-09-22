@@ -1,6 +1,13 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:disciple/app/core/database/module/app_database_module.dart';
+import 'package:disciple/app/core/manager/network_manager.dart';
+import 'package:disciple/features/authentication/services/keycloak_service.dart';
+import 'package:disciple/features/notes/data/api/module/note_api_provider.dart';
+import 'package:disciple/features/notes/data/mapper/module/module.dart';
+import 'package:disciple/features/notes/data/resync/module/module.dart';
+import 'package:disciple/features/notes/data/source_impl/module/module.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -174,7 +181,7 @@ extension ContextExtensions on BuildContext {
   }
 }
 
-extension RefExtension on WidgetRef {
+extension RefExtension on Ref {
   // Get system brightness using SchedulerBinding
   Brightness get _brightness =>
       SchedulerBinding.instance.platformDispatcher.platformBrightness;
@@ -192,5 +199,15 @@ extension RefExtension on WidgetRef {
       _themeMode == ThemeMode.dark ||
       (_themeMode == ThemeMode.system && _brightness == Brightness.dark);
 
-  void reset() {}
+  bool get isloggedIn =>
+      watch(keycloakServiceProvider).value?.isAuthenticated ?? false;
+
+  void reset() {
+    invalidate(noteApiProvider);
+    invalidate(noteSourceModule);
+    invalidate(noteToCompanionMapperProvider);
+    invalidate(appDatabaseProvider);
+    invalidate(syncManagerProvider);
+    invalidate(networkManagerProvider);
+  }
 }

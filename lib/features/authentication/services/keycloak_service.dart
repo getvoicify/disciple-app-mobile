@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:disciple/app/config/app_config.dart';
+import 'package:disciple/app/config/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keycloak_wrapper/keycloak_wrapper.dart';
 
@@ -8,6 +10,7 @@ final keycloakServiceProvider = FutureProvider<KeycloakService>(
 
 class KeycloakService {
   final KeycloakWrapper _keycloakWrapper;
+  Timer? _refreshTimer;
 
   KeycloakService._(this._keycloakWrapper);
 
@@ -22,7 +25,10 @@ class KeycloakService {
     final wrapper = KeycloakWrapper(config: keycloakConfig);
     await wrapper.initialize();
 
-    return KeycloakService._(wrapper);
+    final service = KeycloakService._(wrapper);
+    // 👇 start proactive refresh
+    await service._scheduleTokenRefresh();
+    return service;
   }
 
   String? get accessToken => _keycloakWrapper.accessToken;
@@ -33,14 +39,67 @@ class KeycloakService {
   Stream<bool> get authenticationStream =>
       _keycloakWrapper.authenticationStream;
 
-  Future<bool> login() async => await _keycloakWrapper.login();
+  Future<void> exchangeTokens([Duration? duration]) async {
+    await _keycloakWrapper.exchangeTokens(duration);
+    // 👇 reschedule after refresh
+    _scheduleTokenRefresh();
+  }
 
-  Future<void> logout() async => await _keycloakWrapper.logout();
+  Future<bool> login() async {
+    final success = await _keycloakWrapper.login();
+    if (success) _scheduleTokenRefresh();
+    return success;
+  }
 
-  Future<Map<String, dynamic>?> getUserInfo() async =>
-      await _keycloakWrapper.getUserInfo();
+  Future<void> logout() async {
+    await _keycloakWrapper.logout();
+    _refreshTimer?.cancel();
+    _refreshTimer = null;
+  }
+
+  Future<void> getUserInfo() async {
+    final isValid = _keycloakWrapper.tokenResponse?.isValid;
+    final accessTokenExpirationDateTime =
+        _keycloakWrapper.tokenResponse?.accessTokenExpirationDateTime;
+    final tokenAdditionalParameters =
+        _keycloakWrapper.tokenResponse?.tokenAdditionalParameters;
+
+    getLogger('KeycloakService')
+      ..i("isValid: $isValid")
+      ..i("accessTokenExpiry: $accessTokenExpirationDateTime")
+      ..i("additionalParams: $tokenAdditionalParameters");
+  }
 
   set onError(Function(String, Object, StackTrace) onError) {
     _keycloakWrapper.onError = onError;
+  }
+
+  /// --- 🔄 Token Refresh Scheduling ---
+  Future<void> _scheduleTokenRefresh() async {
+    _refreshTimer?.cancel();
+
+    final expiry =
+        _keycloakWrapper.tokenResponse?.accessTokenExpirationDateTime;
+    if (expiry == null) return;
+
+    final now = DateTime.now();
+    // Refresh 1 minute before expiry
+    final refreshAt = expiry.subtract(const Duration(minutes: 1));
+    final delay = refreshAt.difference(now);
+
+    if (delay.isNegative) {
+      // Already expired, try immediate refresh
+      await exchangeTokens();
+      return;
+    }
+
+    getLogger(
+      'KeycloakService',
+    ).i("⏰ Scheduling token refresh in ${delay.inSeconds} seconds");
+
+    _refreshTimer = Timer(delay, () async {
+      getLogger('KeycloakService').i("🔄 Auto refreshing token...");
+      await exchangeTokens();
+    });
   }
 }
