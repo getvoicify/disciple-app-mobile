@@ -8,6 +8,11 @@ final keycloakServiceProvider = FutureProvider<KeycloakService>(
   (ref) async => await KeycloakService.create(),
 );
 
+final authStatusProvider = StreamProvider<bool>((ref) async* {
+  final service = await ref.watch(keycloakServiceProvider.future);
+  yield* service.authenticationStream;
+});
+
 class KeycloakService {
   final KeycloakWrapper _keycloakWrapper;
   Timer? _refreshTimer;

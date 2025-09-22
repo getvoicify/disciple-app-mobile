@@ -13,21 +13,10 @@ final networkManagerProvider =
       (ref) => NetworkManager(),
     );
 
-// Provider to get the current network status
-final networkStatusProvider = Provider<NetworkStatus>(
-  (ref) => ref.watch(networkManagerProvider),
-);
-
 // Provider to get the network manager instance
 final networkManagerInstanceProvider = Provider<NetworkManager>(
   (ref) => ref.watch(networkManagerProvider.notifier),
 );
-
-// Provider that exposes a stream of network status changes
-final networkStatusStreamProvider = StreamProvider<NetworkStatus>((ref) {
-  final manager = ref.watch(networkManagerInstanceProvider);
-  return manager.onStatusChanged;
-});
 
 class NetworkManager extends StateNotifier<NetworkStatus> {
   final logger = getLogger('NetworkManager');
@@ -73,22 +62,13 @@ class NetworkManager extends StateNotifier<NetworkStatus> {
   Future<void> _updateStatus() async {
     try {
       final isNowOnline = await _checkInternetConnection();
-      final newStatus = isNowOnline
-          ? NetworkStatus.online
-          : NetworkStatus.offline;
+      state = isNowOnline ? NetworkStatus.online : NetworkStatus.offline;
 
-      if (state != newStatus) {
-        state = newStatus;
-        _statusController.add(newStatus); // Notify stream listeners
-      }
-
-      logger.i('Network status: $state');
+      _statusController.add(state); // Notify stream listeners
     } catch (e) {
       logger.e('Network check failed: $e');
-      if (state != NetworkStatus.offline) {
-        state = NetworkStatus.offline;
-        _statusController.add(NetworkStatus.offline); // Notify stream listeners
-      }
+      state = NetworkStatus.offline;
+      _statusController.add(NetworkStatus.offline); // Notify stream listeners
     }
   }
 
@@ -105,7 +85,8 @@ class NetworkManager extends StateNotifier<NetworkStatus> {
 
   @override
   Future<void> dispose() async {
-    await _statusController.close(); // Important: close the controller
+    // Important: close the controller
+    await _statusController.close();
     _stop();
     _timer?.cancel();
     _httpClient.close();
