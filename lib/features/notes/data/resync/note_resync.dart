@@ -28,6 +28,9 @@ class NoteResyncTask implements ResyncTask {
       _mapper = ref.watch(noteToCompanionMapperProvider);
 
   @override
+  final String taskId = 'note_resync_task';
+
+  @override
   Future<void> run() async {
     final unsynced = await (_db.select(
       _db.note,
