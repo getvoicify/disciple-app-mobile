@@ -24,7 +24,8 @@ class NoteToCompanionMapper<T extends INote>
   );
 
   @override
-  NoteCompanion update(T input, {bool isSynced = false}) => NoteCompanion(
+  NoteCompanion update(T input, {bool isSynced = true}) => NoteCompanion(
+    id: Value(input.id ?? ''),
     title: Value(input.title ?? ''),
     content: Value(input.content ?? ''),
     scriptureReferences: Value(

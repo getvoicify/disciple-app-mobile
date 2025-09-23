@@ -40,20 +40,29 @@ class NoteRepoImpl implements NoteRepository {
 
   @override
   Future<bool> updateNote({required NoteEntity entity}) async {
-    final companion = _noteMapper.update(entity);
+    final String noteId = entity.id ?? '';
+    final database = (_database.update(_database.note)
+      ..where((tbl) => tbl.id.equals(noteId)));
 
-    final updatedCount = await (_database.update(
-      _database.note,
-    )..where((tbl) => tbl.id.equals(entity.id ?? ''))).write(companion);
+    if (_networkManager.isOnline && ref.isloggedIn) {
+      final response = await _source.updateNote(id: noteId, entity: entity);
+      return await database.write(_noteMapper.update(response.note!)) > 0;
+    }
 
-    return updatedCount > 0;
+    return await database.write(_noteMapper.update(entity, isSynced: false)) >
+        0;
   }
 
   @override
   Future<bool> deleteNote({required String id}) async {
+    if (_networkManager.isOnline && ref.isloggedIn) {
+      await _source.deleteNote(id: id);
+    }
+
     final count = await (_database.delete(
       _database.note,
     )..where((tbl) => tbl.id.equals(id))).go();
+
     return count > 0;
   }
 

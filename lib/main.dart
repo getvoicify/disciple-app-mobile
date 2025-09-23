@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 final appRouter = AppRouter();
 
@@ -35,12 +36,14 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) => ScreenUtilInit(
     designSize: const Size(430, 932),
     minTextAdapt: true,
-    builder: (context, child) => MaterialApp.router(
-      title: AppConfig.appName,
-      theme: lightTheme,
-      darkTheme: darkTheme,
-      debugShowCheckedModeBanner: false,
-      routerConfig: appRouter.config(),
+    builder: (context, child) => OverlaySupport.global(
+      child: MaterialApp.router(
+        title: AppConfig.appName,
+        theme: lightTheme,
+        darkTheme: darkTheme,
+        debugShowCheckedModeBanner: false,
+        routerConfig: appRouter.config(),
+      ),
     ),
   );
 }

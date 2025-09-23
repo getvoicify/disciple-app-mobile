@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:disciple/app/config/app_config.dart';
 import 'package:disciple/app/config/app_logger.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keycloak_wrapper/keycloak_wrapper.dart';
 
@@ -52,7 +53,13 @@ class KeycloakService {
 
   Future<bool> login() async {
     final success = await _keycloakWrapper.login();
-    if (success) _scheduleTokenRefresh();
+
+    if (success) {
+      final token = _keycloakWrapper.accessToken;
+      await Clipboard.setData(ClipboardData(text: token ?? ''));
+
+      _scheduleTokenRefresh();
+    }
     return success;
   }
 
@@ -62,18 +69,7 @@ class KeycloakService {
     _refreshTimer = null;
   }
 
-  Future<void> getUserInfo() async {
-    final isValid = _keycloakWrapper.tokenResponse?.isValid;
-    final accessTokenExpirationDateTime =
-        _keycloakWrapper.tokenResponse?.accessTokenExpirationDateTime;
-    final tokenAdditionalParameters =
-        _keycloakWrapper.tokenResponse?.tokenAdditionalParameters;
-
-    getLogger('KeycloakService')
-      ..i("isValid: $isValid")
-      ..i("accessTokenExpiry: $accessTokenExpirationDateTime")
-      ..i("additionalParams: $tokenAdditionalParameters");
-  }
+  Future<void> getUserInfo() async {}
 
   set onError(Function(String, Object, StackTrace) onError) {
     _keycloakWrapper.onError = onError;

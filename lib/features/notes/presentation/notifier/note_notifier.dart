@@ -5,6 +5,7 @@ import 'package:disciple/features/notes/domain/entity/parsed_note_data.dart';
 import 'package:disciple/features/notes/domain/usecase/module/module.dart';
 import 'package:disciple/features/notes/domain/usecase/watch_notes_usecase.dart';
 import 'package:disciple/features/notes/presentation/state/note_state.dart';
+import 'package:disciple/widgets/notification/notification_tray.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'note_notifier.g.dart';
@@ -20,10 +21,11 @@ class NoteNotifier extends _$NoteNotifier {
     state = state.copyWith(isAddingNote: true);
     try {
       await ref.read(addNoteUseCaseImpl).execute(parameter: entity);
-    } catch (_) {
+      PageNavigator.pop();
+    } catch (e) {
+      triggerNotificationTray(e.toString(), error: true);
     } finally {
       state = state.copyWith(isAddingNote: false);
-      PageNavigator.pop();
     }
   }
 
@@ -39,7 +41,8 @@ class NoteNotifier extends _$NoteNotifier {
     state = state.copyWith(isLoadingNote: true);
     try {
       _noteData = await ref.read(getNoteByIdUseCaseImpl).execute(parameter: id);
-    } catch (_) {
+    } catch (e) {
+      triggerNotificationTray(e.toString(), error: true);
     } finally {
       state = state.copyWith(isLoadingNote: false, note: _noteData);
     }
@@ -50,7 +53,8 @@ class NoteNotifier extends _$NoteNotifier {
     try {
       await ref.read(deleteNoteUseCaseImpl).execute(parameter: id);
       PageNavigator.pop();
-    } catch (_) {
+    } catch (e) {
+      triggerNotificationTray(e.toString(), error: true);
     } finally {
       state = state.copyWith(isDeletingNote: false);
     }
@@ -61,7 +65,8 @@ class NoteNotifier extends _$NoteNotifier {
     try {
       await ref.read(updateNoteUseCaseImpl).execute(parameter: entity);
       PageNavigator.pop();
-    } catch (_) {
+    } catch (e) {
+      triggerNotificationTray(e.toString(), error: true);
     } finally {
       state = state.copyWith(isUpdatingNote: false);
     }

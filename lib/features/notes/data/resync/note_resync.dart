@@ -52,7 +52,6 @@ class NoteResyncTask implements ResyncTask {
 
         final response = await _source.addNote(
           entity: NoteEntity(
-            id: note.id,
             title: note.title,
             content: note.content,
             scriptureReferences: scriptureRefs,

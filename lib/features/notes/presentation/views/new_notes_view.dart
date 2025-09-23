@@ -169,9 +169,17 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
 
             SizedBox(height: 56.h),
 
-            ElevatedButtonIconWidget(
-              title: AppString.save,
-              onPressed: _saveNote,
+            Consumer(
+              builder: (context, ref, child) {
+                final isBusy =
+                    ref.watch(noteProvider).isAddingNote ||
+                    ref.watch(noteProvider).isUpdatingNote;
+                return ElevatedButtonIconWidget(
+                  title: AppString.save,
+                  isBusy: isBusy,
+                  onPressed: _saveNote,
+                );
+              },
             ),
           ],
         ),
