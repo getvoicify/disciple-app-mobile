@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:disciple/app/core/database/module/app_database_module.dart';
 import 'package:disciple/app/core/manager/network_manager.dart';
 import 'package:disciple/features/authentication/services/keycloak_service.dart';
+import 'package:disciple/features/bible/data/mapper/module/module.dart';
 import 'package:disciple/features/notes/data/api/module/note_api_provider.dart';
 import 'package:disciple/features/notes/data/mapper/module/module.dart';
 import 'package:disciple/features/notes/data/resync/module/module.dart';
@@ -209,5 +210,6 @@ extension RefExtension on Ref {
     invalidate(appDatabaseProvider);
     invalidate(syncManagerProvider);
     invalidate(networkManagerProvider);
+    invalidate(bibleToCompanionMapperProvider);
   }
 }

@@ -1,5 +1,6 @@
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
+import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
@@ -10,10 +11,12 @@ class BuildChapterWidget extends StatelessWidget {
     super.key,
     required this.isFirst,
     required this.isLast,
+    required this.verse,
   });
 
   final bool isFirst;
   final bool isLast;
+  final BibleVerse verse;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -30,7 +33,7 @@ class BuildChapterWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'John 3:16',
+          '${verse.bookName} ${verse.chapter}:${verse.verse}',
           style: context.headlineMedium?.copyWith(
             fontSize: 16.sp,
             color: AppColors.purple,
@@ -38,7 +41,7 @@ class BuildChapterWidget extends StatelessWidget {
         ),
         SizedBox(height: 8.h),
         Text(
-          'For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.',
+          verse.verseText,
           style: context.headlineMedium?.copyWith(fontSize: 20.sp),
         ),
         SizedBox(height: 8.h),

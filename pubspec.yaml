@@ -126,6 +126,7 @@ flutter:
     - assets/images/
     - .env
     - .env_development
+    - assets/bibles/
 
 # analysis_options.yaml
 analyzer:
