@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_strings.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/app/utils/field_validator.dart';
+import 'package:disciple/app/utils/image_picker.dart';
 import 'package:disciple/features/notes/data/model/scripture_reference.dart';
 import 'package:disciple/features/notes/domain/entity/note_entity.dart';
 import 'package:disciple/features/notes/domain/entity/parsed_note_data.dart';
@@ -9,6 +10,7 @@ import 'package:disciple/features/notes/presentation/notifier/note_notifier.dart
 import 'package:disciple/features/notes/presentation/widget/add_scripture_section.dart';
 import 'package:disciple/features/notes/presentation/widget/scripture_chips.dart';
 import 'package:disciple/features/notes/presentation/widget/upload_image_section.dart';
+import 'package:disciple/features/uploads/presentation/notifier/upload_notifier.dart';
 import 'package:disciple/widgets/back_arrow_widget.dart';
 import 'package:disciple/widgets/edit_text_field_with.dart';
 import 'package:disciple/widgets/elevated_button_widget.dart';
@@ -43,6 +45,8 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
   bool get _isUpdating => widget.existingNote != null;
 
   bool _hasScriptures = false;
+  final ImagePickerHandler _imagePickerHandler = ImagePickerHandler();
+  List<String> _successfulUploads = [];
 
   @override
   void initState() {
@@ -73,6 +77,15 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
     });
   }
 
+  Future<void> _pickImage() async {
+    final images = await _imagePickerHandler.pickMultipleImages();
+    if (!mounted || images.isEmpty) return;
+
+    _successfulUploads = await ref
+        .read(uploadProvider.notifier)
+        .uploadAll(files: images);
+  }
+
   Future<void> _saveNote() async {
     // Run both validation checks to show all errors at once.
     final isFormValid = _formKey.currentState!.validate();
@@ -90,10 +103,7 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
       title: _titleContoller.text.trim(),
       content: _detailContoller.text.trim(),
       scriptureReferences: _scriptures.toList(),
-      images: const [
-        'https://via.placeholder.com/150',
-        'https://via.placeholder.com/150',
-      ],
+      images: _successfulUploads,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
@@ -165,7 +175,7 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
 
             SizedBox(height: 14.h),
 
-            const UploadImageSection(),
+            UploadImageSection(onPickImage: _pickImage),
 
             SizedBox(height: 56.h),
 

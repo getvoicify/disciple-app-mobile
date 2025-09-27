@@ -55,4 +55,8 @@ class AppString {
   static String unknownError = 'Unknown Error';
   static String badResponse = 'Bad Response';
   static String feed = 'Feed';
+
+  static String pickFromLibrary = 'Pick From Library';
+  static String pickFromPhoto = 'Take A Photo';
+  static String cancel = 'Cancel';
 }

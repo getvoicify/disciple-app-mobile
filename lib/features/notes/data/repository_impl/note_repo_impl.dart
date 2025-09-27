@@ -1,6 +1,6 @@
 import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/core/database/module/app_database_module.dart';
-import 'package:disciple/app/core/manager/network_manager.dart';
+import 'package:disciple/app/core/manager/connectivity_manager.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/features/notes/data/mapper/module/module.dart';
 import 'package:disciple/features/notes/data/mapper/note_mapper.dart';
@@ -14,7 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class NoteRepoImpl implements NoteRepository {
   final NoteSource _source;
   final AppDatabase _database;
-  final NetworkManager _networkManager;
+  final ConnectivityManager _connectivityManager;
   final NoteToCompanionMapper _noteMapper;
 
   final Ref ref;
@@ -22,14 +22,14 @@ class NoteRepoImpl implements NoteRepository {
   NoteRepoImpl({required this.ref})
     : _source = ref.watch(noteSourceModule),
       _database = ref.watch(appDatabaseProvider),
-      _networkManager = ref.watch(networkManagerProvider.notifier),
+      _connectivityManager = ref.watch(connectivityManagerInstanceProvider),
       _noteMapper = ref.watch(noteToCompanionMapperProvider);
 
   @override
   Future<int> addNote({required NoteEntity entity}) async {
     final database = _database.into(_database.note);
 
-    if (_networkManager.isOnline && ref.isloggedIn) {
+    if (_connectivityManager.isOnline && ref.isloggedIn) {
       final response = await _source.addNote(entity: entity);
       return await database.insert(
         _noteMapper.insert(response, isSynced: true),
@@ -44,7 +44,7 @@ class NoteRepoImpl implements NoteRepository {
     final database = (_database.update(_database.note)
       ..where((tbl) => tbl.id.equals(noteId)));
 
-    if (_networkManager.isOnline && ref.isloggedIn) {
+    if (_connectivityManager.isOnline && ref.isloggedIn) {
       final response = await _source.updateNote(id: noteId, entity: entity);
       return await database.write(_noteMapper.update(response.note!)) > 0;
     }
@@ -55,7 +55,7 @@ class NoteRepoImpl implements NoteRepository {
 
   @override
   Future<bool> deleteNote({required String id}) async {
-    if (_networkManager.isOnline && ref.isloggedIn) {
+    if (_connectivityManager.isOnline && ref.isloggedIn) {
       await _source.deleteNote(id: id);
     }
 

@@ -1,5 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="church.pottersville.disciple_mobile">
+
+    
+
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!-- For Android 12L (API 32) and below -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+
    <application
         android:label="disciple_mobile"
         android:name="${applicationName}"

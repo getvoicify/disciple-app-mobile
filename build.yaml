@@ -26,11 +26,3 @@ targets:
           checked: true
           disallow_unrecognized_keys: false
           ignore_unannotated: false
-
-      retrofit_generator:
-        generate_for:
-          - lib/**/data/api/*.dart
-        options:
-          generate_to_json: true
-          generate_from_json: true
-          explicit_to_json: true

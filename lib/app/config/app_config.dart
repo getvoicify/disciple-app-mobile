@@ -23,7 +23,8 @@ class AppConfig {
   static bool get isDebug => _appEnv == AppEnv.development;
 
   static String get apiUrl =>
-      dotenv.env[AppConstants.apiUrl] ?? '${AppConstants.apiUrl} $_notFound';
+      dotenv.env[AppConstants.apiBaseUrl] ??
+      '${AppConstants.apiBaseUrl} $_notFound';
 
   static String get appName =>
       dotenv.env[AppConstants.appName] ?? '${AppConstants.appName} $_notFound';
@@ -43,6 +44,10 @@ class AppConfig {
   static String get keycloakFrontendUrl =>
       dotenv.env[AppConstants.keycloakFrontendUrl] ??
       '${AppConstants.keycloakFrontendUrl} $_notFound';
+
+  static String get apiBaseUrl =>
+      dotenv.env[AppConstants.apiBaseUrl] ??
+      '${AppConstants.apiBaseUrl} $_notFound';
 
   static String _getFileName() {
     if (_isDevelopment) return AppConstants.developmentEnv;

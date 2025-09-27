@@ -14,7 +14,7 @@ ThemeData lightTheme = ThemeData.light(useMaterial3: false).copyWith(
     centerTitle: true,
     iconTheme: const IconThemeData(color: AppColors.black),
   ),
-
+  cardColor: AppColors.white,
   textTheme: TextTheme(
     headlineLarge: headlineLarge,
     headlineMedium: headlineMedium,

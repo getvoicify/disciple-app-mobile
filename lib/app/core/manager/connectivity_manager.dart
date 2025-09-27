@@ -2,24 +2,25 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:disciple/app/config/app_logger.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
 enum NetworkStatus { online, offline }
 
 // network_providers.dart
-final networkManagerProvider =
-    StateNotifierProvider<NetworkManager, NetworkStatus>(
-      (ref) => NetworkManager(),
+final connectivityManagerProvider =
+    StateNotifierProvider<ConnectivityManager, NetworkStatus>(
+      (ref) => ConnectivityManager(),
     );
 
 // Provider to get the network manager instance
-final networkManagerInstanceProvider = Provider<NetworkManager>(
-  (ref) => ref.watch(networkManagerProvider.notifier),
+final connectivityManagerInstanceProvider = Provider<ConnectivityManager>(
+  (ref) => ref.watch(connectivityManagerProvider.notifier),
 );
 
-class NetworkManager extends StateNotifier<NetworkStatus> {
-  final logger = getLogger('NetworkManager');
+class ConnectivityManager extends StateNotifier<NetworkStatus> {
+  final logger = getLogger('ConnectivityManager');
 
   final Duration checkInterval;
   final Uri testUri;
@@ -31,7 +32,7 @@ class NetworkManager extends StateNotifier<NetworkStatus> {
   final _statusController = StreamController<NetworkStatus>.broadcast();
   Stream<NetworkStatus> get onStatusChanged => _statusController.stream;
 
-  NetworkManager({
+  ConnectivityManager({
     this.checkInterval = const Duration(seconds: 5),
     Uri? testUri,
   }) : testUri = testUri ?? Uri.https('www.google.com', '/'),
@@ -48,7 +49,9 @@ class NetworkManager extends StateNotifier<NetworkStatus> {
   Future<void> start() async {
     // Prevent multiple timers
     _stop();
-    _timer = Timer.periodic(checkInterval, (_) => _updateStatus());
+    _timer = Timer.periodic(checkInterval, (_) async {
+      if (kReleaseMode) await _updateStatus();
+    });
     // Check status immediately on start
     await _updateStatus();
   }

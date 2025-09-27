@@ -2,10 +2,9 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:disciple/app/core/database/module/app_database_module.dart';
-import 'package:disciple/app/core/manager/network_manager.dart';
+import 'package:disciple/app/core/manager/connectivity_manager.dart';
 import 'package:disciple/features/authentication/services/keycloak_service.dart';
 import 'package:disciple/features/bible/data/mapper/module/module.dart';
-import 'package:disciple/features/notes/data/api/module/note_api_provider.dart';
 import 'package:disciple/features/notes/data/mapper/module/module.dart';
 import 'package:disciple/features/notes/data/resync/module/module.dart';
 import 'package:disciple/features/notes/data/source_impl/module/module.dart';
@@ -204,12 +203,11 @@ extension RefExtension on Ref {
       watch(keycloakServiceProvider).value?.isAuthenticated ?? false;
 
   void reset() {
-    invalidate(noteApiProvider);
     invalidate(noteSourceModule);
     invalidate(noteToCompanionMapperProvider);
     invalidate(appDatabaseProvider);
     invalidate(syncManagerProvider);
-    invalidate(networkManagerProvider);
+    invalidate(connectivityManagerInstanceProvider);
     invalidate(bibleToCompanionMapperProvider);
   }
 }

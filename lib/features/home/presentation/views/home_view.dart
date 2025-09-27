@@ -30,7 +30,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
         const ImageWidget(imageUrl: AppImage.notificationIcon),
         SizedBox(width: 16.w),
         GestureDetector(
-          onTap: () => ref.read(keycloakServiceProvider).value?.logout(),
+          onTap: () => ref.read(keycloakServiceProvider).value?.login(),
           child: const CircleAvatar(),
         ),
         SizedBox(width: 16.w),
