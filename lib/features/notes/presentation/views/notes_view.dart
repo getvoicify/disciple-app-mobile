@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 
 final searchQueryProvider = StateProvider<String>((_) => '');
 
@@ -32,10 +33,12 @@ class NotesView extends ConsumerStatefulWidget {
 class _NotesViewState extends ConsumerState<NotesView> {
   final _searchController = TextEditingController();
   Timer? _debounce;
+  final RefreshController _refreshController = RefreshController();
 
   @override
   void initState() {
     super.initState();
+    unawaited(_onRefresh());
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -56,6 +59,26 @@ class _NotesViewState extends ConsumerState<NotesView> {
             .trim();
       }
     });
+  }
+
+  Future<void> _onRefresh() async {
+    try {
+      await ref.read(noteProvider.notifier).getNotes();
+      _refreshController.refreshCompleted();
+    } catch (_) {
+      _refreshController.refreshFailed();
+    }
+  }
+
+  /// FIXME: Implement functionalities for loading more notes
+  Future<void> _onLoadMore() async {
+    try {
+      await ref.read(noteProvider.notifier).getNotes();
+      _refreshController.loadComplete();
+    } catch (_) {
+      _refreshController.loadFailed();
+    }
+    setState(() {});
   }
 
   @override
@@ -125,24 +148,31 @@ class _NotesViewState extends ConsumerState<NotesView> {
                           return const Center(child: Text('No notes found.'));
                         }
 
-                        return ListView.separated(
-                          itemCount: notes.length,
-                          itemBuilder: (_, index) {
-                            final note = notes[index];
-                            final model = BuildTileModel(
-                              title: note.title,
-                              content: note.isSynced.toString(),
-                              date: note.updatedAt,
-                            );
-                            return BuildTileWidget(
-                              model: model,
-                              onTap: () => PageNavigator.pushRoute(
-                                NoteDetailsRoute(id: note.id),
-                              ),
-                            );
-                          },
-                          separatorBuilder: (_, _) =>
-                              const SizedBox(height: 12),
+                        return SmartRefresher(
+                          controller: _refreshController,
+                          enablePullUp: true,
+                          header: const WaterDropHeader(),
+                          onRefresh: _onRefresh,
+                          onLoading: _onLoadMore,
+                          child: ListView.separated(
+                            itemCount: notes.length,
+                            itemBuilder: (_, index) {
+                              final note = notes[index];
+                              final model = BuildTileModel(
+                                title: note.title,
+                                content: note.isSynced.toString(),
+                                date: note.updatedAt,
+                              );
+                              return BuildTileWidget(
+                                model: model,
+                                onTap: () => PageNavigator.pushRoute(
+                                  NoteDetailsRoute(id: note.id),
+                                ),
+                              );
+                            },
+                            separatorBuilder: (_, _) =>
+                                const SizedBox(height: 12),
+                          ),
                         );
                       },
                     ),

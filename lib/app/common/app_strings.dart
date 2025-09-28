@@ -59,4 +59,5 @@ class AppString {
   static String pickFromLibrary = 'Pick From Library';
   static String pickFromPhoto = 'Take A Photo';
   static String cancel = 'Cancel';
+  static String noteAddedSuccessfully = 'Note added successfully';
 }

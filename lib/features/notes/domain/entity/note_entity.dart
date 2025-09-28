@@ -46,12 +46,29 @@ class NoteEntity implements INote {
     updatedAt: updatedAt ?? this.updatedAt,
   );
 
-  Map<String, dynamic> toJson() => {
-    'title': title,
-    'content': content,
-    'scriptureReferences': scriptureReferences
-        .map((ref) => ref.toJson())
-        .toList(),
-    'images': images,
-  };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> json = {};
+
+    if (title != null) {
+      json.addAll({'title': title});
+    }
+
+    if (content != null) {
+      json.addAll({'content': content});
+    }
+
+    if (scriptureReferences.isNotEmpty) {
+      json.addAll({
+        'scriptureReferences': scriptureReferences
+            .map((ref) => ref.toJson())
+            .toList(),
+      });
+    }
+
+    if (images.isNotEmpty) {
+      json.addAll({'images': images});
+    }
+
+    return json;
+  }
 }

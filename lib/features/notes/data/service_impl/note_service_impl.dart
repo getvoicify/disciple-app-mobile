@@ -27,11 +27,7 @@ class NoteServiceImpl implements NoteService {
 
   @override
   Stream<List<NoteData>> watchNotes({WatchNotesParams? parameter}) =>
-      _repository.watchNotes(
-        limit: parameter?.limit ?? 20,
-        offset: parameter?.offset ?? 0,
-        query: parameter?.query,
-      );
+      _repository.watchNotes(params: parameter);
 
   @override
   Future<ParsedNoteData?> getNoteById({required String id}) async {
@@ -73,5 +69,15 @@ class NoteServiceImpl implements NoteService {
       rethrow;
     }
     return result;
+  }
+
+  @override
+  Future<void> getNotes({WatchNotesParams? parameter}) async {
+    try {
+      await _repository.getNotes(params: parameter);
+    } catch (e) {
+      _logger.e('An error occurred getting notes: $e');
+      rethrow;
+    }
   }
 }

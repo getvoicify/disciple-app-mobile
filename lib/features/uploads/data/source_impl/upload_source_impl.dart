@@ -25,6 +25,7 @@ class UploadSourceImpl implements UploadSource {
       formData: formData,
     );
 
-    return Upload.fromJson(response.data as Map<String, dynamic>);
+    final result = response.data as Map<String, dynamic>;
+    return Upload.fromJson(result['media'] as Map<String, dynamic>);
   }
 }

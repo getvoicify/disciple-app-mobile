@@ -6,7 +6,8 @@ class ApiPath {
   //? Api version
   static const String _apiVersionOne = '/api';
 
-  //? Authentication routes
+  //? Notes routes
+  static const String notes = '$_apiVersionOne/notes';
 
   //? Media routes
   static const String mediaUpload = '$_apiVersionOne/media/upload';

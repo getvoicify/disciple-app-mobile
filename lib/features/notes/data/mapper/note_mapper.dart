@@ -1,7 +1,6 @@
 import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/core/database/helpers/drift_helper.dart';
 import 'package:disciple/app/core/mapper/mapper.dart';
-import 'package:disciple/features/notes/data/model/note_model.dart';
 import 'package:disciple/features/notes/domain/interface/i_note.dart';
 import 'package:drift/drift.dart';
 

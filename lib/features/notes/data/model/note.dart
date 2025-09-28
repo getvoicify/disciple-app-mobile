@@ -3,12 +3,12 @@ import 'package:disciple/features/notes/data/model/scripture_reference.dart';
 import 'package:disciple/features/notes/domain/interface/i_note.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'note_model.freezed.dart';
-part 'note_model.g.dart';
+part 'note.freezed.dart';
+part 'note.g.dart';
 
 @freezed
-abstract class NoteModel with _$NoteModel implements INote {
-  const factory NoteModel({
+abstract class Note with _$Note implements INote {
+  const factory Note({
     String? id,
     String? title,
     String? content,
@@ -23,8 +23,7 @@ abstract class NoteModel with _$NoteModel implements INote {
     @Default([]) List<String> images,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) = _NoteModel;
+  }) = _Note;
 
-  factory NoteModel.fromJson(Map<String, dynamic> json) =>
-      _$NoteModelFromJson(json);
+  factory Note.fromJson(Map<String, dynamic> json) => _$NoteFromJson(json);
 }

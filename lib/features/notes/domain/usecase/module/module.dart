@@ -26,3 +26,7 @@ final deleteNoteUseCaseImpl = Provider<DiscipleUseCaseWithRequiredParam>(
 final updateNoteUseCaseImpl = Provider<DiscipleUseCaseWithRequiredParam>(
   (ref) => UpdateNoteByIdUseCaseImpl(service: ref.read(noteServiceModule)),
 );
+
+final getNotesUseCaseImpl = Provider<DiscipleUseCaseWithRequiredParam>(
+  (ref) => GetNotesUseCaseImpl(service: ref.read(noteServiceModule)),
+);

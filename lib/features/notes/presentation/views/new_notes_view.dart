@@ -19,8 +19,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 /// TODO: Implement functionalities for getting Scriptures to be added
-/// TODO: Implement functionalities for image uploading
-
 @RoutePage()
 class NewNotesView extends ConsumerStatefulWidget {
   const NewNotesView({super.key, this.existingNote});
@@ -44,7 +42,6 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
 
   bool get _isUpdating => widget.existingNote != null;
 
-  bool _hasScriptures = false;
   final ImagePickerHandler _imagePickerHandler = ImagePickerHandler();
   List<String> _successfulUploads = [];
 
@@ -73,7 +70,6 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
       if (!_scriptures.add(scripture)) {
         _scriptures.remove(scripture);
       }
-      _hasScriptures = false;
     });
   }
 
@@ -87,17 +83,7 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
   }
 
   Future<void> _saveNote() async {
-    // Run both validation checks to show all errors at once.
-    final isFormValid = _formKey.currentState!.validate();
-    final hasScriptures = _scriptures.isNotEmpty;
-
-    // Update state for scripture error if necessary.
-    if (!hasScriptures) {
-      setState(() => _hasScriptures = true);
-    }
-
-    // If either check fails, do not proceed.
-    if (!isFormValid || !hasScriptures) return;
+    if (!_formKey.currentState!.validate()) return;
 
     final entity = NoteEntity(
       title: _titleContoller.text.trim(),
@@ -156,10 +142,7 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
 
             SizedBox(height: 8.h),
 
-            AddScriptureSection(
-              onAdd: _toggleScripture,
-              hasError: _hasScriptures,
-            ),
+            AddScriptureSection(onAdd: _toggleScripture, hasError: false),
 
             SizedBox(height: 14.h),
 
@@ -183,7 +166,8 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
               builder: (context, ref, child) {
                 final isBusy =
                     ref.watch(noteProvider).isAddingNote ||
-                    ref.watch(noteProvider).isUpdatingNote;
+                    ref.watch(noteProvider).isUpdatingNote ||
+                    ref.watch(uploadProvider).isUploading;
                 return ElevatedButtonIconWidget(
                   title: AppString.save,
                   isBusy: isBusy,

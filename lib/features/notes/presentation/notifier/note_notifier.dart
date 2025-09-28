@@ -1,3 +1,4 @@
+import 'package:disciple/app/common/app_strings.dart';
 import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/features/notes/domain/entity/note_entity.dart';
@@ -21,6 +22,7 @@ class NoteNotifier extends _$NoteNotifier {
     state = state.copyWith(isAddingNote: true);
     try {
       await ref.read(addNoteUseCaseImpl).execute(parameter: entity);
+      triggerNotificationTray(AppString.noteAddedSuccessfully);
       PageNavigator.pop();
     } catch (e) {
       triggerNotificationTray(e.toString(), error: true);
@@ -32,9 +34,7 @@ class NoteNotifier extends _$NoteNotifier {
   Stream<List<NoteData>> watchNotes({String? query, int offset = 0}) =>
       ref
               .watch(watchNotesUseCaseImpl)
-              .execute(
-                parameter: WatchNotesParams(query: query, offset: offset),
-              )
+              .execute(parameter: WatchNotesParams(query: query))
           as Stream<List<NoteData>>;
 
   Future<void> getNoteById({required String id}) async {
@@ -70,5 +70,16 @@ class NoteNotifier extends _$NoteNotifier {
     } finally {
       state = state.copyWith(isUpdatingNote: false);
     }
+  }
+
+  Future<void> getNotes({String? query, int offset = 0}) async {
+    try {
+      await ref
+          .read(getNotesUseCaseImpl)
+          .execute(
+            parameter: WatchNotesParams(query: query, offset: offset),
+          );
+    } catch (_) {
+    } finally {}
   }
 }

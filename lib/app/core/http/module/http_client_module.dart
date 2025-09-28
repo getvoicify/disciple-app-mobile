@@ -18,6 +18,17 @@ final dioProvider = Provider<Dio>((ref) {
     ),
   );
 
+  // 📝 Logging (only in debug mode)
+  if (kDebugMode) {
+    dio.interceptors.add(
+      PrettyDioLogger(
+        requestHeader: true,
+        requestBody: true,
+        responseHeader: true,
+      ),
+    );
+  }
+
   // 🔐 Interceptors
   dio.interceptors.add(
     InterceptorsWrapper(
@@ -86,13 +97,6 @@ final dioProvider = Provider<Dio>((ref) {
       },
     ),
   );
-
-  // 📝 Logging (only in debug mode)
-  if (kDebugMode) {
-    dio.interceptors.add(
-      PrettyDioLogger(requestHeader: true, requestBody: true),
-    );
-  }
 
   return dio;
 });
