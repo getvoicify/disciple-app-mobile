@@ -1,18 +1,64 @@
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
+import 'package:disciple/app/config/app_helper.dart';
 import 'package:disciple/app/utils/extension.dart';
+import 'package:disciple/features/community/data/model/church.dart';
 import 'package:disciple/widgets/image_widget.dart';
+import 'package:disciple/widgets/popup_menu_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class OverviewTab extends StatefulWidget {
-  const OverviewTab({super.key});
+  const OverviewTab({super.key, required this.church});
+
+  final Church church;
 
   @override
   State<OverviewTab> createState() => _OverviewTabState();
 }
 
 class _OverviewTabState extends State<OverviewTab> {
+  Church? _church;
+  final List<PopupMenuItemData> _churchInfo = [];
+  SocialLink? _socialLink;
+  @override
+  void initState() {
+    _church = widget.church;
+    _socialLink = widget.church.socialLinks;
+
+    _churchInfo.addAll([
+      PopupMenuItemData(
+        label: '',
+        value: _socialLink?.facebook,
+        icon: AppImage.facebookIcon,
+      ),
+      PopupMenuItemData(
+        label: '',
+        value: _socialLink?.youtube,
+        icon: AppImage.youtubeIcon,
+      ),
+      PopupMenuItemData(
+        label: '',
+        value: _socialLink?.instagram,
+        icon: AppImage.instagramIcon,
+      ),
+
+      /// TODO: Add thread icon
+      const PopupMenuItemData(label: '', value: '', icon: AppImage.threadIcon),
+      PopupMenuItemData(
+        label: '',
+        value: _socialLink?.twitterX,
+        icon: AppImage.xIcon,
+      ),
+      PopupMenuItemData(
+        label: '',
+        value: _socialLink?.tiktok,
+        icon: AppImage.tiktokIcon,
+      ),
+    ]);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) => Padding(
     padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -23,7 +69,7 @@ class _OverviewTabState extends State<OverviewTab> {
       children: [
         SizedBox(height: 20.h),
         Text(
-          'Qorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum est a, mattis tellus. Sed dignissim, metus nec fringilla accumsan, risus sem sollicitudin lacus, ut interdum tellus elit sed risus. Maecenas eget condimentum velit, sit amet feugiat lectus. ',
+          _church?.missionStatement ?? '',
           style: context.bodyMedium?.copyWith(
             fontSize: 14.sp,
             fontWeight: FontWeight.w500,
@@ -43,7 +89,7 @@ class _OverviewTabState extends State<OverviewTab> {
             SizedBox(width: 8.w),
             Flexible(
               child: Text(
-                '2B, Residence Road, NCI bustop, Gbagada, Lagos',
+                '${_church?.address?.street}, ${_church?.getAddress}',
                 style: context.bodyMedium?.copyWith(fontSize: 12.sp),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -119,17 +165,15 @@ class _OverviewTabState extends State<OverviewTab> {
         Wrap(
           alignment: WrapAlignment.center,
           spacing: 20.w,
-          children:
-              [
-                    AppImage.facebookIcon,
-                    AppImage.youtubeIcon,
-                    AppImage.instagramIcon,
-                    AppImage.threadIcon,
-                    AppImage.xIcon,
-                    AppImage.tiktokIcon,
-                  ]
-                  .map((icon) => ImageWidget(imageUrl: icon, fit: BoxFit.none))
-                  .toList(),
+          children: _churchInfo
+              .map(
+                (icon) => ImageWidget(
+                  imageUrl: icon.icon ?? '',
+                  fit: BoxFit.none,
+                  onTap: () async => await AppHelper.openUrl(icon.value ?? ''),
+                ),
+              )
+              .toList(),
         ),
         SizedBox(height: 20.h), // Add bottom padding
       ],

@@ -106,7 +106,7 @@ ThemeData lightTheme = ThemeData.light(useMaterial3: false).copyWith(
     ),
   ),
   tabBarTheme: TabBarThemeData(
-    labelColor: AppColors.black,
+    labelColor: AppColors.white,
     indicator: BoxDecoration(
       borderRadius: BorderRadius.circular(7.r),
       color: AppColors.purple,

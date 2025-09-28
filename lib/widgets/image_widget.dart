@@ -1,6 +1,7 @@
 import 'package:disciple/app/common/app_images.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ImageWidget extends StatelessWidget {
   const ImageWidget({
@@ -48,6 +49,18 @@ class ImageWidget extends StatelessWidget {
           height: height,
           fit: fit,
           color: iconColor,
+        ),
+      );
+    }
+
+    if (!isAsset && imageUrl.startsWith('https://')) {
+      return InkWell(
+        onTap: onTap,
+        child: CachedNetworkImage(
+          imageUrl: imageUrl,
+          width: width,
+          height: height,
+          fit: fit,
         ),
       );
     }

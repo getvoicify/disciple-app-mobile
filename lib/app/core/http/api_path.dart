@@ -13,4 +13,9 @@ class ApiPath {
   static const String mediaUpload = '$_apiVersionOne/media/upload';
   static String imageUrl(String id) =>
       'https://staging.infra.api.pottersville.church/api/media/serve/$id';
+
+  //? Church routes
+  static const String churches = '$_apiVersionOne/churches';
+  static String acceptChurchInvite(String churchId) =>
+      '$_apiVersionOne/churches/$churchId/accept-invitation';
 }

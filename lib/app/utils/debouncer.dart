@@ -7,11 +7,14 @@ class Debouncer {
   Timer? _timer;
 
   Debouncer({this.milliseconds = 600});
+  bool get isActive => _timer?.isActive ?? false;
 
   void run(VoidCallback action) {
-    dispose();
+    cancel();
     _timer = Timer(Duration(milliseconds: milliseconds), action);
   }
 
-  void dispose() => _timer?.cancel();
+  void cancel() {
+    if (isActive) _timer?.cancel();
+  }
 }

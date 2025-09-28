@@ -7,10 +7,21 @@ import 'package:sqlite3/sqlite3.dart';
 import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 import 'package:disciple/features/notes/data/tables/note.dart';
 import 'package:disciple/features/bible/data/tables/bible.dart';
+import 'package:disciple/features/community/data/tables/churches_table.dart';
 
 part 'app_database.g.dart';
 
-@DriftDatabase(tables: [Note, Versions, BibleVerses])
+@DriftDatabase(
+  tables: [
+    Note,
+    Versions,
+    BibleVerses,
+    Churches,
+    ChurchAddresses,
+    ChurchSocialLinks,
+    ChurchOtherLinks,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 

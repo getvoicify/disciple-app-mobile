@@ -34,5 +34,6 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: BibleRoute.page),
     AutoRoute(page: DevotionalsRoute.page),
     AutoRoute(page: BookmarksRoute.page),
+    AutoRoute(page: ChurchRoute.page),
   ];
 }

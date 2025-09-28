@@ -60,4 +60,9 @@ class AppString {
   static String pickFromPhoto = 'Take A Photo';
   static String cancel = 'Cancel';
   static String noteAddedSuccessfully = 'Note added successfully';
+  static String searchChurchByName = 'Search church by name';
+  static String noChurchesFound = 'No churches found';
+  static String allChurches = 'All Churches';
+  static String searchResults = 'Search Results';
+  static String locationFilter = 'Location Filter';
 }

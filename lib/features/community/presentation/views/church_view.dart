@@ -1,20 +1,23 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/app/utils/extension.dart';
+import 'package:disciple/features/community/data/model/church.dart';
 import 'package:disciple/features/community/presentation/tabs/channel_tabs/prayer_wall_tabs.dart';
 import 'package:disciple/features/community/presentation/tabs/church_tabs/overview_tab.dart';
 import 'package:disciple/features/community/presentation/tabs/church_tabs/posts_tab.dart';
+import 'package:disciple/features/community/presentation/widget/background_image.dart';
 import 'package:disciple/widgets/delegate/sticky_appbar_delegate.dart';
 import 'package:disciple/widgets/elevated_button_widget.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:auto_route/auto_route.dart';
-
 @RoutePage()
 class ChurchView extends StatefulWidget {
-  const ChurchView({super.key});
+  const ChurchView({super.key, required this.church});
+
+  final Church church;
 
   @override
   State<ChurchView> createState() => _ChurchViewState();
@@ -23,10 +26,12 @@ class ChurchView extends StatefulWidget {
 class _ChurchViewState extends State<ChurchView>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
+  late Church _church;
 
   @override
   void initState() {
     _tabController = TabController(length: 3, vsync: this);
+    _church = widget.church;
     super.initState();
   }
 
@@ -61,14 +66,8 @@ class _ChurchViewState extends State<ChurchView>
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  margin: EdgeInsets.only(top: 16.h),
-                  height: 538.h,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.r),
-                    color: Colors.red,
-                  ),
-                ),
+                SizedBox(height: 16.h),
+                BakgroundImage(church: _church),
                 SizedBox(height: 20.h),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -100,6 +99,7 @@ class _ChurchViewState extends State<ChurchView>
               controller: _tabController,
               isScrollable: true,
               indicatorSize: TabBarIndicatorSize.label,
+              labelColor: AppColors.black,
               indicator: const BoxDecoration(
                 borderRadius: BorderRadius.zero,
                 border: Border(
@@ -119,7 +119,7 @@ class _ChurchViewState extends State<ChurchView>
       body: TabBarView(
         controller: _tabController,
         children: [
-          const OverviewTab(),
+          OverviewTab(church: _church),
           const PostTab(),
           const PrayerWallTabs(),
         ],
