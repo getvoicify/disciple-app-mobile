@@ -24,16 +24,17 @@ class BibleView extends ConsumerStatefulWidget {
 }
 
 class _BibleViewState extends ConsumerState<BibleView> {
-  final List<Map> menus = [
-    {"title": "Devotionals", "value": "devotionals"},
-    {"title": "Notes", "value": "notes"},
-    {"title": "Bookmarks", "value": "bookmarks"},
+  final List<PopupMenuItemData<String>> menus = const [
+    PopupMenuItemData<String>(value: 'devotionals', label: 'Devotionals'),
+    PopupMenuItemData<String>(value: 'notes', label: 'Notes'),
+    PopupMenuItemData<String>(value: 'bookmarks', label: 'Bookmarks'),
   ];
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      /// TODO: Implement search for words and return all verses that has such words in them.
       await ref
           .read(bibleProvider.notifier)
           .searchBibles(
@@ -61,9 +62,9 @@ class _BibleViewState extends ConsumerState<BibleView> {
             items: menus
                 .map(
                   (menu) => PopupMenuItemData(
-                    icon: menu['icon'] as String?,
-                    value: menu['value'] as String,
-                    label: menu['title'] as String,
+                    icon: menu.icon,
+                    value: menu.value,
+                    label: menu.label,
                   ),
                 )
                 .toList(),
