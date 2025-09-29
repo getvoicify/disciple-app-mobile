@@ -13,5 +13,6 @@ class AddNoteUseCaseImpl
   Future<void> execute({
     required NoteEntity parameter,
     CancelToken? cancelToken,
-  }) async => await _service.addNote(entity: parameter);
+  }) async =>
+      await _service.addNote(entity: parameter, cancelToken: cancelToken);
 }

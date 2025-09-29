@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:disciple/app/config/app_logger.dart';
 import 'package:disciple/features/community/data/model/church.dart';
 import 'package:disciple/features/community/data/model/membership.dart';
@@ -14,10 +15,16 @@ class ChurchServiceImpl implements ChurchService {
     : _repository = repository;
 
   @override
-  Future<Membership?> acceptChurchInvite({required String churchId}) async {
+  Future<Membership?> acceptChurchInvite({
+    required String churchId,
+    CancelToken? cancelToken,
+  }) async {
     Membership? membership;
     try {
-      membership = await _repository.acceptChurchInvite(churchId: churchId);
+      membership = await _repository.acceptChurchInvite(
+        churchId: churchId,
+        cancelToken: cancelToken,
+      );
     } catch (e) {
       _logger.e('An error occurred while accepting church invite', error: e);
       rethrow;
@@ -26,10 +33,16 @@ class ChurchServiceImpl implements ChurchService {
   }
 
   @override
-  Future<Church> addChurch({required ChurchEntity entity}) async {
+  Future<Church> addChurch({
+    required ChurchEntity entity,
+    CancelToken? cancelToken,
+  }) async {
     Church? church;
     try {
-      church = await _repository.addChurch(entity: entity);
+      church = await _repository.addChurch(
+        entity: entity,
+        cancelToken: cancelToken,
+      );
     } catch (e) {
       _logger.e('An error occurred while adding church', error: e);
       rethrow;
@@ -38,10 +51,16 @@ class ChurchServiceImpl implements ChurchService {
   }
 
   @override
-  Future<bool> banMember({required ChurchEntity parameter}) async {
+  Future<bool> banMember({
+    required ChurchEntity parameter,
+    CancelToken? cancelToken,
+  }) async {
     bool result = false;
     try {
-      result = await _repository.banMember(parameter: parameter);
+      result = await _repository.banMember(
+        parameter: parameter,
+        cancelToken: cancelToken,
+      );
     } catch (e) {
       _logger.e('An error occurred while banning member', error: e);
       rethrow;
@@ -50,10 +69,16 @@ class ChurchServiceImpl implements ChurchService {
   }
 
   @override
-  Future<bool> declineChurchInvite({required ChurchEntity parameter}) async {
+  Future<bool> declineChurchInvite({
+    required ChurchEntity parameter,
+    CancelToken? cancelToken,
+  }) async {
     bool result = false;
     try {
-      result = await _repository.declineChurchInvite(parameter: parameter);
+      result = await _repository.declineChurchInvite(
+        parameter: parameter,
+        cancelToken: cancelToken,
+      );
     } catch (e) {
       _logger.e('An error occurred while declining church invite', error: e);
       rethrow;
@@ -62,9 +87,12 @@ class ChurchServiceImpl implements ChurchService {
   }
 
   @override
-  Future<void> deleteChurch({required String id}) async {
+  Future<void> deleteChurch({
+    required String id,
+    CancelToken? cancelToken,
+  }) async {
     try {
-      await _repository.deleteChurch(id: id);
+      await _repository.deleteChurch(id: id, cancelToken: cancelToken);
     } catch (e) {
       _logger.e('An error occurred while deleting church', error: e);
       rethrow;
@@ -72,10 +100,16 @@ class ChurchServiceImpl implements ChurchService {
   }
 
   @override
-  Future<Church?> getChurchById({required ChurchEntity parameter}) async {
+  Future<Church?> getChurchById({
+    required ChurchEntity parameter,
+    CancelToken? cancelToken,
+  }) async {
     Church? church;
     try {
-      church = await _repository.getChurchById(parameter: parameter);
+      church = await _repository.getChurchById(
+        parameter: parameter,
+        cancelToken: cancelToken,
+      );
     } catch (e) {
       _logger.e('An error occurred while getting church by id', error: e);
       rethrow;
@@ -84,10 +118,16 @@ class ChurchServiceImpl implements ChurchService {
   }
 
   @override
-  Future<List<Church>> getChurches({ChurchEntity? parameter}) async {
+  Future<List<Church>> getChurches({
+    ChurchEntity? parameter,
+    CancelToken? cancelToken,
+  }) async {
     List<Church> churches = [];
     try {
-      churches = await _repository.getChurches(parameter: parameter);
+      churches = await _repository.getChurches(
+        parameter: parameter,
+        cancelToken: cancelToken,
+      );
     } catch (e) {
       _logger.e('An error occurred while getting churches', error: e);
       rethrow;
@@ -96,10 +136,16 @@ class ChurchServiceImpl implements ChurchService {
   }
 
   @override
-  Future<Membership?> inviteMember({required ChurchEntity parameter}) async {
+  Future<Membership?> inviteMember({
+    required ChurchEntity parameter,
+    CancelToken? cancelToken,
+  }) async {
     Membership? membership;
     try {
-      membership = await _repository.inviteMember(parameter: parameter);
+      membership = await _repository.inviteMember(
+        parameter: parameter,
+        cancelToken: cancelToken,
+      );
     } catch (e) {
       _logger.e('An error occurred while inviting member', error: e);
       rethrow;
@@ -108,10 +154,16 @@ class ChurchServiceImpl implements ChurchService {
   }
 
   @override
-  Future<bool> removeMemberFromChurch({required ChurchEntity parameter}) async {
+  Future<bool> removeMemberFromChurch({
+    required ChurchEntity parameter,
+    CancelToken? cancelToken,
+  }) async {
     bool result = false;
     try {
-      result = await _repository.removeMemberFromChurch(parameter: parameter);
+      result = await _repository.removeMemberFromChurch(
+        parameter: parameter,
+        cancelToken: cancelToken,
+      );
     } catch (e) {
       _logger.e(
         'An error occurred while removing member from church',
@@ -123,10 +175,16 @@ class ChurchServiceImpl implements ChurchService {
   }
 
   @override
-  Future<List<Church>> searchChurches({ChurchEntity? parameter}) async {
+  Future<List<Church>> searchChurches({
+    ChurchEntity? parameter,
+    CancelToken? cancelToken,
+  }) async {
     List<Church> churches = [];
     try {
-      churches = await _repository.searchChurches(parameter: parameter);
+      churches = await _repository.searchChurches(
+        parameter: parameter,
+        cancelToken: cancelToken,
+      );
     } catch (e) {
       _logger.e('An error occurred while searching churches', error: e);
       rethrow;
@@ -135,10 +193,16 @@ class ChurchServiceImpl implements ChurchService {
   }
 
   @override
-  Future<Church> updateChurch({required ChurchEntity parameter}) async {
+  Future<Church> updateChurch({
+    required ChurchEntity parameter,
+    CancelToken? cancelToken,
+  }) async {
     Church? church;
     try {
-      church = await _repository.updateChurch(parameter: parameter);
+      church = await _repository.updateChurch(
+        parameter: parameter,
+        cancelToken: cancelToken,
+      );
     } catch (e) {
       _logger.e('An error occurred while updating church', error: e);
       rethrow;
@@ -149,11 +213,13 @@ class ChurchServiceImpl implements ChurchService {
   @override
   Future<Membership?> updateMembersRoleInChurch({
     required ChurchEntity parameter,
+    CancelToken? cancelToken,
   }) async {
     Membership? membership;
     try {
       membership = await _repository.updateMembersRoleInChurch(
         parameter: parameter,
+        cancelToken: cancelToken,
       );
     } catch (e) {
       _logger.e(

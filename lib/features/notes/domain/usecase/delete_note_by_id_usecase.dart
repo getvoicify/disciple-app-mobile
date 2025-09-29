@@ -10,5 +10,5 @@ class DeleteNoteUseCaseImpl
 
   @override
   Future<bool> execute({required String parameter, CancelToken? cancelToken}) =>
-      _service.deleteNote(id: parameter);
+      _service.deleteNote(id: parameter, cancelToken: cancelToken);
 }

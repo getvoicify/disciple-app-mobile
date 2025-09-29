@@ -38,8 +38,10 @@ class WatchNotesUseCaseImpl
   WatchNotesUseCaseImpl({required NoteService service}) : _service = service;
 
   @override
-  Stream<List<NoteData>> execute({required WatchNotesParams parameter}) =>
-      _service.watchNotes(parameter: parameter);
+  Stream<List<NoteData>> execute({
+    required WatchNotesParams parameter,
+    CancelToken? cancelToken,
+  }) => _service.watchNotes(parameter: parameter, cancelToken: cancelToken);
 }
 
 class GetNotesUseCaseImpl
@@ -52,5 +54,6 @@ class GetNotesUseCaseImpl
   Future<void> execute({
     required WatchNotesParams parameter,
     CancelToken? cancelToken,
-  }) async => await _service.getNotes(parameter: parameter);
+  }) async =>
+      await _service.getNotes(parameter: parameter, cancelToken: cancelToken);
 }

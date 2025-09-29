@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:disciple/app/core/http/api_path.dart';
 import 'package:disciple/features/notes/data/model/note.dart';
 import 'package:disciple/app/core/http/app_http_client.dart';
@@ -12,11 +13,15 @@ class NoteSourceImpl implements NoteSource {
   NoteSourceImpl({required AppHttpClient client}) : _client = client;
 
   @override
-  Future<Note> addNote({required NoteEntity entity}) async {
+  Future<Note> addNote({
+    required NoteEntity entity,
+    CancelToken? cancelToken,
+  }) async {
     final response = await _client.request(
       path: ApiPath.notes,
       requestType: RequestType.post,
       data: entity.toJson(),
+      cancelToken: cancelToken,
     );
 
     final result = response.data as Map<String, dynamic>;
@@ -24,19 +29,27 @@ class NoteSourceImpl implements NoteSource {
   }
 
   @override
-  Future<void> deleteNote({required String id}) async {
+  Future<void> deleteNote({
+    required String id,
+    CancelToken? cancelToken,
+  }) async {
     await _client.request(
       path: '${ApiPath.notes}/$id',
       requestType: RequestType.delete,
+      cancelToken: cancelToken,
     );
     return;
   }
 
   @override
-  Future<Note?> getNoteById({required String id}) async {
+  Future<Note?> getNoteById({
+    required String id,
+    CancelToken? cancelToken,
+  }) async {
     final response = await _client.request(
       path: '${ApiPath.notes}/$id',
       requestType: RequestType.get,
+      cancelToken: cancelToken,
     );
 
     final result = response.data as Map<String, dynamic>;
@@ -45,13 +58,14 @@ class NoteSourceImpl implements NoteSource {
 
   @override
   Future<Note> updateNote({
-    required String id,
     required NoteEntity entity,
+    CancelToken? cancelToken,
   }) async {
     final response = await _client.request(
-      path: '${ApiPath.notes}/$id',
+      path: '${ApiPath.notes}/${entity.id}',
       requestType: RequestType.put,
       data: entity.toJson(),
+      cancelToken: cancelToken,
     );
 
     final result = response.data as Map<String, dynamic>;
@@ -59,7 +73,10 @@ class NoteSourceImpl implements NoteSource {
   }
 
   @override
-  Future<List<Note>> getNotes({WatchNotesParams? parameter}) async {
+  Future<List<Note>> getNotes({
+    WatchNotesParams? parameter,
+    CancelToken? cancelToken,
+  }) async {
     await Future.delayed(const Duration(seconds: 2));
     return List.generate(
       20,

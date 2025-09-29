@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/core/database/module/app_database_module.dart';
 import 'package:disciple/features/community/data/model/church.dart';
@@ -19,52 +20,100 @@ class ChurchRepoImpl implements ChurchRepository {
       _database = ref.watch(appDatabaseProvider);
 
   @override
-  Future<Membership?> acceptChurchInvite({required String churchId}) async =>
-      await _source.acceptChurchInvite(churchId: churchId);
+  Future<Membership?> acceptChurchInvite({
+    required String churchId,
+    CancelToken? cancelToken,
+  }) async => await _source.acceptChurchInvite(
+    churchId: churchId,
+    cancelToken: cancelToken,
+  );
 
   @override
-  Future<Church> addChurch({required ChurchEntity entity}) async =>
-      await _source.addChurch(entity: entity);
+  Future<Church> addChurch({
+    required ChurchEntity entity,
+    CancelToken? cancelToken,
+  }) async => await _source.addChurch(entity: entity, cancelToken: cancelToken);
 
   @override
-  Future<bool> banMember({required ChurchEntity parameter}) async =>
-      await _source.banMember(parameter: parameter);
+  Future<bool> banMember({
+    required ChurchEntity parameter,
+    CancelToken? cancelToken,
+  }) async =>
+      await _source.banMember(parameter: parameter, cancelToken: cancelToken);
 
   @override
-  Future<bool> declineChurchInvite({required ChurchEntity parameter}) async =>
-      await _source.declineChurchInvite(parameter: parameter);
+  Future<bool> declineChurchInvite({
+    required ChurchEntity parameter,
+    CancelToken? cancelToken,
+  }) async => await _source.declineChurchInvite(
+    parameter: parameter,
+    cancelToken: cancelToken,
+  );
 
   @override
-  Future<void> deleteChurch({required String id}) async =>
-      await _source.deleteChurch(id: id);
+  Future<void> deleteChurch({
+    required String id,
+    CancelToken? cancelToken,
+  }) async => await _source.deleteChurch(id: id, cancelToken: cancelToken);
 
   @override
-  Future<Church?> getChurchById({required ChurchEntity parameter}) async =>
-      await _source.getChurchById(parameter: parameter);
+  Future<Church?> getChurchById({
+    required ChurchEntity parameter,
+    CancelToken? cancelToken,
+  }) async => await _source.getChurchById(
+    parameter: parameter,
+    cancelToken: cancelToken,
+  );
 
   @override
-  Future<List<Church>> getChurches({ChurchEntity? parameter}) async =>
-      await _source.getChurches(parameter: parameter);
+  Future<List<Church>> getChurches({
+    ChurchEntity? parameter,
+    CancelToken? cancelToken,
+  }) async =>
+      await _source.getChurches(parameter: parameter, cancelToken: cancelToken);
 
   @override
-  Future<Membership?> inviteMember({required ChurchEntity parameter}) async =>
-      await _source.inviteMember(parameter: parameter);
+  Future<Membership?> inviteMember({
+    required ChurchEntity parameter,
+    CancelToken? cancelToken,
+  }) async => await _source.inviteMember(
+    parameter: parameter,
+    cancelToken: cancelToken,
+  );
 
   @override
   Future<bool> removeMemberFromChurch({
     required ChurchEntity parameter,
-  }) async => await _source.removeMemberFromChurch(parameter: parameter);
+    CancelToken? cancelToken,
+  }) async => await _source.removeMemberFromChurch(
+    parameter: parameter,
+    cancelToken: cancelToken,
+  );
 
   @override
-  Future<List<Church>> searchChurches({ChurchEntity? parameter}) async =>
-      await _source.searchChurches(parameter: parameter);
+  Future<List<Church>> searchChurches({
+    ChurchEntity? parameter,
+    CancelToken? cancelToken,
+  }) async => await _source.searchChurches(
+    parameter: parameter,
+    cancelToken: cancelToken,
+  );
 
   @override
-  Future<Church> updateChurch({required ChurchEntity parameter}) async =>
-      await _source.updateChurch(parameter: parameter);
+  Future<Church> updateChurch({
+    required ChurchEntity parameter,
+    CancelToken? cancelToken,
+  }) async => await _source.updateChurch(
+    parameter: parameter,
+    cancelToken: cancelToken,
+  );
 
   @override
   Future<Membership?> updateMembersRoleInChurch({
     required ChurchEntity parameter,
-  }) async => await _source.updateMembersRoleInChurch(parameter: parameter);
+    CancelToken? cancelToken,
+  }) async => await _source.updateMembersRoleInChurch(
+    parameter: parameter,
+    cancelToken: cancelToken,
+  );
 }

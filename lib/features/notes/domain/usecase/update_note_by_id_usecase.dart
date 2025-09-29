@@ -14,5 +14,6 @@ class UpdateNoteByIdUseCaseImpl
   Future<bool> execute({
     required NoteEntity parameter,
     CancelToken? cancelToken,
-  }) async => await _service.updateNote(entity: parameter);
+  }) async =>
+      await _service.updateNote(entity: parameter, cancelToken: cancelToken);
 }

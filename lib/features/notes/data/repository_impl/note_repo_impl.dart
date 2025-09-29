@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/core/database/module/app_database_module.dart';
 import 'package:disciple/app/core/manager/connectivity_manager.dart';
@@ -27,11 +28,17 @@ class NoteRepoImpl implements NoteRepository {
       _noteMapper = ref.watch(noteToCompanionMapperProvider);
 
   @override
-  Future<int> addNote({required NoteEntity entity}) async {
+  Future<int> addNote({
+    required NoteEntity entity,
+    CancelToken? cancelToken,
+  }) async {
     final database = _database.into(_database.note);
 
     if (_connectivityManager.isOnline && ref.isloggedIn) {
-      final response = await _source.addNote(entity: entity);
+      final response = await _source.addNote(
+        entity: entity,
+        cancelToken: cancelToken,
+      );
       return await database.insert(
         _noteMapper.insert(response, isSynced: true),
       );
@@ -40,13 +47,19 @@ class NoteRepoImpl implements NoteRepository {
   }
 
   @override
-  Future<bool> updateNote({required NoteEntity entity}) async {
+  Future<bool> updateNote({
+    required NoteEntity entity,
+    CancelToken? cancelToken,
+  }) async {
     final String noteId = entity.id ?? '';
     final database = (_database.update(_database.note)
       ..where((tbl) => tbl.id.equals(noteId)));
 
     if (_connectivityManager.isOnline && ref.isloggedIn) {
-      final response = await _source.updateNote(id: noteId, entity: entity);
+      final response = await _source.updateNote(
+        entity: entity,
+        cancelToken: cancelToken,
+      );
       return await database.write(_noteMapper.update(response)) > 0;
     }
 
@@ -55,9 +68,12 @@ class NoteRepoImpl implements NoteRepository {
   }
 
   @override
-  Future<bool> deleteNote({required String id}) async {
+  Future<bool> deleteNote({
+    required String id,
+    CancelToken? cancelToken,
+  }) async {
     if (_connectivityManager.isOnline && ref.isloggedIn) {
-      await _source.deleteNote(id: id);
+      await _source.deleteNote(id: id, cancelToken: cancelToken);
     }
 
     final count = await (_database.delete(
@@ -68,13 +84,18 @@ class NoteRepoImpl implements NoteRepository {
   }
 
   @override
-  Future<NoteData?> getNoteById({required String id}) async =>
-      await (_database.select(
-        _database.note,
-      )..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+  Future<NoteData?> getNoteById({
+    required String id,
+    CancelToken? cancelToken,
+  }) async => await (_database.select(
+    _database.note,
+  )..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
 
   @override
-  Stream<List<NoteData>> watchNotes({WatchNotesParams? params}) {
+  Stream<List<NoteData>> watchNotes({
+    WatchNotesParams? params,
+    CancelToken? cancelToken,
+  }) {
     final select = _database.select(_database.note);
 
     if (params?.query != null && (params?.query ?? '').isNotEmpty) {
@@ -87,8 +108,14 @@ class NoteRepoImpl implements NoteRepository {
   }
 
   @override
-  Future<void> getNotes({WatchNotesParams? params}) async {
-    final remoteNotes = await _source.getNotes(parameter: params);
+  Future<void> getNotes({
+    WatchNotesParams? params,
+    CancelToken? cancelToken,
+  }) async {
+    final remoteNotes = await _source.getNotes(
+      parameter: params,
+      cancelToken: cancelToken,
+    );
 
     if (remoteNotes.isEmpty) return;
 

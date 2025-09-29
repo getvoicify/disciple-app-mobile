@@ -13,5 +13,6 @@ class GetNoteByIdUseCaseImpl
   Future<ParsedNoteData?> execute({
     required String parameter,
     CancelToken? cancelToken,
-  }) async => await _service.getNoteById(id: parameter);
+  }) async =>
+      await _service.getNoteById(id: parameter, cancelToken: cancelToken);
 }
