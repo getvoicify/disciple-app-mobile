@@ -82,6 +82,17 @@ run_prod() {
   echo -e "${YELLOW}Running app in production mode...${NC}"
   flutter run --flavor production --target lib/main_production.dart
 }
+# Get app dependencies
+get_dependencies() {
+  echo -e "${YELLOW}Getting app dependencies...${NC}"
+  flutter pub get
+}
+
+# Update app dependencies
+update_dependencies() {
+  echo -e "${YELLOW}Updating app dependencies...${NC}"
+  flutter pub upgrade
+}
 
 # Display available commands
 echo -e "${GREEN}Available commands:${NC}"
@@ -95,3 +106,6 @@ echo -e "${YELLOW}build_apk${NC} - Build APK for release"
 echo -e "${YELLOW}build_aab${NC} - Build App Bundle for release"
 echo -e "${YELLOW}run_dev${NC} - Run app in development mode"
 echo -e "${YELLOW}run_prod${NC} - Run app in production mode"
+echo -e "${YELLOW}get_dependencies${NC} - Get app dependencies"
+echo -e "${YELLOW}update_dependencies${NC} - Update app dependencies"
+
