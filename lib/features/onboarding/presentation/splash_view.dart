@@ -22,15 +22,14 @@ class _SplashViewState extends ConsumerState<SplashView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // ref.read(bibleProvider.notifier).importBibles().whenComplete(() async {
-      //   await PageNavigator.replace(const DashboardRoute());
-      // });
+      ref.read(bibleProvider.notifier).importBibles().whenComplete(() async {
+        await PageNavigator.replace(const DashboardRoute());
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: AppColors.purple,
     body: Container(
       height: context.height,
       width: context.width,
