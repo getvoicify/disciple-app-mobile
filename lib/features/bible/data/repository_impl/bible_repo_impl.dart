@@ -56,19 +56,37 @@ class BibleRepoImpl implements BibleRepository {
   @override
   Future<List<BibleVerse>> searchBibles(BibleSearchParams params) async {
     final query = _database.select(_database.bibleVerses)
-      ..where(
-        (tbl) =>
-            tbl.versionId.equals(params.versionId ?? '') &
-            tbl.bookName.equals(params.bookName ?? '') &
-            tbl.chapter.equals(params.chapter ?? 1) &
-            tbl.verse.isBetweenValues(
-              params.startVerse ?? 1,
-              params.endVerse ?? 1,
-            ),
-      )
-      ..orderBy([(tbl) => OrderingTerm(expression: tbl.verse)]);
+      ..orderBy([(tbl) => OrderingTerm(expression: tbl.verse)])
+      ..where((tbl) {
+        final conditions = <Expression<bool>>[];
 
-    return await query.get();
+        // Always filter by version
+        if (params.versionId != null && params.versionId!.isNotEmpty) {
+          conditions.add(tbl.versionId.equals(params.versionId!));
+        }
+
+        // Search mode: use LIKE or FTS5 if available
+        if (params.searchWord != null && params.searchWord!.isNotEmpty) {
+          conditions.add(tbl.verseText.like('%${params.searchWord!}%'));
+        } else {
+          if (params.bookName != null && params.bookName!.isNotEmpty) {
+            conditions.add(tbl.bookName.equals(params.bookName!));
+          }
+          if (params.chapter != null) {
+            conditions.add(tbl.chapter.equals(params.chapter!));
+          }
+          if (params.startVerse != null && params.endVerse != null) {
+            conditions.add(
+              tbl.verse.isBetweenValues(params.startVerse!, params.endVerse!),
+            );
+          }
+        }
+
+        // Combine all filters with AND
+        return conditions.reduce((a, b) => a & b);
+      });
+
+    return query.get();
   }
 
   @override

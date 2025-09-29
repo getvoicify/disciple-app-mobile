@@ -4,6 +4,7 @@ class BibleSearchParams {
   final int? chapter;
   final int? startVerse;
   final int? endVerse;
+  final String? searchWord;
 
   BibleSearchParams({
     this.versionId,
@@ -11,5 +12,6 @@ class BibleSearchParams {
     this.chapter,
     this.startVerse,
     this.endVerse,
+    this.searchWord,
   });
 }

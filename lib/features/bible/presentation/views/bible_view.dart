@@ -34,16 +34,16 @@ class _BibleViewState extends ConsumerState<BibleView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      /// TODO: Implement search for words and return all verses that has such words in them.
       await ref
           .read(bibleProvider.notifier)
           .searchBibles(
             BibleSearchParams(
               versionId: 'kjv',
-              bookName: 'Genesis',
-              chapter: 1,
-              startVerse: 1,
-              endVerse: 10,
+              // bookName: 'Genesis',
+              // chapter: 1,
+              // startVerse: 1,
+              // endVerse: 10,
+              searchWord: 'faith',
             ),
           );
     });
