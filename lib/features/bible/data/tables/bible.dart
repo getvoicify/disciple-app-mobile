@@ -8,12 +8,23 @@ class Versions extends Table {
 
 class BibleVerses extends Table {
   IntColumn get id => integer().autoIncrement()();
+  @JsonKey('version_id')
   TextColumn get versionId =>
       text().references(Versions, #id, onDelete: KeyAction.cascade)();
+
+  @JsonKey('book_name')
   TextColumn get bookName => text()();
+
+  @JsonKey('book')
   IntColumn get book => integer()();
+
+  @JsonKey('chapter')
   IntColumn get chapter => integer()();
+
+  @JsonKey('verse')
   IntColumn get verse => integer()();
+
+  @JsonKey('verse_text')
   TextColumn get verseText => text()();
 
   @override

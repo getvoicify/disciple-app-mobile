@@ -7,6 +7,7 @@ import 'package:disciple/app/common/app_strings.dart';
 import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/core/routes/app_router.gr.dart';
 import 'package:disciple/app/core/routes/page_navigator.dart';
+import 'package:disciple/app/utils/debouncer.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/features/notes/presentation/notifier/note_notifier.dart';
 import 'package:disciple/widgets/back_arrow_widget.dart';
@@ -16,11 +17,8 @@ import 'package:disciple/widgets/floating_side_action_button.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
-
-final searchQueryProvider = StateProvider<String>((_) => '');
 
 @RoutePage()
 class NotesView extends ConsumerStatefulWidget {
@@ -32,8 +30,8 @@ class NotesView extends ConsumerStatefulWidget {
 
 class _NotesViewState extends ConsumerState<NotesView> {
   final _searchController = TextEditingController();
-  Timer? _debounce;
   final RefreshController _refreshController = RefreshController();
+  final Debouncer _debouncer = Debouncer();
 
   @override
   void initState() {
@@ -47,17 +45,13 @@ class _NotesViewState extends ConsumerState<NotesView> {
     _searchController
       ..removeListener(_onSearchChanged)
       ..dispose();
-    _debounce?.cancel();
+    _debouncer.cancel();
     super.dispose();
   }
 
   void _onSearchChanged() {
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 400), () {
-      if (mounted) {
-        ref.read(searchQueryProvider.notifier).state = _searchController.text
-            .trim();
-      }
+    _debouncer.run(() {
+      if (mounted) {}
     });
   }
 
@@ -93,11 +87,9 @@ class _NotesViewState extends ConsumerState<NotesView> {
     ),
     body: Consumer(
       builder: (context, ref, _) {
-        final searchQuery = ref.watch(searchQueryProvider);
-
         final notesStream = ref
             .watch(noteProvider.notifier)
-            .watchNotes(query: searchQuery);
+            .watchNotes(query: _searchController.text.trim());
         return Stack(
           children: [
             Padding(

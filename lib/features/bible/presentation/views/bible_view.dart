@@ -1,11 +1,14 @@
+import 'dart:async';
+
+import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/app/core/routes/app_router.gr.dart';
 import 'package:disciple/app/core/routes/page_navigator.dart';
+import 'package:disciple/app/utils/debouncer.dart';
 import 'package:disciple/features/bible/domain/param/bible_search_params.dart';
 import 'package:disciple/features/bible/presentation/notifier/bible_notifier.dart';
 import 'package:disciple/features/bible/presentation/widget/build_chapter_widget.dart';
-import 'package:disciple/widgets/build_audio_controller_widget.dart';
 import 'package:disciple/widgets/drop_down_widget.dart';
 import 'package:disciple/widgets/edit_text_field_with.dart';
 import 'package:disciple/widgets/image_widget.dart';
@@ -13,7 +16,6 @@ import 'package:disciple/widgets/popup_menu_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:auto_route/auto_route.dart';
 
 @RoutePage()
 class BibleView extends ConsumerStatefulWidget {
@@ -29,23 +31,33 @@ class _BibleViewState extends ConsumerState<BibleView> {
     PopupMenuItemData<String>(value: 'notes', label: 'Notes'),
     PopupMenuItemData<String>(value: 'bookmarks', label: 'Bookmarks'),
   ];
+  final BibleSearchParams _searchParams = BibleSearchParams();
+  final TextEditingController _searchController = TextEditingController();
+  final Debouncer _debouncer = Debouncer();
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await ref
-          .read(bibleProvider.notifier)
-          .searchBibles(
-            BibleSearchParams(
-              versionId: 'kjv',
-              // bookName: 'Genesis',
-              // chapter: 1,
-              // startVerse: 1,
-              // endVerse: 10,
-              searchWord: 'faith',
-            ),
-          );
+    _searchController.addListener(_onSearchChanged);
+    unawaited(ref.read(bibleProvider.notifier).searchBibles(_searchParams));
+  }
+
+  @override
+  void dispose() {
+    _searchController
+      ..removeListener(_onSearchChanged)
+      ..dispose();
+    _debouncer.cancel();
+
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    _debouncer.run(() async {
+      if (mounted) {
+        _searchParams.searchWord = _searchController.text.trim();
+        await ref.read(bibleProvider.notifier).searchBibles(_searchParams);
+      }
     });
   }
 
@@ -79,8 +91,9 @@ class _BibleViewState extends ConsumerState<BibleView> {
           children: [
             ListView(
               children: [
-                const EditTextFieldWidget(
-                  prefix: ImageWidget(
+                EditTextFieldWidget(
+                  controller: _searchController,
+                  prefix: const ImageWidget(
                     imageUrl: AppImage.searchIcon,
                     fit: BoxFit.none,
                   ),
@@ -101,7 +114,6 @@ class _BibleViewState extends ConsumerState<BibleView> {
                     children: [
                       const BuildDropdownWidget(title: 'KJV'),
                       SizedBox(height: 16.h),
-
                       const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
@@ -122,11 +134,15 @@ class _BibleViewState extends ConsumerState<BibleView> {
                     isFirst: isFirst,
                     isLast: isLast,
                     verse: verse,
+                    startVerse: _searchParams.startVerse,
+                    searchTerm: _searchController.text.trim(),
                   );
                 }),
               ],
             ),
-            const BuildAudioControllerWidget(),
+
+            /// TODO: Add audio controller widget
+            // const BuildAudioControllerWidget(),
           ],
         ),
       ),

@@ -18,8 +18,9 @@ class _SplashViewState extends ConsumerState<SplashView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await ref.read(bibleProvider.notifier).importBibles();
-      await PageNavigator.replace(const DashboardRoute());
+      ref.read(bibleProvider.notifier).importBibles().whenComplete(() async {
+        await PageNavigator.replace(const DashboardRoute());
+      });
     });
   }
 

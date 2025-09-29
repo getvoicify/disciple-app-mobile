@@ -1,16 +1,16 @@
 class BibleSearchParams {
   final String? versionId;
   final String? bookName;
-  final int? chapter;
-  final int? startVerse;
+  final int chapter;
+  final int startVerse;
   final int? endVerse;
-  final String? searchWord;
+  String? searchWord;
 
   BibleSearchParams({
-    this.versionId,
-    this.bookName,
-    this.chapter,
-    this.startVerse,
+    this.versionId = 'kjv',
+    this.bookName = 'Genesis',
+    this.chapter = 1,
+    this.startVerse = 1,
     this.endVerse,
     this.searchWord,
   });
