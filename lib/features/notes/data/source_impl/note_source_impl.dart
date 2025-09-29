@@ -1,11 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:disciple/app/core/http/api_path.dart';
-import 'package:disciple/features/notes/data/model/note.dart';
 import 'package:disciple/app/core/http/app_http_client.dart';
+import 'package:disciple/features/notes/data/model/note.dart';
 import 'package:disciple/features/notes/domain/entity/note_entity.dart';
 import 'package:disciple/features/notes/domain/source/note_source.dart';
 import 'package:disciple/features/notes/domain/usecase/watch_notes_usecase.dart';
-import 'package:uuid/uuid.dart';
 
 class NoteSourceImpl implements NoteSource {
   final AppHttpClient _client;
@@ -77,16 +76,15 @@ class NoteSourceImpl implements NoteSource {
     WatchNotesParams? parameter,
     CancelToken? cancelToken,
   }) async {
-    await Future.delayed(const Duration(seconds: 2));
-    return List.generate(
-      20,
-      (index) => Note(
-        id: const Uuid().v4(),
-        title: 'Note $index',
-        content: 'Content $index',
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      ),
-    ).toList();
+    final response = await _client.request(
+      path: ApiPath.notes,
+      requestType: RequestType.get,
+      cancelToken: cancelToken,
+    );
+
+    final result = response.data as Map<String, dynamic>;
+    return (result['notes'] as List<dynamic>)
+        .map((e) => Note.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 }

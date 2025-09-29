@@ -7,23 +7,10 @@ import 'package:disciple/app/core/http/error_wrapper.dart';
 enum RequestType { post, get, put, delete, upload, patch }
 
 class AppHttpClient {
-  static const int connectTimeout = 500000;
-  static const int receiveTimeout = 500000;
-
-  Dio? dio;
+  final Dio dio;
   final logger = getLogger('HttpClient');
 
-  AppHttpClient() {
-    _initializeDio();
-  }
-
-  AppHttpClient.internal({required this.dio});
-
-  void _initializeDio() {
-    if (dio != null) {
-      dio!.transformer = BackgroundTransformer();
-    }
-  }
+  AppHttpClient({required this.dio});
 
   Future<Response> request({
     required String path,
@@ -44,63 +31,63 @@ class AppHttpClient {
     }
 
     try {
-      final requestOptions = options ?? await _getOption();
+      // final requestOptions = options ?? await _getOption();
 
       switch (requestType) {
         case RequestType.post:
-          response = await dio!.post(
+          response = await dio.post(
             path,
             queryParameters: params,
             data: data,
             cancelToken: cancelToken,
-            options: requestOptions,
+            // options: requestOptions,
             onSendProgress: onSendProgress,
           );
 
         case RequestType.get:
-          response = await dio!.get(
+          response = await dio.get(
             path,
             queryParameters: params,
             cancelToken: cancelToken,
-            options: requestOptions,
+            // options: requestOptions,
           );
 
         case RequestType.put:
-          response = await dio!.put(
+          response = await dio.put(
             path,
             queryParameters: params,
             data: data,
             cancelToken: cancelToken,
-            options: requestOptions,
+            // options: requestOptions,
             onSendProgress: onSendProgress,
           );
 
         case RequestType.patch:
-          response = await dio!.patch(
+          response = await dio.patch(
             path,
             queryParameters: params,
             data: data,
             cancelToken: cancelToken,
-            options: requestOptions,
+            // options: requestOptions,
             onSendProgress: onSendProgress,
           );
 
         case RequestType.delete:
-          response = await dio!.delete(
+          response = await dio.delete(
             path,
             queryParameters: params,
             data: data,
             cancelToken: cancelToken,
-            options: requestOptions,
+            // options: requestOptions,
           );
 
         case RequestType.upload:
-          response = await dio!.post(
+          response = await dio.post(
             path,
             data: formData,
             queryParameters: params,
             cancelToken: cancelToken,
-            options: requestOptions,
+            // options: requestOptions,
             onSendProgress: onSendProgress,
           );
       }
@@ -111,17 +98,4 @@ class AppHttpClient {
       return Future.error(apiError, stackTrace);
     }
   }
-
-  Future<Options> _getOption({bool upload = false}) async => Options(
-    followRedirects: false,
-    receiveTimeout: const Duration(minutes: AppHttpClient.receiveTimeout),
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-      'Accept': 'application/json',
-      "source": "mobile",
-      if (upload) "Content-Disposition": "form-data",
-      if (upload) "Content-Type": "multipart/form-data",
-      if (upload) "x-amz-acl": "public-read",
-    },
-  );
 }

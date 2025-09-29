@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:disciple/app/config/app_config.dart';
 import 'package:disciple/app/config/app_logger.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keycloak_wrapper/keycloak_wrapper.dart';
@@ -56,7 +57,7 @@ class KeycloakService {
 
     if (success) {
       final token = _keycloakWrapper.accessToken;
-      await Clipboard.setData(ClipboardData(text: token ?? ''));
+      if (kDebugMode) await Clipboard.setData(ClipboardData(text: token ?? ''));
 
       _scheduleTokenRefresh();
     }
@@ -104,5 +105,3 @@ class KeycloakService {
     });
   }
 }
-
-

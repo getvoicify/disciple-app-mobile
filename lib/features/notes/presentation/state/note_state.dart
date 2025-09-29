@@ -11,6 +11,7 @@ abstract class NoteState with _$NoteState {
     @Default(false) bool isLoadingNote,
     @Default(false) bool isDeletingNote,
     @Default(false) bool isUpdatingNote,
+    @Default(false) bool isLoadingNotes,
     @JsonKey(includeFromJson: false, includeToJson: false) ParsedNoteData? note,
   }) = _NoteState;
 }

@@ -14,5 +14,5 @@ class UploadMediaUseCaseImpl
   Future<Upload?> execute({
     required XFile parameter,
     CancelToken? cancelToken,
-  }) async => await _service.upload(file: parameter);
+  }) async => await _service.upload(file: parameter, cancelToken: cancelToken);
 }

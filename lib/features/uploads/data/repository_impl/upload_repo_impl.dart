@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:disciple/features/uploads/data/model/upload.dart';
 import 'package:disciple/features/uploads/domain/repository/upload_repository.dart';
 import 'package:disciple/features/uploads/domain/source/upload_source.dart';
@@ -9,6 +10,8 @@ class UploadRepoImpl implements UploadRepository {
   UploadRepoImpl({required UploadSource source}) : _source = source;
 
   @override
-  Future<Upload?> upload({required XFile file}) async =>
-      await _source.upload(file: file);
+  Future<Upload?> upload({
+    required XFile file,
+    CancelToken? cancelToken,
+  }) async => await _source.upload(file: file, cancelToken: cancelToken);
 }

@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:disciple/app/common/app_strings.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/app/utils/field_validator.dart';
@@ -44,6 +45,7 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
 
   final ImagePickerHandler _imagePickerHandler = ImagePickerHandler();
   List<String> _successfulUploads = [];
+  final CancelToken _cancelToken = CancelToken();
 
   @override
   void initState() {
@@ -58,6 +60,7 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
 
   @override
   void dispose() {
+    _cancelToken.cancel();
     _titleContoller.dispose();
     _detailContoller.dispose();
     _titleFocusNode.dispose();
@@ -79,7 +82,7 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
 
     _successfulUploads = await ref
         .read(uploadProvider.notifier)
-        .uploadAll(files: images);
+        .uploadAll(files: images, cancelToken: _cancelToken);
   }
 
   Future<void> _saveNote() async {
@@ -99,9 +102,10 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
     if (_isUpdating) {
       await provider.updateNote(
         entity: entity.copyWith(id: widget.existingNote?.id),
+        cancelToken: _cancelToken,
       );
     } else {
-      await provider.addNote(entity: entity);
+      await provider.addNote(entity: entity, cancelToken: _cancelToken);
     }
   }
 

@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:disciple/app/common/app_strings.dart';
 import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/core/routes/page_navigator.dart';
@@ -18,10 +19,15 @@ class NoteNotifier extends _$NoteNotifier {
 
   ParsedNoteData? _noteData;
 
-  Future<void> addNote({required NoteEntity entity}) async {
+  Future<void> addNote({
+    required NoteEntity entity,
+    CancelToken? cancelToken,
+  }) async {
     state = state.copyWith(isAddingNote: true);
     try {
-      await ref.read(addNoteUseCaseImpl).execute(parameter: entity);
+      await ref
+          .read(addNoteUseCaseImpl)
+          .execute(parameter: entity, cancelToken: cancelToken);
       triggerNotificationTray(AppString.noteAddedSuccessfully);
       PageNavigator.pop();
     } catch (e) {
@@ -60,10 +66,15 @@ class NoteNotifier extends _$NoteNotifier {
     }
   }
 
-  Future<void> updateNote({required NoteEntity entity}) async {
+  Future<void> updateNote({
+    required NoteEntity entity,
+    CancelToken? cancelToken,
+  }) async {
     state = state.copyWith(isUpdatingNote: true);
     try {
-      await ref.read(updateNoteUseCaseImpl).execute(parameter: entity);
+      await ref
+          .read(updateNoteUseCaseImpl)
+          .execute(parameter: entity, cancelToken: cancelToken);
       PageNavigator.pop();
     } catch (e) {
       triggerNotificationTray(e.toString(), error: true);
@@ -72,14 +83,22 @@ class NoteNotifier extends _$NoteNotifier {
     }
   }
 
-  Future<void> getNotes({String? query, int offset = 0}) async {
+  Future<void> getNotes({
+    String? query,
+    int offset = 0,
+    CancelToken? cancelToken,
+  }) async {
+    state = state.copyWith(isLoadingNotes: true);
     try {
       await ref
           .read(getNotesUseCaseImpl)
           .execute(
             parameter: WatchNotesParams(query: query, offset: offset),
+            cancelToken: cancelToken,
           );
     } catch (_) {
-    } finally {}
+    } finally {
+      state = state.copyWith(isLoadingNotes: false);
+    }
   }
 }

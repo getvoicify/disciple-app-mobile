@@ -12,8 +12,8 @@ final dioProvider = Provider<Dio>((ref) {
   final dio = Dio(
     BaseOptions(
       baseUrl: AppConfig.apiBaseUrl,
-      connectTimeout: const Duration(seconds: 15),
-      receiveTimeout: const Duration(seconds: 15),
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 20),
       sendTimeout: const Duration(seconds: 15),
     ),
   );
@@ -32,7 +32,7 @@ final dioProvider = Provider<Dio>((ref) {
   // 🔐 Interceptors
   dio.interceptors.add(
     InterceptorsWrapper(
-      onRequest: (options, handler) async {
+      onRequest: (options, handler) {
         // Inject auth token if available
         final token = _getAccessToken(ref);
 
@@ -48,13 +48,7 @@ final dioProvider = Provider<Dio>((ref) {
 
         return handler.next(options);
       },
-      onResponse: (response, handler) => handler.resolve(
-        Response(
-          requestOptions: response.requestOptions,
-          data: response.data,
-          statusCode: response.statusCode,
-        ),
-      ),
+      onResponse: (response, handler) => handler.next(response),
       onError: (e, handler) async {
         final apiError = ApiError.fromDio(e);
 
@@ -111,5 +105,5 @@ Future<String?> _refreshToken(Ref ref) async {
 
 final networkServiceProvider = Provider<AppHttpClient>((ref) {
   final dio = ref.read(dioProvider);
-  return AppHttpClient.internal(dio: dio);
+  return AppHttpClient(dio: dio);
 });

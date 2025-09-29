@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:disciple/app/core/http/api_path.dart';
 import 'package:disciple/features/uploads/data/model/upload.dart';
 import 'package:disciple/features/uploads/domain/usecase/module/module.dart';
@@ -14,7 +15,10 @@ class UploadNotifier extends _$UploadNotifier {
 
   List<String?> _images = [];
 
-  Future<List<String>> uploadAll({required List<XFile> files}) async {
+  Future<List<String>> uploadAll({
+    required List<XFile> files,
+    CancelToken? cancelToken,
+  }) async {
     state = state.copyWith(isUploading: true);
     // Run uploads in parallel with error isolation
     try {
@@ -22,7 +26,7 @@ class UploadNotifier extends _$UploadNotifier {
         files.map((file) async {
           final Upload? result = await ref
               .read(uploadMediaUseCaseImpl)
-              .execute(parameter: file);
+              .execute(parameter: file, cancelToken: cancelToken);
           return ApiPath.imageUrl(result?.id ?? '');
         }),
       );

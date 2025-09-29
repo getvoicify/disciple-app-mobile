@@ -11,7 +11,10 @@ class UploadSourceImpl implements UploadSource {
   UploadSourceImpl({required AppHttpClient client}) : _client = client;
 
   @override
-  Future<Upload?> upload({required XFile file}) async {
+  Future<Upload?> upload({
+    required XFile file,
+    CancelToken? cancelToken,
+  }) async {
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(
         file.path,
@@ -23,6 +26,7 @@ class UploadSourceImpl implements UploadSource {
       path: ApiPath.mediaUpload,
       requestType: RequestType.upload,
       formData: formData,
+      cancelToken: cancelToken,
     );
 
     final result = response.data as Map<String, dynamic>;
