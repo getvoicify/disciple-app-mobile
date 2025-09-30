@@ -1,3 +1,4 @@
+import 'package:disciple/features/bookmarks/data/tables/bookmark.dart';
 import 'package:drift/drift.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
@@ -25,6 +26,7 @@ part 'app_database.g.dart';
     ChurchAddresses, // Church addresses table
     ChurchSocialLinks, // Social links for churches
     ChurchOtherLinks, // Other links for churches
+    Bookmarks, // Bookmarks table
   ],
 )
 class AppDatabase extends _$AppDatabase {

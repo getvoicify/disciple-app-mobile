@@ -3,12 +3,15 @@ import 'dart:async';
 import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
+import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/core/routes/app_router.gr.dart';
 import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/app/utils/debouncer.dart';
 import 'package:disciple/features/bible/domain/param/bible_search_params.dart';
 import 'package:disciple/features/bible/presentation/notifier/bible_notifier.dart';
 import 'package:disciple/features/bible/presentation/widget/build_chapter_widget.dart';
+import 'package:disciple/features/bookmarks/domain/entity/bookmark_entity.dart';
+import 'package:disciple/features/bookmarks/presentation/notifier/bookmark_notifier.dart';
 import 'package:disciple/widgets/drop_down_widget.dart';
 import 'package:disciple/widgets/edit_text_field_with.dart';
 import 'package:disciple/widgets/image_widget.dart';
@@ -136,6 +139,7 @@ class _BibleViewState extends ConsumerState<BibleView> {
                     verse: verse,
                     startVerse: _searchParams.startVerse,
                     searchTerm: _searchController.text.trim(),
+                    onBookmarkTap: () => _handleBookmarkTap(verse),
                   );
                 }),
               ],
@@ -161,5 +165,15 @@ class _BibleViewState extends ConsumerState<BibleView> {
     if (option == 'bookmarks') {
       await PageNavigator.pushRoute(const BookmarksRoute());
     }
+  }
+
+  Future<void> _handleBookmarkTap(BibleVerse verse) async {
+    final bookmark = BookmarkEntity(
+      versionId: 'kjv',
+      bookName: verse.bookName,
+      chapter: verse.chapter,
+      verse: verse.verse,
+    );
+    await ref.read(bookmarkProvider.notifier).addBookmark(bookmark: bookmark);
   }
 }

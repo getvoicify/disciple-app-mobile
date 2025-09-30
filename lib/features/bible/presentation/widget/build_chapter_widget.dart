@@ -15,6 +15,7 @@ class BuildChapterWidget extends StatelessWidget {
     required this.verse,
     required this.searchTerm,
     required this.startVerse,
+    required this.onBookmarkTap,
   });
 
   final bool isFirst;
@@ -22,6 +23,7 @@ class BuildChapterWidget extends StatelessWidget {
   final BibleVerse verse;
   final String searchTerm;
   final int startVerse;
+  final Function() onBookmarkTap;
 
   @override
   Widget build(BuildContext context) {
@@ -96,11 +98,11 @@ class BuildChapterWidget extends StatelessWidget {
           ],
 
           SizedBox(height: 8.h),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              ImageWidget(imageUrl: AppImage.likeIcon2),
-              ImageWidget(imageUrl: AppImage.editIcon),
+              const ImageWidget(imageUrl: AppImage.likeIcon2),
+              ImageWidget(imageUrl: AppImage.editIcon, onTap: onBookmarkTap),
             ],
           ),
         ],

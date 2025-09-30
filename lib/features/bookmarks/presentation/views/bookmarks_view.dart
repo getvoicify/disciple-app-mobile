@@ -1,23 +1,28 @@
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
+import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/utils/extension.dart';
+import 'package:disciple/features/bookmarks/domain/models/bookmark_with_version.dart';
+import 'package:disciple/features/bookmarks/presentation/notifier/bookmark_notifier.dart';
+import 'package:disciple/features/notes/presentation/notifier/note_notifier.dart';
 import 'package:disciple/widgets/build_tile_widget.dart';
 import 'package:disciple/widgets/edit_text_field_with.dart';
 import 'package:disciple/widgets/image_widget.dart';
+import 'package:disciple/widgets/skeleton/build_tile_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:auto_route/auto_route.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 @RoutePage()
-class BookmarksView extends StatefulWidget {
+class BookmarksView extends ConsumerStatefulWidget {
   const BookmarksView({super.key});
 
   @override
-  State<BookmarksView> createState() => _BookmarksViewState();
+  ConsumerState<BookmarksView> createState() => _BookmarksViewState();
 }
 
-class _BookmarksViewState extends State<BookmarksView> {
+class _BookmarksViewState extends ConsumerState<BookmarksView> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
@@ -56,15 +61,46 @@ class _BookmarksViewState extends State<BookmarksView> {
           ),
           SizedBox(height: 32.h),
 
-          Expanded(
-            child: ListView.separated(
-              itemCount: 20,
-              itemBuilder: (_, _) => const BuildTileWidget(),
-              separatorBuilder: (context, index) => SizedBox(height: 12.h),
-            ),
-          ),
+          Expanded(child: _buildBookmarksList()),
         ],
       ),
     ),
   );
+
+  StreamBuilder<List<BookmarkWithVersion>> _buildBookmarksList() {
+    final bookmarksStream = ref.watch(bookmarkProvider.notifier).getBookmarks();
+
+    return StreamBuilder<List<BookmarkWithVersion>>(
+      stream: bookmarksStream,
+      builder: (context, asyncSnapshot) {
+        if (asyncSnapshot.connectionState == ConnectionState.waiting) {
+          return const BuildTileSkeleton();
+        }
+
+        if (asyncSnapshot.hasError) {
+          return const Center(child: Text('Something went wrong'));
+        }
+
+        final bookmarksWithVersions = asyncSnapshot.data ?? [];
+
+        return ListView.separated(
+          itemCount: bookmarksWithVersions.length,
+          itemBuilder: (_, index) {
+            final bookmarkWithVersion = bookmarksWithVersions[index];
+            final bookmark = bookmarkWithVersion.bookmark;
+            final version = bookmarkWithVersion.version;
+
+            return BuildTileWidget(
+              model: BuildTileModel(
+                title:
+                    '${bookmark.bookName} ${bookmark.chapter}:${bookmark.verse}',
+                content: version.name,
+              ),
+            );
+          },
+          separatorBuilder: (context, index) => SizedBox(height: 12.h),
+        );
+      },
+    );
+  }
 }
