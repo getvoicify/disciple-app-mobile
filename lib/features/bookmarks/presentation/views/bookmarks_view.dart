@@ -1,18 +1,18 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
-import 'package:disciple/app/core/database/app_database.dart';
+import 'package:disciple/app/common/app_strings.dart';
+import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/features/bookmarks/domain/models/bookmark_with_version.dart';
 import 'package:disciple/features/bookmarks/presentation/notifier/bookmark_notifier.dart';
-import 'package:disciple/features/notes/presentation/notifier/note_notifier.dart';
 import 'package:disciple/widgets/build_tile_widget.dart';
 import 'package:disciple/widgets/edit_text_field_with.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:disciple/widgets/skeleton/build_tile_skeleton.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 @RoutePage()
 class BookmarksView extends ConsumerStatefulWidget {
@@ -26,7 +26,12 @@ class _BookmarksViewState extends ConsumerState<BookmarksView> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: const Text('Bookmarks'),
+      title: Text(AppString.bookmarks),
+      leading: ImageWidget(
+        imageUrl: AppImage.backIcon,
+        fit: BoxFit.none,
+        onTap: () => PageNavigator.pop(),
+      ),
       actions: [
         const ImageWidget(imageUrl: AppImage.menuIcon),
         SizedBox(width: 16.w),
@@ -36,12 +41,12 @@ class _BookmarksViewState extends ConsumerState<BookmarksView> {
       minimum: EdgeInsets.symmetric(horizontal: 16.w),
       child: Column(
         children: [
-          const EditTextFieldWidget(
-            prefix: ImageWidget(
+          EditTextFieldWidget(
+            prefix: const ImageWidget(
               imageUrl: AppImage.searchIcon,
               fit: BoxFit.none,
             ),
-            label: 'Search by title',
+            label: AppString.searchBookmarksByTitle,
           ),
           SizedBox(height: 20.h),
           Container(
@@ -77,10 +82,6 @@ class _BookmarksViewState extends ConsumerState<BookmarksView> {
           return const BuildTileSkeleton();
         }
 
-        if (asyncSnapshot.hasError) {
-          return const Center(child: Text('Something went wrong'));
-        }
-
         final bookmarksWithVersions = asyncSnapshot.data ?? [];
 
         return ListView.separated(
@@ -88,7 +89,6 @@ class _BookmarksViewState extends ConsumerState<BookmarksView> {
           itemBuilder: (_, index) {
             final bookmarkWithVersion = bookmarksWithVersions[index];
             final bookmark = bookmarkWithVersion.bookmark;
-            final version = bookmarkWithVersion.version;
             final verse = bookmarkWithVersion.verse;
 
             return BuildTileWidget(

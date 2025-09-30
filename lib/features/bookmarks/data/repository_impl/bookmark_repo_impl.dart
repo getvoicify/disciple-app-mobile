@@ -17,31 +17,15 @@ class BookmarkRepoImpl implements IBookmarkRepository {
        _bookmarkMapper = bookmarkMapper;
 
   @override
-  Future<void> addBookmark({
+  Future<int> addBookmark({
     required BookmarkEntity bookmark,
     CancelToken? cancelToken,
   }) async {
-    // 1. Ensure the version exists
-    if (bookmark.versionId.isNotEmpty) {
-      await _database
-          .into(_database.versions)
-          .insertOnConflictUpdate(
-            VersionsCompanion.insert(
-              id: bookmark.versionId, // required id
-              name: bookmark.versionId.toUpperCase(), // fallback name
-              abbreviation: bookmark.versionId, // fallback abbreviation
-            ),
-          );
-    }
-
-    // 2. Insert the bookmark itself
     final database = _database.into(_database.bookmarks);
-    final result = await database.insert(
+    return await database.insert(
       _bookmarkMapper.insert(bookmark),
-      mode: InsertMode.insertOrIgnore, // optional: avoid duplicate crash
+      mode: InsertMode.insertOrReplace,
     );
-
-    print("Bookmark added with ID: $result");
   }
 
   @override
@@ -54,10 +38,6 @@ class BookmarkRepoImpl implements IBookmarkRepository {
         _database.bibleVerses,
         _database.bibleVerses.id.equalsExp(_database.bookmarks.bibleVerseId),
       ),
-      innerJoin(
-        _database.versions,
-        _database.versions.id.equalsExp(_database.bibleVerses.versionId),
-      ),
     ])..orderBy([OrderingTerm.desc(_database.bookmarks.createdAt)]);
 
     return query.watch().map(
@@ -66,7 +46,6 @@ class BookmarkRepoImpl implements IBookmarkRepository {
             (row) => BookmarkWithVersion(
               bookmark: row.readTable(_database.bookmarks),
               verse: row.readTable(_database.bibleVerses),
-              version: row.readTable(_database.versions),
             ),
           )
           .toList(),

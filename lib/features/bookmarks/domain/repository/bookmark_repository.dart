@@ -3,7 +3,7 @@ import 'package:disciple/features/bookmarks/domain/entity/bookmark_entity.dart';
 import 'package:disciple/features/bookmarks/domain/models/bookmark_with_version.dart';
 
 abstract class IBookmarkRepository {
-  Future<void> addBookmark({
+  Future<int> addBookmark({
     required BookmarkEntity bookmark,
     CancelToken? cancelToken,
   });

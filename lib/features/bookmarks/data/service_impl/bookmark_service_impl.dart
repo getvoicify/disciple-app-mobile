@@ -19,10 +19,12 @@ class BookmarkServiceImpl implements IBookmarkService {
     CancelToken? cancelToken,
   }) async {
     try {
-      await _repository.addBookmark(
+      final result = await _repository.addBookmark(
         bookmark: bookmark,
         cancelToken: cancelToken,
       );
+
+      _logger.i('Successfully added a bookmark: $result');
     } catch (e) {
       _logger.e('Error adding bookmark', error: e);
       rethrow;

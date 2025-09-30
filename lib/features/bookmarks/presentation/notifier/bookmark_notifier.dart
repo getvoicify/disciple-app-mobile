@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/features/bookmarks/domain/entity/bookmark_entity.dart';
 import 'package:disciple/features/bookmarks/domain/models/bookmark_with_version.dart';
 import 'package:disciple/features/bookmarks/domain/usecase/module/module.dart';

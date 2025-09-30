@@ -4,10 +4,6 @@ import 'package:drift/drift.dart';
 class Bookmarks extends Table {
   TextColumn get id => text()();
 
-  @JsonKey('version_id')
-  TextColumn get versionId =>
-      text().references(Versions, #id, onDelete: KeyAction.cascade)();
-
   @JsonKey('bible_verse_id')
   IntColumn get bibleVerseId =>
       integer().references(BibleVerses, #id, onDelete: KeyAction.cascade)();

@@ -11,6 +11,7 @@ class Versions extends Table {
 
 class BibleVerses extends Table {
   IntColumn get id => integer().autoIncrement()();
+
   @JsonKey('version_id')
   TextColumn get versionId =>
       text().references(Versions, #id, onDelete: KeyAction.cascade)();
