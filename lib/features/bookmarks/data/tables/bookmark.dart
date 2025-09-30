@@ -8,14 +8,9 @@ class Bookmarks extends Table {
   TextColumn get versionId =>
       text().references(Versions, #id, onDelete: KeyAction.cascade)();
 
-  @JsonKey('book_name')
-  TextColumn get bookName => text()();
-
-  @JsonKey('chapter')
-  IntColumn get chapter => integer()();
-
-  @JsonKey('verse')
-  IntColumn get verse => integer()();
+  @JsonKey('bible_verse_id')
+  IntColumn get bibleVerseId =>
+      integer().references(BibleVerses, #id, onDelete: KeyAction.cascade)();
 
   @JsonKey('created_at')
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();

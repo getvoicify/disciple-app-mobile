@@ -1,9 +1,8 @@
 import 'package:dio/dio.dart' show CancelToken;
-import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/core/usecase/disciple_usecase.dart';
+import 'package:disciple/features/bookmarks/domain/entity/bookmark_entity.dart';
 import 'package:disciple/features/bookmarks/domain/models/bookmark_with_version.dart';
 import 'package:disciple/features/bookmarks/domain/service/bookmark_service.dart';
-import 'package:disciple/features/bookmarks/domain/entity/bookmark_entity.dart';
 
 class AddBookmarkUseCaseImpl
     implements DiscipleUseCaseWithRequiredParam<BookmarkEntity, void> {

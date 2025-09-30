@@ -168,12 +168,7 @@ class _BibleViewState extends ConsumerState<BibleView> {
   }
 
   Future<void> _handleBookmarkTap(BibleVerse verse) async {
-    final bookmark = BookmarkEntity(
-      versionId: 'kjv',
-      bookName: verse.bookName,
-      chapter: verse.chapter,
-      verse: verse.verse,
-    );
+    final bookmark = BookmarkEntity(versionId: 'kjv', bibleVerseId: verse.id);
     await ref.read(bookmarkProvider.notifier).addBookmark(bookmark: bookmark);
   }
 }

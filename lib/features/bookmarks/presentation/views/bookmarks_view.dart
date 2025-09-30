@@ -89,12 +89,13 @@ class _BookmarksViewState extends ConsumerState<BookmarksView> {
             final bookmarkWithVersion = bookmarksWithVersions[index];
             final bookmark = bookmarkWithVersion.bookmark;
             final version = bookmarkWithVersion.version;
+            final verse = bookmarkWithVersion.verse;
 
             return BuildTileWidget(
               model: BuildTileModel(
-                title:
-                    '${bookmark.bookName} ${bookmark.chapter}:${bookmark.verse}',
-                content: version.name,
+                title: '${verse.bookName} ${verse.chapter}:${verse.verse}',
+                content: verse.verseText,
+                date: bookmark.createdAt,
               ),
             );
           },

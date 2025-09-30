@@ -22,24 +22,26 @@ class BookmarkRepoImpl implements IBookmarkRepository {
     CancelToken? cancelToken,
   }) async {
     // 1. Ensure the version exists
-    if (bookmark.versionId != null && bookmark.versionId!.isNotEmpty) {
+    if (bookmark.versionId.isNotEmpty) {
       await _database
           .into(_database.versions)
           .insertOnConflictUpdate(
             VersionsCompanion.insert(
-              id: bookmark.versionId!, // required id
-              name: bookmark.versionId!.toUpperCase(), // fallback name
-              abbreviation: bookmark.versionId!, // fallback abbreviation
+              id: bookmark.versionId, // required id
+              name: bookmark.versionId.toUpperCase(), // fallback name
+              abbreviation: bookmark.versionId, // fallback abbreviation
             ),
           );
     }
 
     // 2. Insert the bookmark itself
     final database = _database.into(_database.bookmarks);
-    await database.insert(
+    final result = await database.insert(
       _bookmarkMapper.insert(bookmark),
       mode: InsertMode.insertOrIgnore, // optional: avoid duplicate crash
     );
+
+    print("Bookmark added with ID: $result");
   }
 
   @override
@@ -47,18 +49,14 @@ class BookmarkRepoImpl implements IBookmarkRepository {
     BookmarkEntity? bookmark,
     CancelToken? cancelToken,
   }) {
-    _database.select(_database.bookmarks).get().then((bookmarks) {
-      print("Bookmarks: ${bookmarks.map((b) => b.versionId)}");
-    });
-
-    _database.select(_database.versions).get().then((versions) {
-      print("Versions: ${versions.map((v) => v.id)}");
-    });
-
     final query = _database.select(_database.bookmarks).join([
       innerJoin(
+        _database.bibleVerses,
+        _database.bibleVerses.id.equalsExp(_database.bookmarks.bibleVerseId),
+      ),
+      innerJoin(
         _database.versions,
-        _database.versions.id.equalsExp(_database.bookmarks.versionId),
+        _database.versions.id.equalsExp(_database.bibleVerses.versionId),
       ),
     ])..orderBy([OrderingTerm.desc(_database.bookmarks.createdAt)]);
 
@@ -67,6 +65,7 @@ class BookmarkRepoImpl implements IBookmarkRepository {
           .map(
             (row) => BookmarkWithVersion(
               bookmark: row.readTable(_database.bookmarks),
+              verse: row.readTable(_database.bibleVerses),
               version: row.readTable(_database.versions),
             ),
           )
@@ -78,17 +77,8 @@ class BookmarkRepoImpl implements IBookmarkRepository {
   Future<bool> isBookmarked({
     required BookmarkEntity bookmark,
     CancelToken? cancelToken,
-  }) async {
-    final result =
-        await (_database.select(_database.bookmarks)..where(
-              (tbl) =>
-                  tbl.versionId.equals(bookmark.versionId ?? '') &
-                  tbl.bookName.equals(bookmark.bookName ?? '') &
-                  tbl.chapter.equals(bookmark.chapter ?? 0) &
-                  tbl.verse.equals(bookmark.verse ?? 0),
-            ))
-            .getSingleOrNull();
-    return result != null;
+  }) {
+    throw UnimplementedError();
   }
 
   @override
@@ -96,13 +86,6 @@ class BookmarkRepoImpl implements IBookmarkRepository {
     required BookmarkEntity bookmark,
     CancelToken? cancelToken,
   }) async {
-    await (_database.delete(_database.bookmarks)..where(
-          (tbl) =>
-              tbl.versionId.equals(bookmark.versionId ?? '') &
-              tbl.bookName.equals(bookmark.bookName ?? '') &
-              tbl.chapter.equals(bookmark.chapter ?? 0) &
-              tbl.verse.equals(bookmark.verse ?? 0),
-        ))
-        .go();
+    throw UnimplementedError();
   }
 }
