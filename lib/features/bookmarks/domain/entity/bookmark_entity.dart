@@ -5,7 +5,9 @@ class BookmarkEntity implements IBookmark {
   final String? id;
 
   @override
-  final int bibleVerseId;
+  final int? bibleVerseId;
 
-  BookmarkEntity({this.id, required this.bibleVerseId});
+  String? search;
+
+  BookmarkEntity({this.id, this.bibleVerseId, this.search});
 }

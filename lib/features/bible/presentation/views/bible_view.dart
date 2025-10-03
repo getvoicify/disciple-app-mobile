@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
+import 'package:disciple/app/common/app_strings.dart';
 import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/core/routes/app_router.gr.dart';
 import 'package:disciple/app/core/routes/page_navigator.dart';
@@ -92,56 +93,71 @@ class _BibleViewState extends ConsumerState<BibleView> {
         minimum: EdgeInsets.symmetric(horizontal: 16.w),
         child: Stack(
           children: [
-            ListView(
+            Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 EditTextFieldWidget(
                   controller: _searchController,
+                  titleWidget: const SizedBox.shrink(),
                   prefix: const ImageWidget(
                     imageUrl: AppImage.searchIcon,
                     fit: BoxFit.none,
                   ),
-                  label: 'Search scripture by words',
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? ImageWidget(
+                          imageUrl: AppImage.cancelIcon,
+                          fit: BoxFit.none,
+                          onTap: () => _searchController.clear(),
+                        )
+                      : null,
+                  label: AppString.searchScriptureByWords,
                 ),
                 SizedBox(height: 20.h),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 49.w,
-                    vertical: 20.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.grey50,
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                Expanded(
+                  child: ListView(
                     children: [
-                      const BuildDropdownWidget(title: 'KJV'),
-                      SizedBox(height: 16.h),
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          BuildDropdownWidget(title: 'Book'),
-                          BuildDropdownWidget(title: 'Chapter'),
-                          BuildDropdownWidget(title: 'Verse'),
-                        ],
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 49.w,
+                          vertical: 20.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.grey50,
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const BuildDropdownWidget(title: 'KJV'),
+                            SizedBox(height: 16.h),
+                            const Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                BuildDropdownWidget(title: 'Book'),
+                                BuildDropdownWidget(title: 'Chapter'),
+                                BuildDropdownWidget(title: 'Verse'),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
+                      SizedBox(height: 31.h),
+                      ...List.generate(verses.length, (index) {
+                        final verse = verses[index];
+                        final bool isFirst = index == 0;
+                        final bool isLast = index == verses.length - 1;
+                        return BuildChapterWidget(
+                          isFirst: isFirst,
+                          isLast: isLast,
+                          verse: verse,
+                          startVerse: _searchParams.startVerse,
+                          searchTerm: _searchController.text.trim(),
+                          onBookmarkTap: () => _handleBookmarkTap(verse),
+                        );
+                      }),
                     ],
                   ),
                 ),
-                SizedBox(height: 31.h),
-                ...List.generate(verses.length, (index) {
-                  final verse = verses[index];
-                  final bool isFirst = index == 0;
-                  final bool isLast = index == verses.length - 1;
-                  return BuildChapterWidget(
-                    isFirst: isFirst,
-                    isLast: isLast,
-                    verse: verse,
-                    startVerse: _searchParams.startVerse,
-                    searchTerm: _searchController.text.trim(),
-                    onBookmarkTap: () => _handleBookmarkTap(verse),
-                  );
-                }),
               ],
             ),
 
@@ -168,11 +184,11 @@ class _BibleViewState extends ConsumerState<BibleView> {
   }
 
   Future<void> _handleBookmarkTap(BibleVerse verse) async {
-    final String key = '${verse.bookName}-${verse.chapter}-${verse.verse}';
+    final String id = '${verse.bookName}-${verse.chapter}-${verse.verse}';
     await ref
         .read(bookmarkProvider.notifier)
         .addBookmark(
-          bookmark: BookmarkEntity(id: key, bibleVerseId: verse.id),
+          bookmark: BookmarkEntity(id: id, bibleVerseId: verse.id),
         );
   }
 }

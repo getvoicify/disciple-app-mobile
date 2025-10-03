@@ -180,14 +180,14 @@ class _NotesViewState extends ConsumerState<NotesView> {
                 return BuildTileWidget(
                   model: BuildTileModel(
                     title: note.title,
-                    content: note.isSynced.toString(),
+                    content: note.content,
                     date: note.updatedAt,
                   ),
                   onTap: () =>
                       PageNavigator.pushRoute(NoteDetailsRoute(id: note.id)),
                 );
               },
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              separatorBuilder: (_, _) => const SizedBox(height: 12),
             ),
           );
         },

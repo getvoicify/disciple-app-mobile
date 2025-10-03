@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/app/core/routes/app_router.gr.dart';
@@ -7,7 +8,6 @@ import 'package:disciple/features/bible/presentation/notifier/bible_notifier.dar
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:auto_route/auto_route.dart';
 
 @RoutePage()
 class SplashView extends ConsumerStatefulWidget {

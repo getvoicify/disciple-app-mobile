@@ -8,12 +8,12 @@ class BookmarkToCompanionMapper<T extends IBookmark>
   @override
   BookmarksCompanion insert(T input) => BookmarksCompanion.insert(
     id: DriftUtils.generateId(input.id),
-    bibleVerseId: input.bibleVerseId,
+    bibleVerseId: input.bibleVerseId ?? 0,
   );
 
   @override
   BookmarksCompanion update(T input) => BookmarksCompanion.insert(
     id: DriftUtils.generateId(input.id),
-    bibleVerseId: input.bibleVerseId,
+    bibleVerseId: input.bibleVerseId ?? 0,
   );
 }

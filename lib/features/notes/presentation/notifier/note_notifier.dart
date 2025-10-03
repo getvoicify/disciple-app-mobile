@@ -88,7 +88,7 @@ class NoteNotifier extends _$NoteNotifier {
     int offset = 0,
     CancelToken? cancelToken,
   }) async {
-    state = state.copyWith(isLoadingNotes: true);
+    state = state.copyWith(isLoadingNotes: offset <= 1);
     try {
       await ref
           .read(getNotesUseCaseImpl)

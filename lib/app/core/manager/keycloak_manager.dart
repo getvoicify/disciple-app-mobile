@@ -1,27 +1,23 @@
 import 'dart:async';
 import 'package:disciple/app/config/app_config.dart';
 import 'package:disciple/app/config/app_logger.dart';
+import 'package:disciple/app/core/manager/model/user.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keycloak_wrapper/keycloak_wrapper.dart';
 
-final keycloakServiceProvider = FutureProvider<KeycloakService>(
-  (ref) async => await KeycloakService.create(),
+final keycloakManagerProvider = FutureProvider<KeycloakManager>(
+  (ref) async => await KeycloakManager.create(),
 );
 
-final authStatusProvider = StreamProvider<bool>((ref) async* {
-  final service = await ref.watch(keycloakServiceProvider.future);
-  yield* service.authenticationStream;
-});
-
-class KeycloakService {
+class KeycloakManager {
   final KeycloakWrapper _keycloakWrapper;
   Timer? _refreshTimer;
 
-  KeycloakService._(this._keycloakWrapper);
+  KeycloakManager._(this._keycloakWrapper);
 
-  static Future<KeycloakService> create() async {
+  static Future<KeycloakManager> create() async {
     final keycloakConfig = KeycloakConfig(
       bundleIdentifier: AppConfig.keycloakBundleIdentifier,
       clientId: AppConfig.keycloakClientId,
@@ -32,9 +28,12 @@ class KeycloakService {
     final wrapper = KeycloakWrapper(config: keycloakConfig);
     await wrapper.initialize();
 
-    final service = KeycloakService._(wrapper);
-    // 👇 start proactive refresh
-    await service._scheduleTokenRefresh();
+    final service = KeycloakManager._(wrapper);
+    // 👇 get user info and start proactive refresh
+    await Future.wait([
+      service._getUserInfo(),
+      service._scheduleTokenRefresh(),
+    ]);
     return service;
   }
 
@@ -42,6 +41,10 @@ class KeycloakService {
   String? get refreshToken => _keycloakWrapper.refreshToken;
 
   bool get isAuthenticated => accessToken != null;
+
+  User? _user;
+
+  User? get user => _user;
 
   Stream<bool> get authenticationStream =>
       _keycloakWrapper.authenticationStream;
@@ -70,7 +73,10 @@ class KeycloakService {
     _refreshTimer = null;
   }
 
-  Future<void> getUserInfo() async {}
+  Future<void> _getUserInfo() async {
+    final userInfo = await _keycloakWrapper.getUserInfo();
+    if (userInfo != null) _user = User.fromJson(userInfo);
+  }
 
   set onError(Function(String, Object, StackTrace) onError) {
     _keycloakWrapper.onError = onError;

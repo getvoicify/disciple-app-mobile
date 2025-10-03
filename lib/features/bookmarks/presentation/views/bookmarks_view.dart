@@ -4,6 +4,7 @@ import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/app/common/app_strings.dart';
 import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/app/utils/extension.dart';
+import 'package:disciple/features/bookmarks/domain/entity/bookmark_entity.dart';
 import 'package:disciple/features/bookmarks/domain/models/bookmark_with_version.dart';
 import 'package:disciple/features/bookmarks/presentation/notifier/bookmark_notifier.dart';
 import 'package:disciple/widgets/build_tile_widget.dart';
@@ -47,6 +48,8 @@ class _BookmarksViewState extends ConsumerState<BookmarksView> {
               fit: BoxFit.none,
             ),
             label: AppString.searchBookmarksByTitle,
+            onChanged: (value) =>
+                ref.read(bookmarkSearchProvider.notifier).state = value,
           ),
           SizedBox(height: 20.h),
           Container(
@@ -73,7 +76,11 @@ class _BookmarksViewState extends ConsumerState<BookmarksView> {
   );
 
   StreamBuilder<List<BookmarkWithVersion>> _buildBookmarksList() {
-    final bookmarksStream = ref.watch(bookmarkProvider.notifier).getBookmarks();
+    final search = ref.watch(bookmarkSearchProvider);
+
+    final bookmarksStream = ref
+        .watch(bookmarkProvider.notifier)
+        .getBookmarks(bookmark: BookmarkEntity(search: search));
 
     return StreamBuilder<List<BookmarkWithVersion>>(
       stream: bookmarksStream,

@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:disciple/app/config/app_config.dart';
 import 'package:disciple/app/core/http/app_http_client.dart';
 import 'package:disciple/app/core/http/error_wrapper.dart';
-import 'package:disciple/features/authentication/services/keycloak_service.dart';
+import 'package:disciple/app/core/manager/keycloak_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
@@ -96,11 +96,11 @@ final dioProvider = Provider<Dio>((ref) {
 });
 
 String? _getAccessToken(Ref ref) =>
-    ref.read(keycloakServiceProvider).value?.accessToken;
+    ref.read(keycloakManagerProvider).value?.accessToken;
 
 Future<String?> _refreshToken(Ref ref) async {
-  await ref.read(keycloakServiceProvider).value?.exchangeTokens();
-  return ref.watch(keycloakServiceProvider).value?.accessToken;
+  await ref.read(keycloakManagerProvider).value?.exchangeTokens();
+  return ref.watch(keycloakManagerProvider).value?.accessToken;
 }
 
 final networkServiceProvider = Provider<AppHttpClient>((ref) {

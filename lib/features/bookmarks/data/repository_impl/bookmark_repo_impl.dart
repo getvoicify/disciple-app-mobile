@@ -40,6 +40,14 @@ class BookmarkRepoImpl implements IBookmarkRepository {
       ),
     ])..orderBy([OrderingTerm.desc(_database.bookmarks.createdAt)]);
 
+    // Apply filtering if search is not null/empty
+    if (bookmark?.search != null && bookmark!.search!.isNotEmpty) {
+      query.where(
+        _database.bibleVerses.verseText.like('%${bookmark.search}%') |
+            _database.bibleVerses.bookName.like('%${bookmark.search}%'),
+      );
+    }
+
     return query.watch().map(
       (rows) => rows
           .map(

@@ -82,4 +82,6 @@ class AppImage {
   static const String reminderIcon = "${_imagePath}mdi_event-blank-outline.svg";
   static const String moreIcon = "${_imagePath}hugeicons_more-or-less.svg";
   static const String discipleIcon = "${_imagePath}disciple.svg";
+  static const String devotionalsImage = "${_imagePath}bible.png";
+  static const String gradient = "${_imagePath}gradient.png";
 }
