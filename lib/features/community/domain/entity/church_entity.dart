@@ -7,7 +7,8 @@ class ChurchEntity {
   final String? id;
   int? page;
   CancelToken? cancelToken;
-  final String? location;
+  String? location;
+  String? placeId;
 
   ChurchEntity({
     this.id,
@@ -17,6 +18,7 @@ class ChurchEntity {
     this.page,
     this.cancelToken,
     this.location,
+    this.placeId,
   });
 
   Map<String, dynamic> toMap() {
@@ -40,4 +42,24 @@ class ChurchEntity {
 
     return map;
   }
+
+  ChurchEntity copyWith({
+    String? search,
+    String? approvalStatus,
+    String? visibility,
+    String? id,
+    int? page,
+    CancelToken? cancelToken,
+    String? location,
+    String? placeId,
+  }) => ChurchEntity(
+    search: search ?? this.search,
+    approvalStatus: approvalStatus ?? this.approvalStatus,
+    visibility: visibility ?? this.visibility,
+    id: id ?? this.id,
+    page: page ?? this.page,
+    cancelToken: cancelToken ?? this.cancelToken,
+    location: location ?? this.location,
+    placeId: placeId ?? this.placeId,
+  );
 }

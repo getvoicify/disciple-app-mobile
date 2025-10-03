@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
-/// ✅ Provides a configured Dio instance
+/// ✅ Provides a configured Dio instance for your API
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio(
     BaseOptions(
@@ -29,21 +29,18 @@ final dioProvider = Provider<Dio>((ref) {
     );
   }
 
-  // 🔐 Interceptors
+  // 🔐 Interceptors (auth, refresh token, error handling)
   dio.interceptors.add(
     InterceptorsWrapper(
       onRequest: (options, handler) {
-        // Inject auth token if available
         final token = _getAccessToken(ref);
 
         if (token != null) {
           options.headers["authorization"] = "Bearer $token";
         }
-        // Only set Content-Type if it's not a multipart request
         if (options.contentType?.contains('multipart/form-data') != true) {
           options.headers["Content-Type"] = "application/json";
         }
-        // Add accept header
         options.headers["accept"] = "application/json";
 
         return handler.next(options);
@@ -52,24 +49,20 @@ final dioProvider = Provider<Dio>((ref) {
       onError: (e, handler) async {
         final apiError = ApiError.fromDio(e);
 
-        // 🟡 Handle expired token (401 Unauthorized)
         if (apiError.errorType == 401) {
           try {
             final newToken = await _refreshToken(ref);
             e.requestOptions.headers["authorization"] = "Bearer $newToken";
-            // Only set Content-Type if it's not a multipart request
+
             if (e.requestOptions.contentType?.contains('multipart/form-data') !=
                 true) {
               e.requestOptions.headers["Content-Type"] = "application/json";
             }
-            // Add accept header
             e.requestOptions.headers["accept"] = "application/json";
 
-            // retry the original request with new token
             final cloned = await dio.fetch(e.requestOptions);
             return handler.resolve(cloned);
           } catch (_) {
-            // let it fall through (user must re-login)
             return handler.reject(
               DioException(
                 requestOptions: e.requestOptions,
@@ -80,6 +73,7 @@ final dioProvider = Provider<Dio>((ref) {
             );
           }
         }
+
         return handler.reject(
           DioException(
             requestOptions: e.requestOptions,
@@ -103,7 +97,35 @@ Future<String?> _refreshToken(Ref ref) async {
   return ref.watch(keycloakManagerProvider).value?.accessToken;
 }
 
+/// ✅ Default network service for your backend
 final networkServiceProvider = Provider<AppHttpClient>((ref) {
   final dio = ref.read(dioProvider);
   return AppHttpClient(dio: dio);
+});
+
+/// ✅ Separate Dio instance for Google Maps APIs
+final googleServiceProvider = Provider<AppHttpClient>((ref) {
+  final googleDio = Dio(
+    BaseOptions(
+      baseUrl: 'https://maps.googleapis.com',
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 20),
+      sendTimeout: const Duration(seconds: 15),
+      queryParameters: {
+        'key': 'AIzaSyBJsZVVNZfDNLlqLYcDzlU-3u8GaufGWKA', // 🔑 Replace securely
+      },
+    ),
+  );
+
+  if (kDebugMode) {
+    googleDio.interceptors.add(
+      PrettyDioLogger(
+        requestHeader: true,
+        requestBody: true,
+        responseHeader: true,
+      ),
+    );
+  }
+
+  return AppHttpClient(dio: googleDio);
 });

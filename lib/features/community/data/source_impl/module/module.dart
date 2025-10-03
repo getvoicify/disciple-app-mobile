@@ -4,5 +4,8 @@ import 'package:disciple/features/community/domain/source/church_source.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final churchSourceModule = Provider<ChurchSource>(
-  (ref) => ChurchSourceImpl(client: ref.read(networkServiceProvider)),
+  (ref) => ChurchSourceImpl(
+    client: ref.read(networkServiceProvider),
+    googleClient: ref.read(googleServiceProvider),
+  ),
 );

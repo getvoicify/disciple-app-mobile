@@ -9,8 +9,13 @@ import 'package:disciple/features/community/domain/source/church_source.dart';
 
 class ChurchSourceImpl implements ChurchSource {
   final AppHttpClient _client;
+  final AppHttpClient _googleClient;
 
-  ChurchSourceImpl({required AppHttpClient client}) : _client = client;
+  ChurchSourceImpl({
+    required AppHttpClient client,
+    required AppHttpClient googleClient,
+  }) : _client = client,
+       _googleClient = googleClient;
 
   @override
   Future<Membership?> acceptChurchInvite({
@@ -107,9 +112,36 @@ class ChurchSourceImpl implements ChurchSource {
   Future<List<Church>> searchChurches({
     ChurchEntity? parameter,
     CancelToken? cancelToken,
-  }) {
-    // TODO: implement searchChurches
-    throw UnimplementedError();
+  }) async {
+    final address = await _googleClient.request(
+      path: '/maps/api/place/details/json',
+      requestType: RequestType.get,
+      cancelToken: cancelToken,
+      queryParams: {'place_id': parameter?.placeId, 'fields': 'geometry'},
+    );
+
+    final geometry =
+        // ignore: avoid_dynamic_calls
+        address.data["result"]?['geometry']?['location']
+            as Map<String, dynamic>;
+
+    if (geometry.isEmpty) return [];
+
+    final response = await _client.request(
+      path: '${ApiPath.churches}/search',
+      requestType: RequestType.get,
+      cancelToken: cancelToken,
+      queryParams: {
+        'latitude': geometry['lat'] as double,
+        'longitude': geometry['lng'] as double,
+        'q': parameter?.location,
+      },
+    );
+
+    final data = response.data as Map<String, dynamic>;
+    return (data['churches'] as List<dynamic>)
+        .map((data) => Church.fromJson(data as Map<String, dynamic>))
+        .toList();
   }
 
   @override
@@ -135,19 +167,11 @@ class ChurchSourceImpl implements ChurchSource {
     ChurchEntity? parameter,
     CancelToken? cancelToken,
   }) async {
-    _client.dio.options.baseUrl = 'https://maps.googleapis.com';
-
-    // https://maps.googleapis.com/maps/api/place/autocomplete/json?input=lagos&key=AIzaSyBJsZVVNZfDNLlqLYcDzlU-3u8GaufGWKA&components=country:ng
-
-    final response = await _client.request(
+    final response = await _googleClient.request(
       path: '/maps/api/place/autocomplete/json',
       requestType: RequestType.get,
       cancelToken: cancelToken,
-      queryParams: {
-        'input': parameter?.location,
-        'key': 'AIzaSyBJsZVVNZfDNLlqLYcDzlU-3u8GaufGWKA',
-        'components': 'country:ng',
-      },
+      queryParams: {'input': parameter?.location, 'components': 'country:ng'},
     );
     final data = response.data as Map<String, dynamic>;
     return (data['predictions'] as List<dynamic>)

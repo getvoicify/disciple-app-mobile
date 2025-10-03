@@ -153,14 +153,19 @@ class ChurchNotifier extends _$ChurchNotifier {
     }
   }
 
-  Future<void> searchChurches({required String query}) async {
+  Future<void> searchChurches({required ChurchEntity parameter}) async {
     state = state.copyWith(isSearchingChurches: true);
     try {
-      await ref.read(searchChurchesUseCaseImpl).execute(parameter: query);
-    } catch (e) {
-      triggerNotificationTray(e.toString(), error: true);
+      final churches = await ref
+          .read(searchChurchesUseCaseImpl)
+          .execute(parameter: parameter);
+
+      if (parameter.page == 1) _churches.clear();
+
+      _churches.addAll(churches);
+    } catch (_) {
     } finally {
-      state = state.copyWith(isSearchingChurches: false);
+      state = state.copyWith(isLoadingChurches: false, churches: _churches);
     }
   }
 

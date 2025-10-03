@@ -161,8 +161,8 @@ class _NotesViewState extends ConsumerState<NotesView> {
           if (isLoading) {
             return ListView.separated(
               itemCount: 25,
-              itemBuilder: (_, __) => const BuildTileSkeleton(),
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (_, _) => const BuildTileSkeleton(),
+              separatorBuilder: (_, _) => const SizedBox(height: 12),
             );
           }
 

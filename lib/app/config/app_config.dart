@@ -54,4 +54,8 @@ class AppConfig {
     if (_isTest) return AppConstants.testEnv;
     return AppConstants.liveEnv;
   }
+
+  static String get googleApiKey =>
+      dotenv.env[AppConstants.googleApiKey] ??
+      '${AppConstants.googleApiKey} $_notFound';
 }
