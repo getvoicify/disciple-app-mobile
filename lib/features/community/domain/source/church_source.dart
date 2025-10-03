@@ -1,4 +1,5 @@
 import 'package:disciple/features/community/data/model/church.dart';
+import 'package:disciple/features/community/data/model/location.dart';
 import 'package:disciple/features/community/data/model/membership.dart';
 import 'package:disciple/features/community/domain/entity/church_entity.dart';
 import 'package:dio/dio.dart';
@@ -58,6 +59,11 @@ abstract class ChurchSource {
 
   Future<Membership?> updateMembersRoleInChurch({
     required ChurchEntity parameter,
+    CancelToken? cancelToken,
+  });
+
+  Future<List<Location>> getLocations({
+    ChurchEntity? parameter,
     CancelToken? cancelToken,
   });
 }

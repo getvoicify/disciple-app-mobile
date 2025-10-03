@@ -84,4 +84,7 @@ class AppImage {
   static const String discipleIcon = "${_imagePath}disciple.svg";
   static const String devotionalsImage = "${_imagePath}bible.png";
   static const String gradient = "${_imagePath}gradient.png";
+  static const String locationDot = "${_imagePath}fluent-mdl2_location.svg";
+  static const String locationIconThin =
+      "${_imagePath}iconamoon_location-thin.svg";
 }

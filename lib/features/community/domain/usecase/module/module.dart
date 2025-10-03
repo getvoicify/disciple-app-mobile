@@ -61,3 +61,7 @@ final banMemberUseCaseImpl = Provider<DiscipleUseCaseWithRequiredParam>(
 final searchChurchesUseCaseImpl = Provider<DiscipleUseCaseWithRequiredParam>(
   (ref) => SearchChurchesUseCaseImpl(service: ref.read(churchServiceModule)),
 );
+
+final getLocationsUseCaseImpl = Provider<DiscipleUseCaseWithRequiredParam>(
+  (ref) => GetLocationsUseCaseImpl(service: ref.read(churchServiceModule)),
+);

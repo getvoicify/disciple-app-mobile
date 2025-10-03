@@ -7,6 +7,7 @@ class ChurchEntity {
   final String? id;
   int? page;
   CancelToken? cancelToken;
+  final String? location;
 
   ChurchEntity({
     this.id,
@@ -15,6 +16,7 @@ class ChurchEntity {
     this.visibility,
     this.page,
     this.cancelToken,
+    this.location,
   });
 
   Map<String, dynamic> toMap() {

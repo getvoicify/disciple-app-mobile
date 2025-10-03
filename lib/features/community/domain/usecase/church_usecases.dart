@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart' show CancelToken;
 import 'package:disciple/app/core/usecase/disciple_usecase.dart';
 import 'package:disciple/features/community/data/model/church.dart';
+import 'package:disciple/features/community/data/model/location.dart';
 import 'package:disciple/features/community/data/model/membership.dart';
 import 'package:disciple/features/community/domain/entity/church_entity.dart';
 import 'package:disciple/features/community/domain/service/church_service.dart';
@@ -168,4 +169,18 @@ class DeleteChurchUseCaseImpl
     required String parameter,
     CancelToken? cancelToken,
   }) async => await _service.deleteChurch(id: parameter);
+}
+
+class GetLocationsUseCaseImpl
+    implements DiscipleUseCaseWithRequiredParam<ChurchEntity, List<Location>> {
+  final ChurchService _service;
+
+  GetLocationsUseCaseImpl({required ChurchService service})
+    : _service = service;
+
+  @override
+  Future<List<Location>> execute({
+    required ChurchEntity parameter,
+    CancelToken? cancelToken,
+  }) async => await _service.getLocations(parameter: parameter);
 }

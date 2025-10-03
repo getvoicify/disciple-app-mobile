@@ -1,4 +1,5 @@
 import 'package:disciple/features/community/data/model/church.dart';
+import 'package:disciple/features/community/data/model/location.dart';
 import 'package:disciple/features/community/domain/entity/church_entity.dart';
 import 'package:disciple/features/community/domain/usecase/module/module.dart';
 import 'package:disciple/features/community/presentation/state/church_state.dart';
@@ -13,6 +14,7 @@ class ChurchNotifier extends _$ChurchNotifier {
   ChurchState build() => const ChurchState();
 
   final List<Church> _churches = [];
+  List<Location> _locations = [];
 
   Future<void> addChurch({required ChurchEntity entity}) async {
     state = state.copyWith(isAddingChurch: true);
@@ -159,6 +161,18 @@ class ChurchNotifier extends _$ChurchNotifier {
       triggerNotificationTray(e.toString(), error: true);
     } finally {
       state = state.copyWith(isSearchingChurches: false);
+    }
+  }
+
+  Future<void> getLocations({required ChurchEntity parameter}) async {
+    state = state.copyWith(isGettingLocations: true);
+    try {
+      _locations = await ref
+          .read(getLocationsUseCaseImpl)
+          .execute(parameter: parameter);
+    } catch (_) {
+    } finally {
+      state = state.copyWith(isGettingLocations: false, locations: _locations);
     }
   }
 }

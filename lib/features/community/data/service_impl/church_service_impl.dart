@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:disciple/app/config/app_logger.dart';
 import 'package:disciple/features/community/data/model/church.dart';
+import 'package:disciple/features/community/data/model/location.dart';
 import 'package:disciple/features/community/data/model/membership.dart';
 import 'package:disciple/features/community/domain/entity/church_entity.dart';
 import 'package:disciple/features/community/domain/repository/church_repository.dart';
@@ -229,5 +230,23 @@ class ChurchServiceImpl implements ChurchService {
       rethrow;
     }
     return membership;
+  }
+
+  @override
+  Future<List<Location>> getLocations({
+    ChurchEntity? parameter,
+    CancelToken? cancelToken,
+  }) async {
+    List<Location> locations = [];
+    try {
+      locations = await _repository.getLocations(
+        parameter: parameter,
+        cancelToken: cancelToken,
+      );
+    } catch (e) {
+      _logger.e('An error occurred while getting locations', error: e);
+      rethrow;
+    }
+    return locations;
   }
 }

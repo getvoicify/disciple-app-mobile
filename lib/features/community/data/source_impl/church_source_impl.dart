@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:disciple/app/core/http/api_path.dart';
 import 'package:disciple/app/core/http/app_http_client.dart';
 import 'package:disciple/features/community/data/model/church.dart';
+import 'package:disciple/features/community/data/model/location.dart';
 import 'package:disciple/features/community/data/model/membership.dart';
 import 'package:disciple/features/community/domain/entity/church_entity.dart';
 import 'package:disciple/features/community/domain/source/church_source.dart';
@@ -127,5 +128,30 @@ class ChurchSourceImpl implements ChurchSource {
   }) {
     // TODO: implement updateMembersRoleInChurch
     throw UnimplementedError();
+  }
+
+  @override
+  Future<List<Location>> getLocations({
+    ChurchEntity? parameter,
+    CancelToken? cancelToken,
+  }) async {
+    _client.dio.options.baseUrl = 'https://maps.googleapis.com';
+
+    // https://maps.googleapis.com/maps/api/place/autocomplete/json?input=lagos&key=AIzaSyBJsZVVNZfDNLlqLYcDzlU-3u8GaufGWKA&components=country:ng
+
+    final response = await _client.request(
+      path: '/maps/api/place/autocomplete/json',
+      requestType: RequestType.get,
+      cancelToken: cancelToken,
+      queryParams: {
+        'input': parameter?.location,
+        'key': 'AIzaSyBJsZVVNZfDNLlqLYcDzlU-3u8GaufGWKA',
+        'components': 'country:ng',
+      },
+    );
+    final data = response.data as Map<String, dynamic>;
+    return (data['predictions'] as List<dynamic>)
+        .map((data) => Location.fromJson(data as Map<String, dynamic>))
+        .toList();
   }
 }

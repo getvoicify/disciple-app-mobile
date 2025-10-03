@@ -1,4 +1,5 @@
 import 'package:disciple/features/community/data/model/church.dart';
+import 'package:disciple/features/community/data/model/location.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'church_state.freezed.dart';
@@ -21,5 +22,7 @@ abstract class ChurchState with _$ChurchState {
     @Default(false) bool isRemovingMemberFromChurch,
     @Default(false) bool isUpdatingMembersRoleInChurch,
     @Default(false) bool isBanningMember,
+    @Default(false) bool isGettingLocations,
+    @Default([]) List<Location> locations,
   }) = _ChurchState;
 }

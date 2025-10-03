@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/core/database/module/app_database_module.dart';
 import 'package:disciple/features/community/data/model/church.dart';
+import 'package:disciple/features/community/data/model/location.dart';
 import 'package:disciple/features/community/data/model/membership.dart';
 import 'package:disciple/features/community/data/source_impl/module/module.dart';
 import 'package:disciple/features/community/domain/entity/church_entity.dart';
@@ -113,6 +114,15 @@ class ChurchRepoImpl implements ChurchRepository {
     required ChurchEntity parameter,
     CancelToken? cancelToken,
   }) async => await _source.updateMembersRoleInChurch(
+    parameter: parameter,
+    cancelToken: cancelToken,
+  );
+
+  @override
+  Future<List<Location>> getLocations({
+    ChurchEntity? parameter,
+    CancelToken? cancelToken,
+  }) async => await _source.getLocations(
     parameter: parameter,
     cancelToken: cancelToken,
   );
