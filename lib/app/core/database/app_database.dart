@@ -9,6 +9,7 @@ import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 import 'package:disciple/features/notes/data/tables/note.dart';
 import 'package:disciple/features/bible/data/tables/bible.dart';
 import 'package:disciple/features/community/data/tables/churches_table.dart';
+import 'package:disciple/features/bible/data/tables/daily_scripture.dart';
 
 part 'app_database.g.dart';
 
@@ -27,6 +28,7 @@ part 'app_database.g.dart';
     ChurchSocialLinks, // Social links for churches
     ChurchOtherLinks, // Other links for churches
     Bookmarks, // Bookmarks table
+    DailyScripture, // Daily scripture table
   ],
 )
 class AppDatabase extends _$AppDatabase {

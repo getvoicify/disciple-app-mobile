@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:disciple/app/config/app_logger.dart';
 import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/features/bible/data/mapper/bible_mapper.dart';
@@ -222,5 +224,60 @@ class BibleRepoImpl implements BibleRepository {
 
     final rows = await query.get();
     return rows.map((row) => ChapterInfo.fromRow(row)).toList();
+  }
+
+  @override
+  @override
+  Future<BibleVerse?> getDailyScripture() async {
+    final today = DateTime.now();
+    final todayKey = DateTime(
+      today.year,
+      today.month,
+      today.day,
+    ).toIso8601String();
+
+    final cachedVerse = await (_database.customSelect(
+      '''
+    SELECT v.*
+    FROM daily_scripture d
+    JOIN bible_verses v ON v.id = d.verse_id
+    WHERE d.date_key = ?
+    ''',
+      variables: [Variable.withString(todayKey)],
+      readsFrom: {_database.dailyScripture, _database.bibleVerses},
+    )).getSingleOrNull();
+
+    if (cachedVerse != null) {
+      return BibleVerse.fromJson(cachedVerse.data);
+    }
+
+    final totalRows =
+        await (_database.selectOnly(_database.bibleVerses)
+              ..addColumns([_database.bibleVerses.id.count()]))
+            .map((row) => row.read(_database.bibleVerses.id.count()))
+            .getSingle();
+
+    if (totalRows == null || totalRows == 0) return null;
+
+    final random = Random().nextInt(totalRows);
+
+    // Fetch random verse in one query
+    final verseRow = await (_database.select(
+      _database.bibleVerses,
+    )..limit(1, offset: random)).getSingleOrNull();
+
+    if (verseRow != null) {
+      // Store only id for tomorrow’s reuse
+      await _database
+          .into(_database.dailyScripture)
+          .insertOnConflictUpdate(
+            DailyScriptureCompanion.insert(
+              dateKey: todayKey,
+              verseId: verseRow.id,
+            ),
+          );
+    }
+
+    return verseRow;
   }
 }

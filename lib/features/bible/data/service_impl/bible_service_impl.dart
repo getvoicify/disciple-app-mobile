@@ -62,4 +62,14 @@ class BibleServiceImpl implements BibleService {
       rethrow;
     }
   }
+
+  @override
+  Future<BibleVerse?> getDailyScripture() async {
+    try {
+      return await _repository.getDailyScripture();
+    } catch (e) {
+      _logger.e('An error occurred getting daily scripture: $e');
+      rethrow;
+    }
+  }
 }

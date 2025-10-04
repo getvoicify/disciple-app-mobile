@@ -13,3 +13,15 @@ class GetBibleVersionsUsecaseImpl
   @override
   List<Version> execute([CancelToken? cancelToken]) => _service.getVersions();
 }
+
+class GetDailyScriptureUsecaseImpl
+    implements DiscipleUseCaseWithOutParam<Future<BibleVerse?>> {
+  final BibleService _service;
+
+  GetDailyScriptureUsecaseImpl({required BibleService service})
+    : _service = service;
+
+  @override
+  Future<BibleVerse?> execute([CancelToken? cancelToken]) async =>
+      await _service.getDailyScripture();
+}

@@ -16,6 +16,7 @@ class BibleNotifier extends _$BibleNotifier {
   List<String> _books = [];
   List<ChapterInfo?> _chapters = [];
   List<Version> _versions = [];
+  BibleVerse? _dailyScripture;
 
   Future<void> importBibles() async =>
       await ref.read(importBibleUseCaseImpl).execute();
@@ -59,6 +60,15 @@ class BibleNotifier extends _$BibleNotifier {
     } catch (_) {
     } finally {
       state = state.copyWith(chapters: _chapters);
+    }
+  }
+
+  Future<void> getDailyScripture() async {
+    try {
+      _dailyScripture = await ref.read(getDailyScriptureUseCaseImpl).execute();
+    } catch (_) {
+    } finally {
+      state = state.copyWith(dailyScripture: _dailyScripture);
     }
   }
 }

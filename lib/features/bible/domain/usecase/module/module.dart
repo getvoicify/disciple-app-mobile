@@ -28,3 +28,7 @@ final searchBibleChaptersUseCaseImpl =
       (ref) =>
           SearchBibleChaptersUsecaseImpl(service: ref.read(bibleServiceModule)),
     );
+
+final getDailyScriptureUseCaseImpl = Provider<DiscipleUseCaseWithOutParam>(
+  (ref) => GetDailyScriptureUsecaseImpl(service: ref.read(bibleServiceModule)),
+);

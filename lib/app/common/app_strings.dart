@@ -69,4 +69,5 @@ class AppString {
   static String locationFilter = 'Location Filter';
   static String searchScriptureByWords = 'Search scripture by words';
   static String bookmarkAddedSuccessfully = 'Bookmark added successfully';
+  static String dailyScripture = 'Daily Scripture';
 }

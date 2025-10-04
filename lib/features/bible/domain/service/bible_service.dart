@@ -8,4 +8,5 @@ abstract class BibleService {
   Future<List<String>> getBooks(String versionId);
   List<Version> getVersions();
   Future<List<ChapterInfo>> getBookInfo(BibleSearchParams params);
+  Future<BibleVerse?> getDailyScripture();
 }

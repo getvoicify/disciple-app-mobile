@@ -1,11 +1,15 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_fonts.dart';
 import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/app/common/app_strings.dart';
+import 'package:disciple/app/config/app_helper.dart';
 import 'package:disciple/app/core/manager/keycloak_manager.dart';
 import 'package:disciple/app/core/manager/model/user.dart';
 import 'package:disciple/app/utils/extension.dart';
+import 'package:disciple/features/bible/presentation/notifier/bible_notifier.dart';
 import 'package:disciple/widgets/action_button_widget.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:disciple/widgets/mini_button_widget.dart';
@@ -22,9 +26,24 @@ class HomeView extends ConsumerStatefulWidget {
 }
 
 class _HomeViewState extends ConsumerState<HomeView> {
+  late BibleNotifier _bibleNotifier;
+  final GlobalKey _shareKey = GlobalKey();
+  bool _hideActionsForCapture = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _bibleNotifier = ref.read(bibleProvider.notifier);
+    unawaited(_bibleNotifier.getDailyScripture());
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(keycloakManagerProvider).value?.user;
+    final dailyScripture = ref.watch(bibleProvider).dailyScripture;
+    // 'Joshua 21:45 NIV',
+    final String scripture =
+        '${dailyScripture?.bookName} ${dailyScripture?.chapter}:${dailyScripture?.verse} ${(dailyScripture?.versionId ?? '').toUpperCase()}';
     return Scaffold(
       appBar: AppBar(
         title: Text(AppString.feed),
@@ -67,70 +86,84 @@ class _HomeViewState extends ConsumerState<HomeView> {
             ),
             SizedBox(height: 26.h),
 
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(20.w),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.r),
-                image: const DecorationImage(
-                  image: AssetImage(AppImage.gradient),
-                  fit: BoxFit.cover,
+            RepaintBoundary(
+              key: _shareKey,
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(20.w),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.r),
+                  image: const DecorationImage(
+                    image: AssetImage(AppImage.gradient),
+                    fit: BoxFit.cover,
+                  ),
                 ),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Daily Scripture',
-                    style: context.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  SizedBox(height: 2.h),
-                  Text(
-                    'Joshua 21:45 NIV',
-                    style: context.headlineLarge?.copyWith(fontSize: 16.sp),
-                  ),
-                  SizedBox(height: 64.h),
-                  Text(
-                    'Not one of all the Lord’s good promises to Israel failed; every one was fulfilled.',
-                    style: context.bodyLarge?.copyWith(
-                      fontSize: 16.sp,
-                      fontFamily: AppFonts.literata,
-                    ),
-                  ),
-                  SizedBox(height: 26.h),
-                  Container(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 28.w,
-                        vertical: 9.h,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      AppString.dailyScripture,
+                      style: context.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w400,
                       ),
-                      decoration: BoxDecoration(
-                        color: AppColors.grey50,
-                        borderRadius: BorderRadius.circular(8.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.grey100.withValues(alpha: 0.10),
-                            blurRadius: 4.r,
-                            offset: const Offset(0, 2),
+                    ),
+                    SizedBox(height: 2.h),
+                    Text(
+                      scripture,
+                      style: context.headlineLarge?.copyWith(fontSize: 16.sp),
+                    ),
+                    SizedBox(height: 64.h),
+                    Text(
+                      dailyScripture?.verseText ?? '',
+                      style: context.bodyLarge?.copyWith(
+                        fontSize: 16.sp,
+                        fontFamily: AppFonts.literata,
+                      ),
+                    ),
+                    SizedBox(height: 26.h),
+                    Offstage(
+                      offstage: _hideActionsForCapture,
+                      child: Container(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 28.w,
+                            vertical: 9.h,
                           ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        spacing: 32.w,
-                        children: [
-                          const ActionButtonWidget(icon: AppImage.likeIcon),
-                          const ActionButtonWidget(icon: AppImage.shareIcon),
-                          const ActionButtonWidget(icon: AppImage.expandIcon),
-                        ],
+                          decoration: BoxDecoration(
+                            color: AppColors.grey50,
+                            borderRadius: BorderRadius.circular(8.r),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.grey100.withValues(
+                                  alpha: 0.10,
+                                ),
+                                blurRadius: 4.r,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            spacing: 32.w,
+                            children: [
+                              const ActionButtonWidget(icon: AppImage.likeIcon),
+                              ActionButtonWidget(
+                                icon: AppImage.shareIcon,
+                                onTap: () =>
+                                    AppHelper.shareScriptureImage(_shareKey),
+                              ),
+                              const ActionButtonWidget(
+                                icon: AppImage.expandIcon,
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
 

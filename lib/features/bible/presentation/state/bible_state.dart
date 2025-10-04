@@ -20,5 +20,8 @@ abstract class BibleState with _$BibleState {
     @Default([])
     @JsonKey(includeFromJson: false, includeToJson: false)
     List<String> books,
+    @Default(null)
+    @JsonKey(includeFromJson: false, includeToJson: false)
+    BibleVerse? dailyScripture,
   }) = _BibleState;
 }
