@@ -1,7 +1,12 @@
+import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
+import 'package:disciple/app/core/manager/keycloak_manager.dart';
+import 'package:disciple/app/core/manager/model/user.dart';
+import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/features/community/presentation/tabs/channels_tabs.dart';
 import 'package:disciple/widgets/decorated_tab.dart';
 import 'package:disciple/widgets/image_widget.dart';
+import 'package:disciple/widgets/profile_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -34,7 +39,7 @@ class _CommunityViewState extends ConsumerState<CommunityView>
       actions: [
         const ImageWidget(imageUrl: AppImage.notificationIcon),
         SizedBox(width: 16.w),
-        const CircleAvatar(),
+        const ProfileImageWidget(),
         SizedBox(width: 16.w),
       ],
       bottom: DecoratedTabBar(

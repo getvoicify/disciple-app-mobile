@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_colors.dart';
@@ -7,15 +8,17 @@ import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/app/common/app_strings.dart';
 import 'package:disciple/app/config/app_helper.dart';
 import 'package:disciple/app/core/manager/keycloak_manager.dart';
-import 'package:disciple/app/core/manager/model/user.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/features/bible/presentation/notifier/bible_notifier.dart';
 import 'package:disciple/widgets/action_button_widget.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:disciple/widgets/mini_button_widget.dart';
+import 'package:disciple/widgets/profile_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 @RoutePage()
 class HomeView extends ConsumerStatefulWidget {
@@ -41,7 +44,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
   Widget build(BuildContext context) {
     final user = ref.watch(keycloakManagerProvider).value?.user;
     final dailyScripture = ref.watch(bibleProvider).dailyScripture;
-    // 'Joshua 21:45 NIV',
     final String scripture =
         '${dailyScripture?.bookName} ${dailyScripture?.chapter}:${dailyScripture?.verse} ${(dailyScripture?.versionId ?? '').toUpperCase()}';
     return Scaffold(
@@ -51,19 +53,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
         actions: [
           const ImageWidget(imageUrl: AppImage.notificationIcon),
           SizedBox(width: 16.w),
-          GestureDetector(
-            /// TODO: Remember to remove this click event as its not needed here
-            onTap: () => ref.read(keycloakManagerProvider).value?.login(),
-            child: CircleAvatar(
-              backgroundColor: AppColors.grey200,
-              child: Text(
-                user?.initial ?? '',
-                style: context.headlineLarge?.copyWith(fontSize: 24.sp),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-              ),
-            ),
-          ),
+          const ProfileImageWidget(),
           SizedBox(width: 16.w),
         ],
       ),
@@ -71,17 +61,14 @@ class _HomeViewState extends ConsumerState<HomeView> {
         minimum: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
         child: ListView(
           children: [
-            GestureDetector(
-              onTap: () => ref.read(keycloakManagerProvider).value?.login(),
-              child: Text(
-                context.greetings(user?.givenName ?? ''),
-                style: context.bodyMedium?.copyWith(
-                  fontSize: 16.sp,
-                  color: AppColors.grey100,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 1.5.sp,
-                  fontFamily: AppFonts.literata,
-                ),
+            Text(
+              context.greetings(user?.givenName ?? ''),
+              style: context.bodyMedium?.copyWith(
+                fontSize: 16.sp,
+                color: AppColors.grey100,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 1.5.sp,
+                fontFamily: AppFonts.literata,
               ),
             ),
             SizedBox(height: 26.h),
@@ -151,8 +138,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                               const ActionButtonWidget(icon: AppImage.likeIcon),
                               ActionButtonWidget(
                                 icon: AppImage.shareIcon,
-                                onTap: () =>
-                                    AppHelper.shareScriptureImage(_shareKey),
+                                onTap: () => _shareScriptureImage(),
                               ),
                               const ActionButtonWidget(
                                 icon: AppImage.expandIcon,
@@ -317,4 +303,25 @@ class _HomeViewState extends ConsumerState<HomeView> {
       ],
     ),
   );
+
+  Future<void> _shareScriptureImage() async {
+    setState(() => _hideActionsForCapture = true);
+
+    // Give Flutter a frame to rebuild without actions
+    await Future.delayed(const Duration(milliseconds: 50));
+
+    final bytes = await AppHelper.captureWidget(_shareKey);
+
+    setState(() => _hideActionsForCapture = false); // restore buttons
+
+    if (bytes != null) {
+      final tempDir = await getTemporaryDirectory();
+      final file = await File('${tempDir.path}/daily_scripture.png').create();
+      await file.writeAsBytes(bytes);
+
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(file.path)], text: "Today's Scripture 📖"),
+      );
+    }
+  }
 }

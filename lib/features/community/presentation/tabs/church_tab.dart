@@ -50,16 +50,7 @@ class _ChurchState extends ConsumerState<ChurchTab>
 
     _searchController.addListener(_onSearchChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final tabsRouter = AutoTabsRouter.of(context);
-      tabsRouter.addListener(() {
-        if (_overlayEntry != null && !mounted) return;
-
-        // If user switches away from this tab, remove overlay
-        if (tabsRouter.activeIndex != /* index of this tab */ 2) {
-          _overlayEntry?.remove();
-          _overlayEntry = null;
-        }
-      });
+      AutoTabsRouter.of(context).addListener(() => _hideOverlay());
       await _refresh();
     });
   }
@@ -319,8 +310,10 @@ class _ChurchState extends ConsumerState<ChurchTab>
                     final church = churches[index];
                     return ChurchListItem(
                       church: church,
-                      onTap: () =>
-                          PageNavigator.pushRoute(ChurchRoute(church: church)),
+                      onTap: () async {
+                        _hideOverlay();
+                        PageNavigator.pushRoute(ChurchRoute(church: church));
+                      },
                     );
                   }, childCount: churches.length),
                 ),

@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:disciple/app/config/app_config.dart';
 import 'package:disciple/app/config/app_logger.dart';
 import 'package:disciple/app/core/manager/model/user.dart';
+import 'package:disciple/app/core/routes/app_router.gr.dart';
+import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,6 +31,12 @@ class KeycloakManager {
     await wrapper.initialize();
 
     final service = KeycloakManager._(wrapper);
+
+    wrapper.onError = (message, error, stackTrace) async {
+      if (message == 'Failed to fetch user info.') {
+        await service._logout();
+      }
+    };
     // 👇 get user info and start proactive refresh
     await Future.wait([
       service._getUserInfo(),
@@ -67,10 +75,11 @@ class KeycloakManager {
     return success;
   }
 
-  Future<void> logout() async {
+  Future<void> _logout() async {
     await _keycloakWrapper.logout();
     _refreshTimer?.cancel();
     _refreshTimer = null;
+    PageNavigator.replace(const HomeboardingRoute());
   }
 
   Future<void> _getUserInfo() async {

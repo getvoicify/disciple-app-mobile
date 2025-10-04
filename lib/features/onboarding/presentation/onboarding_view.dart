@@ -1,6 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/app/common/app_strings.dart';
+import 'package:disciple/app/core/manager/keycloak_manager.dart';
+import 'package:disciple/app/core/routes/app_router.gr.dart';
+import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:disciple/widgets/mini_button_widget.dart';
@@ -60,7 +63,7 @@ class _HomeboardingViewState extends ConsumerState<HomeboardingView> {
                 style: context.bodyLarge,
               ),
               SizedBox(height: 30.h),
-              MiniButtonWidget(title: AppString.getStarted, onTap: () async {}),
+              MiniButtonWidget(title: AppString.getStarted, onTap: _login),
             ],
           ),
         ),
@@ -76,4 +79,11 @@ class _HomeboardingViewState extends ConsumerState<HomeboardingView> {
           children: [TextSpan(text: subtitle, style: context.headlineMedium)],
         ),
       );
+
+  Future<void> _login() async {
+    final success = await ref.read(keycloakManagerProvider).value?.login();
+    if (success != null && success) {
+      PageNavigator.replace(const DashboardRoute());
+    }
+  }
 }

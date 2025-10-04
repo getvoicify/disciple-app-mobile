@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:disciple/app/config/app_logger.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
@@ -50,7 +49,7 @@ class ConnectivityManager extends StateNotifier<NetworkStatus> {
     // Prevent multiple timers
     _stop();
     _timer = Timer.periodic(checkInterval, (_) async {
-      if (kReleaseMode) await _updateStatus();
+      await _updateStatus();
     });
     // Check status immediately on start
     await _updateStatus();
