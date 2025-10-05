@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:disciple/app/config/app_config.dart';
 import 'package:disciple/app/config/app_logger.dart';
 import 'package:disciple/app/core/manager/model/user.dart';
@@ -79,6 +80,7 @@ class KeycloakManager {
     await _keycloakWrapper.logout();
     _refreshTimer?.cancel();
     _refreshTimer = null;
+
     PageNavigator.replace(const HomeboardingRoute());
   }
 

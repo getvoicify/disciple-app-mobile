@@ -10,6 +10,7 @@ import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/app/utils/debouncer.dart';
 import 'package:disciple/features/bible/domain/param/bible_search_params.dart';
 import 'package:disciple/features/bible/presentation/notifier/bible_notifier.dart';
+import 'package:disciple/features/bible/presentation/sheets/get_bible_books_sheet.dart';
 import 'package:disciple/features/bible/presentation/widget/build_chapter_widget.dart';
 import 'package:disciple/features/bookmarks/domain/entity/bookmark_entity.dart';
 import 'package:disciple/features/bookmarks/presentation/notifier/bookmark_notifier.dart';
@@ -17,6 +18,7 @@ import 'package:disciple/widgets/drop_down_widget.dart';
 import 'package:disciple/widgets/edit_text_field_with.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:disciple/widgets/popup_menu_widget.dart';
+import 'package:disciple/widgets/sheets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -35,15 +37,17 @@ class _BibleViewState extends ConsumerState<BibleView> {
     PopupMenuItemData<String>(value: 'notes', label: 'Notes'),
     PopupMenuItemData<String>(value: 'bookmarks', label: 'Bookmarks'),
   ];
-  final BibleSearchParams _searchParams = BibleSearchParams();
+  BibleSearchParams _searchParams = BibleSearchParams();
   final TextEditingController _searchController = TextEditingController();
   final Debouncer _debouncer = Debouncer();
+  late BibleNotifier _bibleNotifier;
 
   @override
   void initState() {
     super.initState();
+    _bibleNotifier = ref.read(bibleProvider.notifier);
     _searchController.addListener(_onSearchChanged);
-    unawaited(ref.read(bibleProvider.notifier).searchBibles(_searchParams));
+    unawaited(_bibleNotifier.searchBibles(_searchParams));
   }
 
   @override
@@ -60,7 +64,7 @@ class _BibleViewState extends ConsumerState<BibleView> {
     _debouncer.run(() async {
       if (mounted) {
         _searchParams.searchWord = _searchController.text.trim();
-        await ref.read(bibleProvider.notifier).searchBibles(_searchParams);
+        await _bibleNotifier.searchBibles(_searchParams);
       }
     });
   }
@@ -128,14 +132,27 @@ class _BibleViewState extends ConsumerState<BibleView> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const BuildDropdownWidget(title: 'KJV'),
+                            BuildDropdownWidget(
+                              title: (_searchParams.versionId ?? '')
+                                  .toUpperCase(),
+                              onTap: _searchBibleSheet,
+                            ),
                             SizedBox(height: 16.h),
-                            const Row(
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                BuildDropdownWidget(title: 'Book'),
-                                BuildDropdownWidget(title: 'Chapter'),
-                                BuildDropdownWidget(title: 'Verse'),
+                                BuildDropdownWidget(
+                                  title: _searchParams.bookName ?? '',
+                                  onTap: _searchBibleSheet,
+                                ),
+                                BuildDropdownWidget(
+                                  title: _searchParams.chapter.toString(),
+                                  onTap: _searchBibleSheet,
+                                ),
+                                BuildDropdownWidget(
+                                  title: _searchParams.startVerse.toString(),
+                                  onTap: _searchBibleSheet,
+                                ),
                               ],
                             ),
                           ],
@@ -190,5 +207,15 @@ class _BibleViewState extends ConsumerState<BibleView> {
         .addBookmark(
           bookmark: BookmarkEntity(id: id, bibleVerseId: verse.id),
         );
+  }
+
+  Future<void> _searchBibleSheet() async {
+    final result = await Sheets.showSheet<BibleSearchParams>(
+      child: GetBibleBooksSheet(searchParams: _searchParams),
+    );
+    if (result != null) {
+      _searchParams = result;
+      await _bibleNotifier.searchBibles(_searchParams);
+    }
   }
 }

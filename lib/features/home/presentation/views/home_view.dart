@@ -18,7 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 
 @RoutePage()
 class HomeView extends ConsumerStatefulWidget {
@@ -32,6 +31,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
   late BibleNotifier _bibleNotifier;
   final GlobalKey _shareKey = GlobalKey();
   bool _hideActionsForCapture = false;
+  bool _isExpanded = false;
 
   @override
   void initState() {
@@ -75,80 +75,171 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
             RepaintBoundary(
               key: _shareKey,
-              child: Container(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeInOutCubic,
                 width: double.infinity,
                 padding: EdgeInsets.all(20.w),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.r),
+                  borderRadius: BorderRadius.circular(12.r),
                   image: const DecorationImage(
                     image: AssetImage(AppImage.gradient),
                     fit: BoxFit.cover,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppString.dailyScripture,
-                      style: context.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    SizedBox(height: 2.h),
-                    Text(
-                      scripture,
-                      style: context.headlineLarge?.copyWith(fontSize: 16.sp),
-                    ),
-                    SizedBox(height: 64.h),
-                    Text(
-                      dailyScripture?.verseText ?? '',
-                      style: context.bodyLarge?.copyWith(
-                        fontSize: 16.sp,
-                        fontFamily: AppFonts.literata,
-                      ),
-                    ),
-                    SizedBox(height: 26.h),
-                    Offstage(
-                      offstage: _hideActionsForCapture,
-                      child: Container(
-                        alignment: Alignment.bottomCenter,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 28.w,
-                            vertical: 9.h,
+                child: AnimatedSize(
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.easeInOutCubic,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // --- Cancel icon fade in ---
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 400),
+                        switchInCurve: Curves.easeInOutCubic,
+                        switchOutCurve: Curves.easeInOutCubic,
+                        transitionBuilder: (child, animation) => FadeTransition(
+                          opacity: animation,
+                          child: SizeTransition(
+                            sizeFactor: animation,
+                            child: child,
                           ),
-                          decoration: BoxDecoration(
-                            color: AppColors.grey50,
-                            borderRadius: BorderRadius.circular(8.r),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.grey100.withValues(
-                                  alpha: 0.10,
+                        ),
+                        child: !_isExpanded
+                            ? const SizedBox.shrink()
+                            : Align(
+                                alignment: Alignment.topLeft,
+                                child: GestureDetector(
+                                  onTap: () =>
+                                      setState(() => _isExpanded = false),
+                                  child: AnimatedPadding(
+                                    duration: const Duration(milliseconds: 400),
+                                    curve: Curves.easeInOutCubic,
+                                    padding: EdgeInsets.only(
+                                      bottom: _isExpanded ? 16.h : 0,
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const ImageWidget(
+                                          imageUrl: AppImage.cancelIcon,
+                                        ),
+                                        AnimatedSize(
+                                          duration: const Duration(
+                                            milliseconds: 400,
+                                          ),
+                                          curve: Curves.easeInOutCubic,
+                                          child: SizedBox(
+                                            height: _isExpanded ? 119.h : 0,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                                blurRadius: 4.r,
-                                offset: const Offset(0, 2),
                               ),
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            spacing: 32.w,
-                            children: [
-                              const ActionButtonWidget(icon: AppImage.likeIcon),
-                              ActionButtonWidget(
-                                icon: AppImage.shareIcon,
-                                onTap: () => _shareScriptureImage(),
-                              ),
-                              const ActionButtonWidget(
-                                icon: AppImage.expandIcon,
-                              ),
-                            ],
+                      ),
+
+                      // --- Title + Reference ---
+                      Text(
+                        AppString.dailyScripture,
+                        style: context.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14.sp,
+                        ),
+                      ),
+                      SizedBox(height: 4.h),
+                      Text(
+                        scripture,
+                        style: context.headlineLarge?.copyWith(fontSize: 16.sp),
+                      ),
+                      AnimatedSize(
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeInOutCubic,
+                        child: SizedBox(height: _isExpanded ? 20.h : 40.h),
+                      ),
+
+                      // --- Animated verse text ---
+                      TweenAnimationBuilder<double>(
+                        tween: Tween<double>(
+                          begin: _isExpanded ? 16.sp : 32.sp,
+                          end: _isExpanded ? 32.sp : 16.sp,
+                        ),
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.easeInOutCubic,
+                        builder: (context, animatedFontSize, child) => Text(
+                          dailyScripture?.verseText ?? '',
+                          textAlign: TextAlign.start,
+                          style: context.bodyLarge!.copyWith(
+                            fontSize: animatedFontSize,
+                            fontFamily: AppFonts.literata,
+                            fontWeight: FontWeight.w400,
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                      // --- Animated spacing ---
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeInOutCubic,
+                        height: _isExpanded ? 120.h : 24.h,
+                      ),
+
+                      // --- Action buttons fade in/out smoothly ---
+                      AnimatedOpacity(
+                        opacity: _hideActionsForCapture ? 0 : 1,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOutCubic,
+                        child: Center(
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 28.w,
+                              vertical: 9.h,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.grey50,
+                              borderRadius: BorderRadius.circular(8.r),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.grey100.withValues(
+                                    alpha: 0.10,
+                                  ),
+                                  blurRadius: 4.r,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              spacing: 32.w,
+                              children: [
+                                const ActionButtonWidget(
+                                  icon: AppImage.likeIcon2,
+                                ),
+                                ActionButtonWidget(
+                                  icon: AppImage.shareIcon,
+                                  onTap: () => _shareScriptureImage(),
+                                ),
+                                if (!_isExpanded)
+                                  ActionButtonWidget(
+                                    icon: AppImage.expandIcon,
+                                    onTap: () =>
+                                        setState(() => _isExpanded = true),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -319,9 +410,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
       final file = await File('${tempDir.path}/daily_scripture.png').create();
       await file.writeAsBytes(bytes);
 
-      await SharePlus.instance.share(
-        ShareParams(files: [XFile(file.path)], text: "Today's Scripture 📖"),
-      );
+      /// TODO: Share the file
+      // await SharePlus.instance.share(
+      //   ShareParams(files: [XFile(file.path)], text: "Today's Scripture 📖"),
+      // );
     }
   }
 }

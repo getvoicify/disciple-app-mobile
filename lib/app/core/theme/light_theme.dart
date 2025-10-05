@@ -58,6 +58,7 @@ ThemeData lightTheme = ThemeData.light(useMaterial3: false).copyWith(
       }),
     ),
   ),
+
   inputDecorationTheme: InputDecorationTheme(
     labelStyle: bodyMedium.copyWith(
       overflow: TextOverflow.ellipsis,
@@ -153,12 +154,27 @@ ThemeData lightTheme = ThemeData.light(useMaterial3: false).copyWith(
   bottomNavigationBarTheme: BottomNavigationBarThemeData(
     backgroundColor: AppColors.purple25,
     elevation: 10,
-    type: BottomNavigationBarType.fixed,
+    type: BottomNavigationBarType.shifting,
     selectedLabelStyle: bodyMedium.copyWith(color: AppColors.purple),
     unselectedLabelStyle: bodyMedium.copyWith(color: AppColors.grey700),
     showSelectedLabels: true,
-    showUnselectedLabels: true,
+    showUnselectedLabels: false,
     selectedItemColor: AppColors.purple,
     unselectedItemColor: AppColors.grey300,
+  ),
+  bottomSheetTheme: BottomSheetThemeData(
+    backgroundColor: AppColors.white,
+    modalBarrierColor: const Color.fromRGBO(
+      117,
+      117,
+      126,
+      1,
+    ).withValues(alpha: .40),
+    showDragHandle: true,
+    dragHandleColor: AppColors.grey200,
+
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+    ),
   ),
 );

@@ -70,4 +70,6 @@ class AppString {
   static String searchScriptureByWords = 'Search scripture by words';
   static String bookmarkAddedSuccessfully = 'Bookmark added successfully';
   static String dailyScripture = 'Daily Scripture';
+  static String seletBiblePassage = "Select Bible Passage";
+  static String goToPassage = 'Go to Passage';
 }

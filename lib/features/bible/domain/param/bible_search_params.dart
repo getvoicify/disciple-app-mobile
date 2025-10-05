@@ -1,9 +1,9 @@
 class BibleSearchParams {
-  final String? versionId;
-  final String? bookName;
-  final int chapter;
-  final int startVerse;
-  final int? endVerse;
+  String? versionId;
+  String? bookName;
+  int chapter;
+  int startVerse;
+  int? endVerse;
   String? searchWord;
 
   BibleSearchParams({

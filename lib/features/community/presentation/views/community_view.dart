@@ -1,17 +1,12 @@
-import 'package:disciple/app/common/app_colors.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_images.dart';
-import 'package:disciple/app/core/manager/keycloak_manager.dart';
-import 'package:disciple/app/core/manager/model/user.dart';
-import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/features/community/presentation/tabs/channels_tabs.dart';
+import 'package:disciple/features/community/presentation/tabs/church_tab.dart';
 import 'package:disciple/widgets/decorated_tab.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:disciple/widgets/profile_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import 'package:disciple/features/community/presentation/tabs/church_tab.dart';
-import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 @RoutePage()

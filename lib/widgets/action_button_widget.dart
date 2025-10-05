@@ -18,7 +18,12 @@ class ActionButtonWidget extends StatelessWidget {
         shape: BoxShape.circle,
         color: AppColors.purple,
       ),
-      child: ImageWidget(imageUrl: icon, height: 17.h, width: 17.w),
+      child: ImageWidget(
+        imageUrl: icon,
+        height: 17.h,
+        width: 17.w,
+        iconColor: AppColors.white,
+      ),
     ),
   );
 }
