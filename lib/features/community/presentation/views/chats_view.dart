@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:auto_route/auto_route.dart';
 
-
 @RoutePage()
 class ChatsView extends StatefulWidget {
   const ChatsView({super.key});
