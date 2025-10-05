@@ -3,7 +3,9 @@ import 'package:disciple/app/config/app_logger.dart';
 import 'package:disciple/features/community/data/model/church.dart';
 import 'package:disciple/features/community/data/model/location.dart';
 import 'package:disciple/features/community/data/model/membership.dart';
+import 'package:disciple/features/community/data/model/post.dart';
 import 'package:disciple/features/community/domain/entity/church_entity.dart';
+import 'package:disciple/features/community/domain/entity/post_entity.dart';
 import 'package:disciple/features/community/domain/repository/church_repository.dart';
 import 'package:disciple/features/community/domain/service/church_service.dart';
 
@@ -248,5 +250,20 @@ class ChurchServiceImpl implements ChurchService {
       rethrow;
     }
     return locations;
+  }
+
+  @override
+  Future<List<Post>> posts({
+    PostEntity? entity,
+    CancelToken? cancelToken,
+  }) async {
+    List<Post> posts = [];
+    try {
+      posts = await _repository.posts(entity: entity, cancelToken: cancelToken);
+    } catch (e) {
+      _logger.e('An error occurred while getting posts', error: e);
+      rethrow;
+    }
+    return posts;
   }
 }

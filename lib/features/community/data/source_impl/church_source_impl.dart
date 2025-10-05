@@ -4,7 +4,9 @@ import 'package:disciple/app/core/http/app_http_client.dart';
 import 'package:disciple/features/community/data/model/church.dart';
 import 'package:disciple/features/community/data/model/location.dart';
 import 'package:disciple/features/community/data/model/membership.dart';
+import 'package:disciple/features/community/data/model/post.dart';
 import 'package:disciple/features/community/domain/entity/church_entity.dart';
+import 'package:disciple/features/community/domain/entity/post_entity.dart';
 import 'package:disciple/features/community/domain/source/church_source.dart';
 
 class ChurchSourceImpl implements ChurchSource {
@@ -176,6 +178,23 @@ class ChurchSourceImpl implements ChurchSource {
     final data = response.data as Map<String, dynamic>;
     return (data['predictions'] as List<dynamic>)
         .map((data) => Location.fromJson(data as Map<String, dynamic>))
+        .toList();
+  }
+
+  @override
+  Future<List<Post>> posts({
+    PostEntity? entity,
+    CancelToken? cancelToken,
+  }) async {
+    final response = await _client.request(
+      path: ApiPath.posts,
+      requestType: RequestType.get,
+      cancelToken: cancelToken,
+      queryParams: entity?.toMap(),
+    );
+    final data = response.data as Map<String, dynamic>;
+    return (data as List<dynamic>)
+        .map((data) => Post.fromJson(data as Map<String, dynamic>))
         .toList();
   }
 }

@@ -18,4 +18,7 @@ class ApiPath {
   static const String churches = '$_apiVersionOne/churches';
   static String acceptChurchInvite(String churchId) =>
       '$_apiVersionOne/churches/$churchId/accept-invitation';
+
+  //? Post routes
+  static const String posts = '$_apiVersionOne/posts';
 }

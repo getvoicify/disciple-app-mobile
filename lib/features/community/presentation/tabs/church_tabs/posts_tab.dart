@@ -1,17 +1,38 @@
+import 'package:dio/dio.dart';
 import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/app/utils/extension.dart';
+import 'package:disciple/features/community/presentation/notifier/church_notifier.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class PostTab extends StatefulWidget {
+class PostTab extends ConsumerStatefulWidget {
   const PostTab({super.key});
 
   @override
-  State<PostTab> createState() => _PostTabState();
+  ConsumerState<PostTab> createState() => _PostTabState();
 }
 
-class _PostTabState extends State<PostTab> {
+class _PostTabState extends ConsumerState<PostTab> {
+  late ChurchNotifier _churchNotifier;
+  final CancelToken _cancelToken = CancelToken();
+
+  @override
+  void initState() {
+    _churchNotifier = ref.read(churchProvider.notifier);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _churchNotifier.getPosts(cancelToken: _cancelToken);
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _cancelToken.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) => Padding(
     padding: EdgeInsets.symmetric(horizontal: 16.w),

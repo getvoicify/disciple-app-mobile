@@ -4,8 +4,10 @@ import 'package:disciple/app/core/database/module/app_database_module.dart';
 import 'package:disciple/features/community/data/model/church.dart';
 import 'package:disciple/features/community/data/model/location.dart';
 import 'package:disciple/features/community/data/model/membership.dart';
+import 'package:disciple/features/community/data/model/post.dart';
 import 'package:disciple/features/community/data/source_impl/module/module.dart';
 import 'package:disciple/features/community/domain/entity/church_entity.dart';
+import 'package:disciple/features/community/domain/entity/post_entity.dart';
 import 'package:disciple/features/community/domain/repository/church_repository.dart';
 import 'package:disciple/features/community/domain/source/church_source.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -126,4 +128,10 @@ class ChurchRepoImpl implements ChurchRepository {
     parameter: parameter,
     cancelToken: cancelToken,
   );
+
+  @override
+  Future<List<Post>> posts({
+    PostEntity? entity,
+    CancelToken? cancelToken,
+  }) async => await _source.posts(entity: entity, cancelToken: cancelToken);
 }

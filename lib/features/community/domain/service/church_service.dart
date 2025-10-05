@@ -2,7 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:disciple/features/community/data/model/church.dart';
 import 'package:disciple/features/community/data/model/location.dart';
 import 'package:disciple/features/community/data/model/membership.dart';
+import 'package:disciple/features/community/data/model/post.dart';
 import 'package:disciple/features/community/domain/entity/church_entity.dart';
+import 'package:disciple/features/community/domain/entity/post_entity.dart';
 
 abstract class ChurchService {
   Future<Church> addChurch({
@@ -66,4 +68,6 @@ abstract class ChurchService {
     ChurchEntity? parameter,
     CancelToken? cancelToken,
   });
+
+  Future<List<Post>> posts({PostEntity? entity, CancelToken? cancelToken});
 }

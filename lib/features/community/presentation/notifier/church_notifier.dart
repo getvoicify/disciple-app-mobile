@@ -1,6 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:disciple/features/community/data/model/church.dart';
 import 'package:disciple/features/community/data/model/location.dart';
+import 'package:disciple/features/community/data/model/post.dart';
 import 'package:disciple/features/community/domain/entity/church_entity.dart';
+import 'package:disciple/features/community/domain/entity/post_entity.dart';
 import 'package:disciple/features/community/domain/usecase/module/module.dart';
 import 'package:disciple/features/community/presentation/state/church_state.dart';
 import 'package:disciple/widgets/notification/notification_tray.dart';
@@ -15,6 +18,7 @@ class ChurchNotifier extends _$ChurchNotifier {
 
   final List<Church> _churches = [];
   List<Location> _locations = [];
+  List<Post> _posts = [];
 
   Future<void> addChurch({required ChurchEntity entity}) async {
     state = state.copyWith(isAddingChurch: true);
@@ -178,6 +182,21 @@ class ChurchNotifier extends _$ChurchNotifier {
     } catch (_) {
     } finally {
       state = state.copyWith(isGettingLocations: false, locations: _locations);
+    }
+  }
+
+  Future<void> getPosts({
+    PostEntity? parameter,
+    CancelToken? cancelToken,
+  }) async {
+    state = state.copyWith(isGettingPosts: true);
+    try {
+      _posts = await ref
+          .read(getPostsUseCaseImpl)
+          .execute(parameter: parameter, cancelToken: cancelToken);
+    } catch (_) {
+    } finally {
+      state = state.copyWith(isGettingPosts: false, posts: _posts);
     }
   }
 }

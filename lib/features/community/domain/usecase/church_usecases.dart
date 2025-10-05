@@ -3,7 +3,9 @@ import 'package:disciple/app/core/usecase/disciple_usecase.dart';
 import 'package:disciple/features/community/data/model/church.dart';
 import 'package:disciple/features/community/data/model/location.dart';
 import 'package:disciple/features/community/data/model/membership.dart';
+import 'package:disciple/features/community/data/model/post.dart';
 import 'package:disciple/features/community/domain/entity/church_entity.dart';
+import 'package:disciple/features/community/domain/entity/post_entity.dart';
 import 'package:disciple/features/community/domain/service/church_service.dart';
 
 class AddChurchUseCaseImpl
@@ -183,4 +185,17 @@ class GetLocationsUseCaseImpl
     required ChurchEntity parameter,
     CancelToken? cancelToken,
   }) async => await _service.getLocations(parameter: parameter);
+}
+
+class GetPostsUseCaseImpl
+    implements DiscipleUseCaseWithOptionalParam<PostEntity, List<Post>> {
+  final ChurchService _service;
+
+  GetPostsUseCaseImpl({required ChurchService service}) : _service = service;
+
+  @override
+  Future<List<Post>> execute({
+    PostEntity? parameter,
+    CancelToken? cancelToken,
+  }) async => await _service.posts(entity: parameter);
 }
