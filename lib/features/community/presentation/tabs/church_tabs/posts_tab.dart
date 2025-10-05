@@ -40,7 +40,7 @@ class _PostTabState extends ConsumerState<PostTab> {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: 20,
-      itemBuilder: (_, _) => const PostTileWidget(),
+      itemBuilder: (_, index) => const PostTileWidget(),
       separatorBuilder: (context, index) => SizedBox(height: 26.h),
     ),
   );

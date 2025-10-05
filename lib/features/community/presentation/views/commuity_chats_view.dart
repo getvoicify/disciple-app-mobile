@@ -52,7 +52,7 @@ class _CommunityChatsViewState extends State<CommunityChatsView>
     body: SafeArea(
       minimum: EdgeInsets.symmetric(horizontal: 16.w),
       child: NestedScrollView(
-        headerSliverBuilder: (_, _) => [
+        headerSliverBuilder: (_, innerBoxIsScrolled) => [
           SliverToBoxAdapter(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -142,7 +142,7 @@ class _CommunityChatsViewState extends State<CommunityChatsView>
       SizedBox(height: 16.h),
       Expanded(
         child: ListView.separated(
-          separatorBuilder: (_, _) => SizedBox(height: 16.h),
+          separatorBuilder: (_, index) => SizedBox(height: 16.h),
           itemBuilder: (context, index) {
             if (index.isEven) return const ReceiverChatBubleWidget();
             return const SenderChatBubleWidget();
@@ -157,7 +157,7 @@ class _CommunityChatsViewState extends State<CommunityChatsView>
 
   Widget _buildMembersTab() => ListView.separated(
     itemCount: _memberCount,
-    separatorBuilder: (_, _) => SizedBox(height: 12.h),
+    separatorBuilder: (_, index) => SizedBox(height: 12.h),
     itemBuilder: (context, index) =>
         _buildMemberItem(name: 'Member ${index + 1}', isAdmin: index == 0),
   );

@@ -161,8 +161,8 @@ class _NotesViewState extends ConsumerState<NotesView> {
           if (isLoading) {
             return ListView.separated(
               itemCount: 25,
-              itemBuilder: (_, _) => const BuildTileSkeleton(),
-              separatorBuilder: (_, _) => const SizedBox(height: 12),
+              itemBuilder: (_, index) => const BuildTileSkeleton(),
+              separatorBuilder: (_, index) => const SizedBox(height: 12),
             );
           }
 
@@ -187,7 +187,7 @@ class _NotesViewState extends ConsumerState<NotesView> {
                       PageNavigator.pushRoute(NoteDetailsRoute(id: note.id)),
                 );
               },
-              separatorBuilder: (_, _) => const SizedBox(height: 12),
+              separatorBuilder: (_, index) => const SizedBox(height: 12),
             ),
           );
         },

@@ -17,7 +17,7 @@ class _FriendsTabsState extends State<FriendsTabs> {
       ListView.separated(
         itemCount: 20,
         padding: EdgeInsets.symmetric(horizontal: 16.w),
-        itemBuilder: (_, _) => const FriendsTileWidget(),
+        itemBuilder: (_, index) => const FriendsTileWidget(),
         separatorBuilder: (context, index) => SizedBox(height: 12.h),
       ),
       const FloatingSideButtonWidget(title: 'Add Friends '),

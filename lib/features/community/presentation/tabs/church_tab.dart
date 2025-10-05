@@ -291,7 +291,7 @@ class _ChurchState extends ConsumerState<ChurchTab>
               if (isLoading)
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
-                    (_, _) => const ChurchListItemSkeleton(),
+                    (_, index) => const ChurchListItemSkeleton(),
                     childCount: 5,
                   ),
                 )

@@ -17,7 +17,7 @@ class _PersonalTabsState extends State<PersonalTabs> {
       ListView.separated(
         itemCount: 20,
         padding: EdgeInsets.symmetric(horizontal: 16.w),
-        itemBuilder: (_, _) => const CommuityTIleWidget(),
+        itemBuilder: (_, index) => const CommuityTIleWidget(),
         separatorBuilder: (context, index) => SizedBox(height: 12.h),
       ),
       const FloatingSideButtonWidget(title: 'Create New'),

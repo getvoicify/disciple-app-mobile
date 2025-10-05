@@ -120,7 +120,7 @@ class _LocationSearchWidgetState extends ConsumerState<LocationSearchWidget> {
                       ),
                     );
                   },
-                  separatorBuilder: (_, _) => SizedBox(height: 12.h),
+                  separatorBuilder: (_, index) => SizedBox(height: 12.h),
                   itemCount: locations.length,
                 ),
               ),
