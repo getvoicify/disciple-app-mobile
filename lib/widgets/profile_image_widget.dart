@@ -13,13 +13,16 @@ class ProfileImageWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(keycloakManagerProvider).value?.user;
 
-    return CircleAvatar(
-      backgroundColor: AppColors.grey200,
-      child: Text(
-        user?.initial ?? '',
-        style: context.headlineLarge?.copyWith(fontSize: 24.sp),
-        textAlign: TextAlign.center,
-        maxLines: 1,
+    return GestureDetector(
+      onTap: () => ref.read(keycloakManagerProvider).value?.login(),
+      child: CircleAvatar(
+        backgroundColor: AppColors.grey200,
+        child: Text(
+          user?.initial ?? '',
+          style: context.headlineLarge?.copyWith(fontSize: 24.sp),
+          textAlign: TextAlign.center,
+          maxLines: 1,
+        ),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
+import 'package:disciple/app/common/app_strings.dart';
 import 'package:disciple/app/config/app_helper.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/features/community/data/model/church.dart';
@@ -7,6 +8,7 @@ import 'package:disciple/widgets/image_widget.dart';
 import 'package:disciple/widgets/popup_menu_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class OverviewTab extends StatefulWidget {
   const OverviewTab({super.key, required this.church});
@@ -101,9 +103,12 @@ class _OverviewTabState extends State<OverviewTab> {
         Container(
           height: 156.h,
           margin: EdgeInsets.symmetric(horizontal: 28.w),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8.r),
-            color: Colors.red,
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.r)),
+          child: GoogleMap(
+            myLocationButtonEnabled: false,
+            initialCameraPosition: CameraPosition(
+              target: LatLng(_church?.latitude ?? 0, _church?.longitude ?? 0),
+            ),
           ),
         ),
         SizedBox(height: 33.h),
@@ -116,12 +121,12 @@ class _OverviewTabState extends State<OverviewTab> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Contact us',
+                AppString.contactUs,
                 style: context.headlineLarge?.copyWith(fontSize: 24.sp),
               ),
               SizedBox(height: 8.h),
               Text(
-                'Our friendly team would love to hear from you.',
+                AppString.ourFriendlyTeamWouldLoveToHearFromYou,
                 style: context.bodyMedium?.copyWith(fontSize: 14.sp),
               ),
               SizedBox(height: 20.h),
@@ -139,7 +144,7 @@ class _OverviewTabState extends State<OverviewTab> {
                       const ImageWidget(imageUrl: AppImage.emailIcon),
                       SizedBox(width: 8.w),
                       Text(
-                        'Send Email',
+                        AppString.sendEmail,
                         style: context.bodyMedium?.copyWith(
                           color: AppColors.white,
                         ),
@@ -153,7 +158,7 @@ class _OverviewTabState extends State<OverviewTab> {
         ),
         SizedBox(height: 24.h),
         Text(
-          'Connect with us on our socials',
+          AppString.connectWithUsOnOurSocials,
           style: context.headlineLarge?.copyWith(
             fontSize: 14.sp,
             fontWeight: FontWeight.w500,

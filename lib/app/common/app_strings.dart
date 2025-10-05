@@ -72,4 +72,9 @@ class AppString {
   static String dailyScripture = 'Daily Scripture';
   static String seletBiblePassage = "Select Bible Passage";
   static String goToPassage = 'Go to Passage';
+  static String contactUs = 'Contact Us';
+  static String ourFriendlyTeamWouldLoveToHearFromYou =
+      'Our friendly team would love to hear from you.';
+  static String sendEmail = 'Send Email';
+  static String connectWithUsOnOurSocials = 'Connect with us on our socials';
 }
