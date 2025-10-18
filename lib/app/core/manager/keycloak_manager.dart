@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:disciple/app/config/app_config.dart';
 import 'package:disciple/app/config/app_logger.dart';
@@ -6,7 +7,6 @@ import 'package:disciple/app/core/manager/model/user.dart';
 import 'package:disciple/app/core/routes/app_router.gr.dart';
 import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keycloak_wrapper/keycloak_wrapper.dart';
 
@@ -60,7 +60,10 @@ class KeycloakManager {
 
   Future<void> exchangeTokens([Duration? duration]) async {
     await _keycloakWrapper.exchangeTokens(duration);
-    // 👇 reschedule after refresh
+    // 👇 Save the new token after refresh (for debugging)
+    await _saveTokenToFile(_keycloakWrapper.accessToken);
+
+    // 👇 Reschedule after refresh
     _scheduleTokenRefresh();
   }
 
@@ -69,11 +72,25 @@ class KeycloakManager {
 
     if (success) {
       final token = _keycloakWrapper.accessToken;
-      if (kDebugMode) await Clipboard.setData(ClipboardData(text: token ?? ''));
+      await _saveTokenToFile(token);
 
       _scheduleTokenRefresh();
     }
     return success;
+  }
+
+  Future<void> _saveTokenToFile(String? token) async {
+    if (kDebugMode) {
+      try {
+        final file = File('/Users/mac/Documents/disciple/tokens.txt');
+
+        await file.writeAsString(token ?? '');
+
+        debugPrint('✅ Token saved to: ${file.path}');
+      } catch (e) {
+        debugPrint('❌ Failed to save token: $e');
+      }
+    }
   }
 
   Future<void> _logout() async {

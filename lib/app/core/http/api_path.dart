@@ -21,4 +21,5 @@ class ApiPath {
 
   //? Post routes
   static const String posts = '$_apiVersionOne/posts';
+  static const String devotionals = '$posts/daily-devotionals';
 }

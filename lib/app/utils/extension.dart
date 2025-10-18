@@ -19,6 +19,8 @@ import 'package:disciple/app/core/theme/provider/theme_provider.dart';
 extension DateTimeExtensions on DateTime {
   String get monthTime => DateFormat('MMM dd, yyyy | hh:mm a').format(this);
 
+  String get yyyyMMdd => DateFormat('yyyy-MM-dd').format(this);
+
   String get timeAgo {
     final now = DateTime.now();
     final difference = now.difference(this);

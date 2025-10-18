@@ -1,6 +1,11 @@
+import 'package:dio/dio.dart';
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/app/utils/extension.dart';
+import 'package:disciple/features/devotionals/presentation/notifier/devotional_notifier.dart';
+import 'package:disciple/features/devotionals/presentation/views/skeleton/devotional_skeleton.dart';
+import 'package:disciple/features/devotionals/presentation/widget/devotional_widget.dart';
+import 'package:disciple/widgets/back_arrow_widget.dart';
 import 'package:disciple/widgets/edit_text_field_with.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
@@ -17,11 +22,32 @@ class DevotionalsView extends ConsumerStatefulWidget {
 }
 
 class _DevotionalsViewState extends ConsumerState<DevotionalsView> {
+  late DevotionalNotifier _devotionalNotifier;
+  final CancelToken _cancelToken = CancelToken();
+
+  @override
+  void initState() {
+    _devotionalNotifier = ref.read(devotionalProvider.notifier);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _devotionalNotifier.getDevotionals(
+        date: DateTime(2024, 01, 16),
+        cancelToken: _cancelToken,
+      );
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _cancelToken.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: const Text('Devotionals'),
-      leading: const ImageWidget(imageUrl: AppImage.backIcon, fit: BoxFit.none),
+      leading: const BackArrowWidget(),
       actions: [
         const ImageWidget(imageUrl: AppImage.menuIcon),
         SizedBox(width: 16.w),
@@ -69,63 +95,27 @@ class _DevotionalsViewState extends ConsumerState<DevotionalsView> {
           ),
           SizedBox(height: 32.h),
 
-          Expanded(
-            child: ListView.separated(
-              itemCount: 20,
-              itemBuilder: (_, _) => Row(
-                children: [
-                  Container(
-                    height: 126.h,
-                    width: 126.w,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12.r),
-                      color: AppColors.red50,
-                    ),
-                  ),
-                  SizedBox(width: 16.w),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Potter’s Heart',
-                          style: context.headlineLarge?.copyWith(
-                            fontSize: 16.sp,
+          Consumer(
+            builder: (_, ref, _) {
+              final state = ref.watch(devotionalProvider);
+              return Expanded(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder: (child, animation) =>
+                      FadeTransition(opacity: animation, child: child),
+                  child: state.isLoadingDevotionals
+                      ? const DevotionalSkeletonList()
+                      : ListView.separated(
+                          itemCount: state.devotionals.length,
+                          itemBuilder: (_, index) => DevotionalWidget(
+                            devotional: state.devotionals[index],
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                          separatorBuilder: (context, index) =>
+                              SizedBox(height: 20.h),
                         ),
-                        SizedBox(height: 4.h),
-                        Text(
-                          'by Potter’sVille Church',
-                          style: context.bodyMedium,
-                        ),
-                        SizedBox(height: 2.h),
-                        Text(
-                          'Author: Pastor kayode Oguta',
-                          style: context.bodyMedium?.copyWith(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        SizedBox(height: 8.h),
-                        const Divider(),
-                        SizedBox(height: 8.h),
-                        Row(
-                          children: [
-                            const ImageWidget(imageUrl: AppImage.likeIcon3),
-                            SizedBox(width: 16.w),
-                            const ImageWidget(imageUrl: AppImage.shareIcon2),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              separatorBuilder: (context, index) => SizedBox(height: 20.h),
-            ),
+                ),
+              );
+            },
           ),
         ],
       ),
