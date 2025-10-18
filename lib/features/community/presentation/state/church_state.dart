@@ -1,4 +1,5 @@
 import 'package:disciple/features/community/data/model/church.dart';
+import 'package:disciple/features/community/data/model/gallery.dart';
 import 'package:disciple/features/community/data/model/location.dart';
 import 'package:disciple/features/community/data/model/post.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -27,5 +28,7 @@ abstract class ChurchState with _$ChurchState {
     @Default([]) List<Location> locations,
     @Default(false) bool isGettingPosts,
     @Default([]) List<Post> posts,
+    @Default(false) bool isGettingGalleries,
+    @Default([]) List<Gallery> galleries,
   }) = _ChurchState;
 }

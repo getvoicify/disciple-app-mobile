@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart' show CancelToken;
 import 'package:disciple/app/core/usecase/disciple_usecase.dart';
 import 'package:disciple/features/community/data/model/church.dart';
+import 'package:disciple/features/community/data/model/gallery.dart';
 import 'package:disciple/features/community/data/model/location.dart';
 import 'package:disciple/features/community/data/model/membership.dart';
 import 'package:disciple/features/community/data/model/post.dart';
@@ -198,4 +199,18 @@ class GetPostsUseCaseImpl
     PostEntity? parameter,
     CancelToken? cancelToken,
   }) async => await _service.posts(entity: parameter);
+}
+
+class GetGalleriesUseCaseImpl
+    implements DiscipleUseCaseWithRequiredParam<String, List<Gallery>> {
+  final ChurchService _service;
+
+  GetGalleriesUseCaseImpl({required ChurchService service})
+    : _service = service;
+
+  @override
+  Future<List<Gallery>> execute({
+    required String parameter,
+    CancelToken? cancelToken,
+  }) async => await _service.galleries(id: parameter);
 }

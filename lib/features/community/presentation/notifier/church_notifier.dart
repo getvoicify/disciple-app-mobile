@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:disciple/features/community/data/model/church.dart';
+import 'package:disciple/features/community/data/model/gallery.dart';
 import 'package:disciple/features/community/data/model/location.dart';
 import 'package:disciple/features/community/data/model/post.dart';
 import 'package:disciple/features/community/domain/entity/church_entity.dart';
@@ -19,6 +20,7 @@ class ChurchNotifier extends _$ChurchNotifier {
   final List<Church> _churches = [];
   List<Location> _locations = [];
   List<Post> _posts = [];
+  List<Gallery> _galleries = [];
 
   Future<void> addChurch({required ChurchEntity entity}) async {
     state = state.copyWith(isAddingChurch: true);
@@ -197,6 +199,21 @@ class ChurchNotifier extends _$ChurchNotifier {
     } catch (_) {
     } finally {
       state = state.copyWith(isGettingPosts: false, posts: _posts);
+    }
+  }
+
+  Future<void> getGalleries({
+    required String parameter,
+    CancelToken? cancelToken,
+  }) async {
+    state = state.copyWith(isGettingGalleries: true);
+    try {
+      _galleries = await ref
+          .read(getGalleriesUseCaseImpl)
+          .execute(parameter: parameter, cancelToken: cancelToken);
+    } catch (_) {
+    } finally {
+      state = state.copyWith(isGettingGalleries: false, galleries: _galleries);
     }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:disciple/features/community/data/model/church.dart';
+import 'package:disciple/features/community/data/model/gallery.dart';
 import 'package:disciple/features/community/data/model/location.dart';
 import 'package:disciple/features/community/data/model/membership.dart';
 import 'package:disciple/features/community/data/model/post.dart';
@@ -70,4 +71,9 @@ abstract class ChurchSource {
   });
 
   Future<List<Post>> posts({PostEntity? entity, CancelToken? cancelToken});
+
+  Future<List<Gallery>> galleries({
+    required String id,
+    CancelToken? cancelToken,
+  });
 }

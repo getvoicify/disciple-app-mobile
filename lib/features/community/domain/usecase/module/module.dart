@@ -69,3 +69,7 @@ final getLocationsUseCaseImpl = Provider<DiscipleUseCaseWithRequiredParam>(
 final getPostsUseCaseImpl = Provider<DiscipleUseCaseWithOptionalParam>(
   (ref) => GetPostsUseCaseImpl(service: ref.read(churchServiceModule)),
 );
+
+final getGalleriesUseCaseImpl = Provider<DiscipleUseCaseWithRequiredParam>(
+  (ref) => GetGalleriesUseCaseImpl(service: ref.read(churchServiceModule)),
+);

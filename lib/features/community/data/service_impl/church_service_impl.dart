@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:disciple/app/config/app_logger.dart';
 import 'package:disciple/features/community/data/model/church.dart';
+import 'package:disciple/features/community/data/model/gallery.dart';
 import 'package:disciple/features/community/data/model/location.dart';
 import 'package:disciple/features/community/data/model/membership.dart';
 import 'package:disciple/features/community/data/model/post.dart';
@@ -265,5 +266,20 @@ class ChurchServiceImpl implements ChurchService {
       rethrow;
     }
     return posts;
+  }
+
+  @override
+  Future<List<Gallery>> galleries({
+    required String id,
+    CancelToken? cancelToken,
+  }) async {
+    List<Gallery> galleries = [];
+    try {
+      galleries = await _repository.galleries(id: id, cancelToken: cancelToken);
+    } catch (e) {
+      _logger.e('An error occurred while getting galleries', error: e);
+      rethrow;
+    }
+    return galleries;
   }
 }

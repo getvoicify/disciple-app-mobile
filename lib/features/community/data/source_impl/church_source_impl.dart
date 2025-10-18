@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:disciple/app/core/http/api_path.dart';
 import 'package:disciple/app/core/http/app_http_client.dart';
 import 'package:disciple/features/community/data/model/church.dart';
+import 'package:disciple/features/community/data/model/gallery.dart';
 import 'package:disciple/features/community/data/model/location.dart';
 import 'package:disciple/features/community/data/model/membership.dart';
 import 'package:disciple/features/community/data/model/post.dart';
@@ -195,6 +196,22 @@ class ChurchSourceImpl implements ChurchSource {
     final data = response.data as Map<String, dynamic>;
     return (data as List<dynamic>)
         .map((data) => Post.fromJson(data as Map<String, dynamic>))
+        .toList();
+  }
+
+  @override
+  Future<List<Gallery>> galleries({
+    required String id,
+    CancelToken? cancelToken,
+  }) async {
+    final response = await _client.request(
+      path: '${ApiPath.churches}/$id/galleries',
+      requestType: RequestType.get,
+      cancelToken: cancelToken,
+    );
+    final data = response.data as Map<String, dynamic>;
+    return (data as List<dynamic>)
+        .map((data) => Gallery.fromJson(data as Map<String, dynamic>))
         .toList();
   }
 }

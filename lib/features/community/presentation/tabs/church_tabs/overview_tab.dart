@@ -7,19 +7,20 @@ import 'package:disciple/features/community/data/model/church.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:disciple/widgets/popup_menu_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class OverviewTab extends StatefulWidget {
+class OverviewTab extends ConsumerStatefulWidget {
   const OverviewTab({super.key, required this.church});
 
   final Church church;
 
   @override
-  State<OverviewTab> createState() => _OverviewTabState();
+  ConsumerState<OverviewTab> createState() => _OverviewTabState();
 }
 
-class _OverviewTabState extends State<OverviewTab> {
+class _OverviewTabState extends ConsumerState<OverviewTab> {
   Church? _church;
   final List<PopupMenuItemData> _churchInfo = [];
   SocialLink? _socialLink;
@@ -66,8 +67,7 @@ class _OverviewTabState extends State<OverviewTab> {
     padding: EdgeInsets.symmetric(horizontal: 16.w),
     child: ListView(
       shrinkWrap: true,
-      physics:
-          const NeverScrollableScrollPhysics(), // Disable scrolling in this ListView
+      physics: const NeverScrollableScrollPhysics(),
       children: [
         SizedBox(height: 20.h),
         Text(

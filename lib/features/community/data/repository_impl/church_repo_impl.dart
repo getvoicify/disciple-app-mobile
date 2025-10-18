@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/core/database/module/app_database_module.dart';
 import 'package:disciple/features/community/data/model/church.dart';
+import 'package:disciple/features/community/data/model/gallery.dart';
 import 'package:disciple/features/community/data/model/location.dart';
 import 'package:disciple/features/community/data/model/membership.dart';
 import 'package:disciple/features/community/data/model/post.dart';
@@ -134,4 +135,10 @@ class ChurchRepoImpl implements ChurchRepository {
     PostEntity? entity,
     CancelToken? cancelToken,
   }) async => await _source.posts(entity: entity, cancelToken: cancelToken);
+
+  @override
+  Future<List<Gallery>> galleries({
+    required String id,
+    CancelToken? cancelToken,
+  }) async => await _source.galleries(id: id, cancelToken: cancelToken);
 }
