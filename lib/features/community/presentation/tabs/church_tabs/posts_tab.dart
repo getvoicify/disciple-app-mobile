@@ -1,10 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:disciple/app/common/app_images.dart';
-import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/features/community/presentation/notifier/church_notifier.dart';
 import 'package:disciple/features/community/presentation/skeleton/post_tile_skeleton.dart';
 import 'package:disciple/features/community/presentation/widget/post_tile_widget.dart';
-import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
