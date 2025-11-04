@@ -21,6 +21,8 @@ extension DateTimeExtensions on DateTime {
 
   String get yyyyMMdd => DateFormat('yyyy-MM-dd').format(this);
 
+  String get monthYear => DateFormat('MMMM yyyy').format(this);
+
   String get timeAgo {
     final now = DateTime.now();
     final difference = now.difference(this);

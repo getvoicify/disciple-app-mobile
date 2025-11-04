@@ -29,7 +29,6 @@ class NoteNotifier extends _$NoteNotifier {
           .read(addNoteUseCaseImpl)
           .execute(parameter: entity, cancelToken: cancelToken);
       triggerNotificationTray(AppString.noteAddedSuccessfully);
-      PageNavigator.pop();
     } catch (e) {
       triggerNotificationTray(e.toString(), error: true);
     } finally {

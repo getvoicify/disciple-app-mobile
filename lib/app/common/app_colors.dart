@@ -25,4 +25,10 @@ class AppColors {
   static const Color purple25 = Color(0XFFFCFAFF);
   static const Color pink = Color(0XFFC11574);
   static const Color purple26 = Color(0XFF7F56D9);
+  static const Color purple100 = Color(0XFFF4EBFF);
+  static const Color grey250 = Color(0XFF98A2B3);
+  static const Color lightPink = Color(0XFFFFE4E8);
+  static const Color softPeach = Color(0XFFFFEAD5);
+  static const Color babyBlue = Color(0XFFE0EAFF);
+  static const Color skyBlue = Color(0XFFB9E6FE);
 }

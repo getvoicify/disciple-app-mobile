@@ -1,5 +1,7 @@
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
+import 'package:disciple/app/core/routes/app_router.gr.dart';
+import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/widgets/edit_text_field_with.dart';
 import 'package:disciple/widgets/floating_side_action_button.dart';
 import 'package:disciple/widgets/image_widget.dart';
@@ -108,7 +110,10 @@ class _AllRemindersViewState extends ConsumerState<AllRemindersView>
         itemBuilder: (_, index) => const ReminderTileWidget(),
         separatorBuilder: (context, index) => SizedBox(height: 12.h),
       ),
-      const FloatingSideButtonWidget(title: 'Create New'),
+      FloatingSideButtonWidget(
+        title: 'Create New',
+        onTap: () => PageNavigator.pushRoute(const CreateReminderRoute()),
+      ),
     ],
   );
 }

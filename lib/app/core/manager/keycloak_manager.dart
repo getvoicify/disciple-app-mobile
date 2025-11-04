@@ -98,7 +98,8 @@ class KeycloakManager {
     _refreshTimer?.cancel();
     _refreshTimer = null;
 
-    PageNavigator.replace(const HomeboardingRoute());
+    /// TODO: undo this
+    // PageNavigator.replace(const HomeboardingRoute());
   }
 
   Future<void> _getUserInfo() async {

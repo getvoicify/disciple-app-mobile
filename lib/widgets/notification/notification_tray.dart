@@ -81,7 +81,7 @@ class _MessageNotificationState extends State<MessageNotification>
         width: double.infinity,
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
         decoration: BoxDecoration(
-          color: widget.error ? AppColors.red : AppColors.white,
+          color: widget.error ? AppColors.red : AppColors.green,
           borderRadius: BorderRadius.circular(8.r),
           border: Border.all(
             color: widget.error ? Colors.transparent : AppColors.white,

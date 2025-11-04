@@ -8,10 +8,12 @@ class PopupMenuItemData<T> {
     required this.value,
     required this.label,
     this.icon,
+    this.child,
   });
   final T value;
   final String label;
   final String? icon;
+  final Widget? child;
 }
 
 /// A reusable popup menu button widget.
@@ -21,6 +23,7 @@ class PopupMenuWidget<T> extends StatelessWidget {
     required this.items,
     required this.onSelected,
     this.icon,
+    this.child,
   });
 
   /// The list of items to display in the menu.
@@ -31,6 +34,8 @@ class PopupMenuWidget<T> extends StatelessWidget {
 
   /// The icon to display for the button.
   final String? icon;
+
+  final Widget? child;
 
   @override
   Widget build(BuildContext context) => PopupMenuButton<T>(
@@ -52,6 +57,6 @@ class PopupMenuWidget<T> extends StatelessWidget {
           ),
         )
         .toList(),
-    icon: icon != null ? ImageWidget(imageUrl: icon!) : null,
+    icon: child ?? (icon != null ? ImageWidget(imageUrl: icon!) : null),
   );
 }

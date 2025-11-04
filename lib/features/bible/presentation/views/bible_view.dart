@@ -12,8 +12,9 @@ import 'package:disciple/features/bible/domain/param/bible_search_params.dart';
 import 'package:disciple/features/bible/presentation/notifier/bible_notifier.dart';
 import 'package:disciple/features/bible/presentation/sheets/get_bible_books_sheet.dart';
 import 'package:disciple/features/bible/presentation/widget/build_chapter_widget.dart';
-import 'package:disciple/features/bookmarks/domain/entity/bookmark_entity.dart';
-import 'package:disciple/features/bookmarks/presentation/notifier/bookmark_notifier.dart';
+import 'package:disciple/features/notes/data/model/scripture_reference.dart';
+import 'package:disciple/features/notes/domain/entity/note_entity.dart';
+import 'package:disciple/features/notes/presentation/notifier/note_notifier.dart';
 import 'package:disciple/widgets/drop_down_widget.dart';
 import 'package:disciple/widgets/edit_text_field_with.dart';
 import 'package:disciple/widgets/image_widget.dart';
@@ -169,7 +170,7 @@ class _BibleViewState extends ConsumerState<BibleView> {
                           verse: verse,
                           startVerse: _searchParams.startVerse,
                           searchTerm: _searchController.text.trim(),
-                          onBookmarkTap: () => _handleBookmarkTap(verse),
+                          onBookmarkTap: () => _addToNote(verse),
                         );
                       }),
                     ],
@@ -200,13 +201,22 @@ class _BibleViewState extends ConsumerState<BibleView> {
     }
   }
 
-  Future<void> _handleBookmarkTap(BibleVerse verse) async {
-    final String id = '${verse.bookName}-${verse.chapter}-${verse.verse}';
-    await ref
-        .read(bookmarkProvider.notifier)
-        .addBookmark(
-          bookmark: BookmarkEntity(id: id, bibleVerseId: verse.id),
-        );
+  Future<void> _addToNote(BibleVerse verse) async {
+    final entity = NoteEntity(
+      title: verse.bookName,
+      content: verse.verseText,
+      scriptureReferences: [
+        ScriptureReference(
+          book: verse.bookName,
+          chapter: verse.chapter,
+          verse: verse.verse,
+        ),
+      ],
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    await ref.read(noteProvider.notifier).addNote(entity: entity);
   }
 
   Future<void> _searchBibleSheet() async {

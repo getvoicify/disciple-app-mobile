@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:disciple/app/common/app_strings.dart';
+import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/app/utils/field_validator.dart';
 import 'package:disciple/app/utils/image_picker.dart';
@@ -105,7 +106,9 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
         cancelToken: _cancelToken,
       );
     } else {
-      await provider.addNote(entity: entity, cancelToken: _cancelToken);
+      provider
+          .addNote(entity: entity, cancelToken: _cancelToken)
+          .then((_) => PageNavigator.pop());
     }
   }
 
