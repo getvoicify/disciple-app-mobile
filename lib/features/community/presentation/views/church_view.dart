@@ -77,7 +77,7 @@ class _ChurchViewState extends ConsumerState<ChurchView>
       ],
     ),
     body: NestedScrollView(
-      headerSliverBuilder: (_, _) => [
+      headerSliverBuilder: (_, innerBoxIsScrolled) => [
         SliverToBoxAdapter(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),

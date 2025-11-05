@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:auto_route/auto_route.dart';
 
-
 @RoutePage()
 class ChatsView extends StatefulWidget {
   const ChatsView({super.key});
@@ -42,7 +41,7 @@ class _ChatsViewState extends State<ChatsView> {
           SizedBox(height: 16.h),
           Expanded(
             child: ListView.separated(
-              separatorBuilder: (_, _) => SizedBox(height: 16.h),
+              separatorBuilder: (_, index) => SizedBox(height: 16.h),
               itemBuilder: (context, index) {
                 if (index.isEven) return const ReceiverChatBubleWidget();
                 return const SenderChatBubleWidget();

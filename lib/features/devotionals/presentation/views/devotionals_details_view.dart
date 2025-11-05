@@ -163,7 +163,7 @@ class _DevotionalsDetailsViewState
                     itemCount: 20,
                     padding: EdgeInsets.zero,
                     shrinkWrap: true,
-                    itemBuilder: (_, _) => const BuildTileWidget(),
+                    itemBuilder: (_, index) => const BuildTileWidget(),
                     separatorBuilder: (context, index) =>
                         SizedBox(height: 12.h),
                   ),

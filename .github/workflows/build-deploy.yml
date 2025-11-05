@@ -28,7 +28,7 @@ on:
           - none
 
 env:
-  FLUTTER_VERSION: '3.19.0'
+  FLUTTER_VERSION: '3.35.0'
   JAVA_VERSION: '17'
   RUBY_VERSION: '3.2'
 
