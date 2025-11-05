@@ -112,7 +112,7 @@ final googleServiceProvider = Provider<AppHttpClient>((ref) {
       receiveTimeout: const Duration(seconds: 20),
       sendTimeout: const Duration(seconds: 15),
       queryParameters: {
-        'key': 'AIzaSyBJsZVVNZfDNLlqLYcDzlU-3u8GaufGWKA', // 🔑 Replace securely
+        'key': AppConfig.googleApiKey, // 🔑 Replace securely
       },
     ),
   );

@@ -8,9 +8,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarWidget extends ConsumerStatefulWidget {
-  const CalendarWidget({super.key, required this.frequency});
-
-  final String frequency;
+  const CalendarWidget({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _CalendarWidgetState();

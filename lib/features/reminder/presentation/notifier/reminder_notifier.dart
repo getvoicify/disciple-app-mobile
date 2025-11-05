@@ -18,6 +18,7 @@ class ReminderNotifier extends _$ReminderNotifier {
     state = state.copyWith(isAddingReminder: true);
     try {
       await ref.read(addReminderUseCaseImpl).execute(parameter: entity);
+      triggerNotificationTray("Reminder added successfully");
     } catch (e) {
       triggerNotificationTray(e.toString(), error: true);
     } finally {

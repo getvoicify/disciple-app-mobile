@@ -29,13 +29,11 @@ class CreateReminderView extends ConsumerStatefulWidget {
 class _CreateReminderViewState extends ConsumerState<CreateReminderView>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
-  final _searchController = TextEditingController();
   final _hourController = TextEditingController();
   final _minuteController = TextEditingController();
   final _titleController = TextEditingController();
 
-  String _frequency = 'Daily';
-  String period = 'AM';
+  String _period = 'AM';
   bool _enableAlert = false;
   late final CalendarNotifier _calendarNotifier;
 
@@ -62,7 +60,7 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
     _tabController = TabController(length: 3, vsync: this);
     _reminderNotifier = ref.read(reminderProvider.notifier);
     _calendarNotifier = ref.read(calendarProvider.notifier);
-
+    _setOtherValues();
     // Listen to calendar changes to validate form
     _calendarNotifier.addListener(_validateForm);
   }
@@ -70,12 +68,53 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
   @override
   void dispose() {
     _tabController.dispose();
-    _searchController.dispose();
     _hourController.dispose();
     _minuteController.dispose();
     _titleController.dispose();
-    _calendarNotifier.removeListener(_validateForm);
+    _calendarNotifier
+      ..reset()
+      ..removeListener(_validateForm);
     super.dispose();
+  }
+
+  void _setOtherValues() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = ref.watch(calendarProvider);
+
+      final reminder = state.reminder;
+      if (reminder == null) return;
+
+      final dt = reminder.scheduledAt;
+      if (dt != null) {
+        final int hour24 = dt.hour;
+        final int minute = dt.minute;
+
+        // Convert to 12h
+        final period = hour24 >= 12 ? "PM" : "AM";
+        int hour12 = hour24 % 12;
+        if (hour12 == 0) hour12 = 12; // 00 → 12 AM or PM
+
+        _hourController.text = hour12.toString();
+        _minuteController.text = minute.toString().padLeft(2, '0');
+        _period = period;
+      }
+
+      _titleController.text = reminder.title ?? '';
+
+      final savedColor = reminder.colorValue;
+      final savedLabel = reminder.colorLabel;
+      if (savedColor != null && savedLabel != null) {
+        final match = _colors.firstWhere(
+          (c) => (c.value as Color).toARGB32() == savedColor,
+          orElse: () => _colors.first,
+        );
+        _color = match;
+      }
+
+      _enableAlert = reminder.reminder ?? _enableAlert;
+
+      setState(() {});
+    });
   }
 
   void _validateForm() {
@@ -83,7 +122,9 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
     final minute = int.tryParse(_minuteController.text) ?? -1;
     final titleValid = _titleController.text.trim().isNotEmpty;
     final timeValid = hour >= 1 && hour <= 12 && minute >= 0 && minute <= 59;
-    final calendarValid = _calendarNotifier.dateRange().isNotEmpty;
+    final calendarValid =
+        _calendarNotifier.weekDay != null ||
+        _calendarNotifier.dateRange().isNotEmpty;
 
     setState(() {
       _isFormValid = titleValid && timeValid && calendarValid;
@@ -105,7 +146,7 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
           children: [
             _buildDateSelector(context),
             SizedBox(height: 24.h),
-            CalendarWidget(frequency: _frequency),
+            const CalendarWidget(),
             SizedBox(height: 32.h),
             _buildDetailsSection(context),
             SizedBox(height: 60.h),
@@ -138,23 +179,29 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
         ),
       ),
       _styledCard(
-        DropdownButton<String>(
-          value: _frequency,
-          isDense: true,
-          style: context.headlineLarge?.copyWith(fontSize: 14.sp),
-          icon: const ImageWidget(imageUrl: AppImage.arrowDownIcon),
-          items: ['Daily', 'Weekly', 'Monthly']
-              .map(
-                (e) => DropdownMenuItem(
-                  value: e,
-                  child: Text(e, style: context.bodyMedium),
-                ),
-              )
-              .toList(),
-          onChanged: (value) {
-            setState(() => _frequency = value!);
-            ref.read(calendarProvider.notifier).setCalendarFormat(_frequency);
-            _validateForm();
+        Consumer(
+          builder: (context, ref, child) {
+            final calendarState = ref.watch(calendarProvider);
+            return DropdownButton<String>(
+              value: calendarState.frequency,
+              isDense: true,
+              style: context.headlineLarge?.copyWith(fontSize: 14.sp),
+              icon: const ImageWidget(imageUrl: AppImage.arrowDownIcon),
+              items: ['Daily', 'Weekly', 'Monthly']
+                  .map(
+                    (e) => DropdownMenuItem(
+                      value: e,
+                      child: Text(e, style: context.bodyMedium),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (value) {
+                ref.read(calendarProvider.notifier)
+                  ..setFrequency(value!)
+                  ..setCalendarFormat(value);
+                _validateForm();
+              },
+            );
           },
         ),
       ),
@@ -231,7 +278,7 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
     decoration: _inputBorderStyle,
     child: DropdownButtonHideUnderline(
       child: DropdownButton<String>(
-        value: period,
+        value: _period,
         isExpanded: true,
         icon: const SizedBox.shrink(),
         style: context.bodyMedium?.copyWith(fontSize: 16.sp),
@@ -247,7 +294,7 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
             )
             .toList(),
         onChanged: (v) {
-          setState(() => period = v!);
+          setState(() => _period = v!);
           _validateForm();
         },
       ),
@@ -336,11 +383,24 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
   Future<void> _addReminder() async {
     final calendarState = ref.watch(calendarProvider);
 
-    final hour = int.tryParse(_hourController.text) ?? 0;
+    int hour = int.tryParse(_hourController.text) ?? 0;
     final minute = int.tryParse(_minuteController.text) ?? 0;
 
+    // Convert 12h to 24h
+    if (_period == "PM" && hour != 12) {
+      hour += 12;
+    } else if (_period == "AM" && hour == 12) {
+      hour = 0;
+    }
+
     final now = DateTime.now();
-    final baseTime = DateTime(now.year, now.month, now.day, hour, minute);
+    final baseTime = calendarState.weekDay != null
+        ? _calendarNotifier.nextWeekday(
+            weekday: calendarState.weekDay!,
+            hour: hour,
+            minute: minute,
+          )
+        : DateTime(now.year, now.month, now.day, hour, minute);
 
     final reminder = ReminderEntity(
       title: _titleController.text.trim(),

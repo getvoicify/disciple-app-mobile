@@ -1,6 +1,5 @@
 import 'package:disciple/app/config/app_logger.dart';
 import 'package:disciple/app/core/database/app_database.dart';
-import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/features/reminder/data/model/reminder_model.dart';
 import 'package:disciple/features/reminder/domain/entity/reminder_entity.dart';
 import 'package:disciple/features/reminder/domain/repository/reminder_repository.dart';
@@ -18,12 +17,14 @@ class ReminderServiceImpl implements ReminderService {
   @override
   Future<void> addReminder({required ReminderEntity entity}) async {
     try {
-      final dates = entity.scheduledDates;
-      if (dates == null || dates.isEmpty) return;
-
       final time = entity.scheduledAt ?? DateTime.now();
+      final dates = entity.scheduledDates ?? [];
 
-      for (final date in dates) {
+      // If no date range, just insert the single reminder
+      final targetDates = dates.isEmpty ? [entity.scheduledAt!] : dates;
+
+      // Build reminders with correct time
+      final reminders = targetDates.map((date) {
         final scheduledDateTime = DateTime(
           date.year,
           date.month,
@@ -32,12 +33,15 @@ class ReminderServiceImpl implements ReminderService {
           time.minute,
         );
 
-        final reminder = entity.copyWith(scheduledAt: scheduledDateTime);
+        return entity.copyWith(scheduledAt: scheduledDateTime);
+      }).toList();
 
-        await _repository.addReminder(entity: reminder);
-      }
 
-      _logger.i('Reminders added successfully');
+      await Future.wait(
+        reminders.map((r) => _repository.addReminder(entity: r)),
+      );
+
+      _logger.i("${reminders.length} reminder(s) saved");
     } catch (e, st) {
       _logger.e('Error adding reminder: $e\n$st');
       rethrow;

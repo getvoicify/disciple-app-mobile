@@ -32,10 +32,28 @@ class ReminderRepoImpl implements ReminderRepository {
   }) {
     final select = _database.select(_database.reminder);
 
-    // if (parameter.query != null && (parameter.query ?? '').isNotEmpty) {
-    //   select.where((tbl) => tbl.title.like('${parameter.query}%'));
-    // }
+    // Current time reference
+    final now = DateTime.now();
 
+    // Filter by status (upcoming / past)
+    if (parameter.status != null) {
+      if (parameter.status == true) {
+        // Upcoming reminders
+        select.where((tbl) => tbl.scheduledAt.isBiggerOrEqualValue(now));
+      } else {
+        // Past reminders
+        select.where((tbl) => tbl.scheduledAt.isSmallerThanValue(now));
+      }
+    }
+
+    // Filter by search text
+    if (parameter.searchText != null &&
+        parameter.searchText!.trim().isNotEmpty) {
+      final q = parameter.searchText!.trim();
+      select.where((tbl) => tbl.title.like('$q%'));
+    }
+
+    // Sort by most recently updated
     select.orderBy([(tbl) => OrderingTerm.desc(tbl.updatedAt)]);
 
     return select.watch();
