@@ -146,7 +146,7 @@ class _AllRemindersViewState extends ConsumerState<AllRemindersView>
               onTap: () => _onTap(reminder),
             );
           },
-          separatorBuilder: (_, __) => SizedBox(height: 12.h),
+          separatorBuilder: (_, _) => SizedBox(height: 12.h),
         );
       },
     );

@@ -16,15 +16,14 @@ class AppRouter extends RootStackRouter {
   @override
   List<AutoRoute> get routes => [
     AutoRoute(page: HomeboardingRoute.page),
-    AutoRoute(page: SplashRoute.page),
+    AutoRoute(page: SplashRoute.page, initial: true),
     AutoRoute(
       page: DashboardRoute.page,
-      initial: true,
       children: [
         AutoRoute(page: HomeRoute.page),
         AutoRoute(page: BibleRoute.page),
         AutoRoute(page: CommunityRoute.page),
-        AutoRoute(page: AllRemindersRoute.page),
+        AutoRoute(page: TodayRemindersRoute.page),
         AutoRoute(page: MoreRoute.page),
       ],
     ),
@@ -37,5 +36,6 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: BookmarksRoute.page),
     AutoRoute(page: ChurchRoute.page),
     AutoRoute(page: CreateReminderRoute.page),
+    AutoRoute(page: AllRemindersRoute.page),
   ];
 }

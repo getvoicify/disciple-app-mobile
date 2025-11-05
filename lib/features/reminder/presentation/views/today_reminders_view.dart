@@ -1,13 +1,10 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_colors.dart';
-import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/utils/extension.dart';
+import 'package:disciple/features/reminder/presentation/widget/reminder_tile_widget.dart';
 import 'package:disciple/widgets/floating_side_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import 'package:disciple/features/reminder/presentation/widget/reminder_tile_widget.dart';
-
-import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 @RoutePage()
