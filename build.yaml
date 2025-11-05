@@ -1,0 +1,38 @@
+targets:
+  $default:
+    builders:
+      freezed:
+        generate_for:
+          - lib/**.dart
+        options:
+          from_json: true
+          to_json: true
+          copy_with: true
+          equal: false
+          map: false
+          when: false
+          immutable: false
+          add_diagnostics: false
+          make_sealed: false
+
+      json_serializable:
+        generate_for:
+          - lib/**.dart
+          - lib/features/*/presentation/state/*.dart
+        options:
+          explicit_to_json: true
+          include_if_null: true
+          field_rename: none
+          checked: true
+          disallow_unrecognized_keys: false
+          ignore_unannotated: false
+      drift_dev:
+        options:
+          sql:
+            dialect: sqlite
+            options:
+              modules:
+                - json1
+                - fts5
+                - math
+                - dbstat

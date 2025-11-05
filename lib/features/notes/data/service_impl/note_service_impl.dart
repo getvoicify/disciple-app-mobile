@@ -1,0 +1,110 @@
+import 'package:dio/dio.dart';
+import 'package:disciple/app/config/app_logger.dart';
+import 'package:disciple/app/core/database/app_database.dart';
+import 'package:disciple/features/notes/domain/entity/note_entity.dart';
+import 'package:disciple/features/notes/domain/entity/parsed_note_data.dart';
+import 'package:disciple/features/notes/domain/repository/note_repository.dart';
+import 'package:disciple/features/notes/domain/service/note_service.dart';
+import 'package:disciple/features/notes/domain/usecase/watch_notes_usecase.dart';
+
+class NoteServiceImpl implements NoteService {
+  final _logger = getLogger('NoteServiceImpl');
+
+  final NoteRepository _repository;
+
+  NoteServiceImpl({required NoteRepository repository})
+    : _repository = repository;
+
+  @override
+  Future<void> addNote({
+    required NoteEntity entity,
+    CancelToken? cancelToken,
+  }) async {
+    try {
+      final id = await _repository.addNote(
+        entity: entity,
+        cancelToken: cancelToken,
+      );
+      _logger.i('Note added successfully with id: $id');
+    } catch (e) {
+      _logger.e('An error occurred adding note: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Stream<List<NoteData>> watchNotes({
+    WatchNotesParams? parameter,
+    CancelToken? cancelToken,
+  }) => _repository.watchNotes(params: parameter, cancelToken: cancelToken);
+
+  @override
+  Future<ParsedNoteData?> getNoteById({
+    required String id,
+    CancelToken? cancelToken,
+  }) async {
+    ParsedNoteData? note;
+
+    try {
+      final noteData = await _repository.getNoteById(
+        id: id,
+        cancelToken: cancelToken,
+      );
+
+      note = ParsedNoteData(noteData);
+      _logger.i('Note retrieved successfully with id: $id');
+    } catch (e) {
+      _logger.e('An error occurred retrieving note: $e');
+      rethrow;
+    }
+    return note;
+  }
+
+  @override
+  Future<bool> deleteNote({
+    required String id,
+    CancelToken? cancelToken,
+  }) async {
+    bool result = false;
+    try {
+      result = await _repository.deleteNote(id: id, cancelToken: cancelToken);
+      _logger.i('Note with id: $id deleted successfully');
+    } catch (e) {
+      _logger.e('An error occurred deleting note: $e');
+      rethrow;
+    }
+    return result;
+  }
+
+  @override
+  Future<bool> updateNote({
+    required NoteEntity entity,
+    CancelToken? cancelToken,
+  }) async {
+    bool result = false;
+    try {
+      result = await _repository.updateNote(
+        entity: entity,
+        cancelToken: cancelToken,
+      );
+      _logger.i('Note with id: ${entity.id} updated successfully');
+    } catch (e) {
+      _logger.e('An error occurred updating note: $e');
+      rethrow;
+    }
+    return result;
+  }
+
+  @override
+  Future<void> getNotes({
+    WatchNotesParams? parameter,
+    CancelToken? cancelToken,
+  }) async {
+    try {
+      await _repository.getNotes(params: parameter, cancelToken: cancelToken);
+    } catch (e) {
+      _logger.e('An error occurred getting notes: $e');
+      rethrow;
+    }
+  }
+}
