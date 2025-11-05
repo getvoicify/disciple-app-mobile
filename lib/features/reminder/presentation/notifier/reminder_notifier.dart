@@ -15,7 +15,7 @@ class ReminderNotifier extends _$ReminderNotifier {
   ReminderState build() => const ReminderState();
 
   Future<void> addReminder({required ReminderEntity entity}) async {
-    state = state.copyWith(isAddingReminder: true);
+    state = state.copyWith(isBusy: true);
     try {
       await ref.read(addReminderUseCaseImpl).execute(parameter: entity);
       triggerNotificationTray("Reminder added successfully");
@@ -23,7 +23,7 @@ class ReminderNotifier extends _$ReminderNotifier {
       triggerNotificationTray(e.toString(), error: true);
     } finally {
       ref.read(calendarProvider.notifier).reset();
-      state = state.copyWith(isAddingReminder: false);
+      state = state.copyWith(isBusy: false);
     }
   }
 
@@ -40,4 +40,30 @@ class ReminderNotifier extends _$ReminderNotifier {
                 ),
               )
           as Stream<List<ReminderData>>;
+
+  Future<void> updateReminder({required ReminderEntity entity}) async {
+    state = state.copyWith(isBusy: true);
+    try {
+      await ref.read(updateReminderUseCaseImpl).execute(parameter: entity);
+      triggerNotificationTray("Reminder updated successfully");
+    } catch (e) {
+      triggerNotificationTray(e.toString(), error: true);
+    } finally {
+      ref.read(calendarProvider.notifier).reset();
+      state = state.copyWith(isBusy: false);
+    }
+  }
+
+  Future<void> deleteReminder({required String id}) async {
+    state = state.copyWith(isBusy: true);
+    try {
+      await ref.read(deleteReminderUseCaseImpl).execute(parameter: id);
+      triggerNotificationTray("Reminder deleted successfully");
+    } catch (e) {
+      triggerNotificationTray(e.toString(), error: true);
+    } finally {
+      ref.read(calendarProvider.notifier).reset();
+      state = state.copyWith(isBusy: false);
+    }
+  }
 }

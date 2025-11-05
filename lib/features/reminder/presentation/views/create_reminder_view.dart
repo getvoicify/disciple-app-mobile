@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
+import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/app/utils/field_validator.dart';
 import 'package:disciple/features/reminder/data/model/reminder_model.dart';
@@ -17,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:uuid/uuid.dart';
 
 @RoutePage()
 class CreateReminderView extends ConsumerStatefulWidget {
@@ -29,13 +31,13 @@ class CreateReminderView extends ConsumerStatefulWidget {
 class _CreateReminderViewState extends ConsumerState<CreateReminderView>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
+
   final _hourController = TextEditingController();
   final _minuteController = TextEditingController();
   final _titleController = TextEditingController();
 
   String _period = 'AM';
   bool _enableAlert = false;
-  late final CalendarNotifier _calendarNotifier;
 
   PopupMenuItemData _color = const PopupMenuItemData(
     value: AppColors.lightPink,
@@ -50,7 +52,16 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
     PopupMenuItemData(value: AppColors.skyBlue, label: "Sky Blue"),
   ];
 
-  late ReminderNotifier _reminderNotifier;
+  final List<PopupMenuItemData<String>> menus = const [
+    PopupMenuItemData<String>(
+      value: 'delete',
+      label: 'Delete',
+      icon: AppImage.deleteIcon,
+    ),
+  ];
+
+  late final CalendarNotifier _calendarNotifier;
+  late final ReminderNotifier _reminderNotifier;
 
   bool _isFormValid = false;
 
@@ -58,10 +69,16 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _reminderNotifier = ref.read(reminderProvider.notifier);
+
+    // store provider notifiers once for safe dispose usage
     _calendarNotifier = ref.read(calendarProvider.notifier);
-    _setOtherValues();
-    // Listen to calendar changes to validate form
+    _reminderNotifier = ref.read(reminderProvider.notifier);
+
+    // If calendarProvider has a reminder preloaded (edit mode),
+    // populate UI after first frame with read (not watch).
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadEditData());
+
+    // listen to calendar changes to revalidate
     _calendarNotifier.addListener(_validateForm);
   }
 
@@ -71,50 +88,45 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
     _hourController.dispose();
     _minuteController.dispose();
     _titleController.dispose();
+
     _calendarNotifier
       ..reset()
       ..removeListener(_validateForm);
+
     super.dispose();
   }
 
-  void _setOtherValues() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final state = ref.watch(calendarProvider);
+  void _loadEditData() {
+    final reminder = ref.read(calendarProvider).reminder;
+    if (reminder == null) return;
 
-      final reminder = state.reminder;
-      if (reminder == null) return;
+    // convert stored 24h hour into 12h + period
+    final dt = reminder.scheduledAt;
+    if (dt != null) {
+      final int hour24 = dt.hour;
+      final minute = dt.minute;
+      _period = hour24 >= 12 ? 'PM' : 'AM';
+      int hour12 = hour24 % 12;
+      if (hour12 == 0) hour12 = 12;
+      _hourController.text = hour12.toString();
+      _minuteController.text = minute.toString().padLeft(2, '0');
+    }
 
-      final dt = reminder.scheduledAt;
-      if (dt != null) {
-        final int hour24 = dt.hour;
-        final int minute = dt.minute;
+    _titleController.text = reminder.title ?? '';
 
-        // Convert to 12h
-        final period = hour24 >= 12 ? "PM" : "AM";
-        int hour12 = hour24 % 12;
-        if (hour12 == 0) hour12 = 12; // 00 → 12 AM or PM
+    final savedColor = reminder.colorValue;
+    if (savedColor != null) {
+      // pick matching instance from _colors to satisfy DropdownButton's equality
+      final match = _colors.firstWhere(
+        (c) => (c.value as Color).toARGB32() == savedColor,
+        orElse: () => _colors.first,
+      );
+      _color = match;
+    }
 
-        _hourController.text = hour12.toString();
-        _minuteController.text = minute.toString().padLeft(2, '0');
-        _period = period;
-      }
+    _enableAlert = reminder.reminder ?? _enableAlert;
 
-      _titleController.text = reminder.title ?? '';
-
-      final savedColor = reminder.colorValue;
-      final savedLabel = reminder.colorLabel;
-      if (savedColor != null && savedLabel != null) {
-        final match = _colors.firstWhere(
-          (c) => (c.value as Color).toARGB32() == savedColor,
-          orElse: () => _colors.first,
-        );
-        _color = match;
-      }
-
-      _enableAlert = reminder.reminder ?? _enableAlert;
-
-      setState(() {});
-    });
+    setState(() {});
   }
 
   void _validateForm() {
@@ -131,41 +143,129 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
     });
   }
 
+  Future<void> _addReminder() async {
+    final calendarState = ref.read(calendarProvider);
+
+    // parse input
+    int hour = int.tryParse(_hourController.text) ?? 0;
+    final minute = int.tryParse(_minuteController.text) ?? 0;
+
+    // convert to 24-hour
+    if (_period == 'PM' && hour != 12) hour += 12;
+    if (_period == 'AM' && hour == 12) hour = 0;
+
+    // compute scheduled base time:
+    final DateTime baseTime = calendarState.weekDay != null
+        ? _calendarNotifier.nextWeekday(
+            weekday: calendarState.weekDay!,
+            hour: hour,
+            minute: minute,
+          )
+        : (calendarState.rangeStart != null
+              ? DateTime(
+                  calendarState.rangeStart!.year,
+                  calendarState.rangeStart!.month,
+                  calendarState.rangeStart!.day,
+                  hour,
+                  minute,
+                )
+              : DateTime.now().copyWith(hour: hour, minute: minute));
+
+    // build ReminderEntity. If editing, keep the existing id
+    final editing = calendarState.reminder;
+    final entity = ReminderEntity(
+      id: editing?.id,
+      title: _titleController.text.trim(),
+      color: ReminderColor(
+        label: _color.label,
+        color: (_color.value as Color).toARGB32(),
+      ),
+      reminder: _enableAlert,
+      scheduledAt: baseTime,
+      scheduledDates: calendarState.dateRange(),
+      createdAt: editing?.createdAt ?? DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    if (editing == null) {
+      await _reminderNotifier.addReminder(entity: entity);
+    } else {
+      await _reminderNotifier.updateReminder(entity: entity);
+    }
+
+    // after save - reset calendar provider (optional)
+    _calendarNotifier.reset();
+    if (mounted) Navigator.of(context).pop();
+  }
+
+  void _discardChanges() {
+    _calendarNotifier.reset();
+    _hourController.clear();
+    _minuteController.clear();
+    _titleController.clear();
+    setState(() {});
+  }
+
+  // ---------------- UI ----------------
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      leading: const BackArrowWidget(),
-      elevation: 0,
-      title: const Text('Create Reminder'),
-    ),
-    body: Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildDateSelector(context),
-            SizedBox(height: 24.h),
-            const CalendarWidget(),
-            SizedBox(height: 32.h),
-            _buildDetailsSection(context),
-            SizedBox(height: 60.h),
-            ElevatedButtonIconWidget(
-              onPressed: _isFormValid ? _addReminder : null,
-              title: 'Save Reminder',
-            ),
-            SizedBox(height: 18.h),
-            ElevatedButtonIconWidget(
-              onPressed: _discardChanges,
-              backgroundColor: AppColors.purple50,
-              textStyle: context.bodyLarge?.copyWith(color: AppColors.purple),
-              title: 'Discard Changes',
-            ),
-          ],
+  Widget build(BuildContext context) {
+    final calendarState = ref.watch(calendarProvider);
+    final bool updating = calendarState.reminder != null;
+    return Scaffold(
+      appBar: AppBar(
+        leading: const BackArrowWidget(),
+        elevation: 0,
+        title: Text(updating ? 'Update Reminder' : 'Create Reminder'),
+        actions: [
+          PopupMenuWidget<String>(
+            items: menus
+                .map(
+                  (menu) => PopupMenuItemData(
+                    icon: menu.icon,
+                    value: menu.value,
+                    label: menu.label,
+                  ),
+                )
+                .toList(),
+            onSelected: (value) => _handleMenuSelection(value),
+            icon: AppImage.dotsIcon,
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildDateSelector(context),
+              SizedBox(height: 24.h),
+              const CalendarWidget(),
+              SizedBox(height: 32.h),
+              _buildDetailsSection(context),
+              SizedBox(height: 60.h),
+              ElevatedButtonIconWidget(
+                onPressed: _isFormValid ? _addReminder : null,
+                title: updating ? 'Update Reminder' : 'Save Reminder',
+              ),
+              if (!updating) ...[
+                SizedBox(height: 18.h),
+                ElevatedButtonIconWidget(
+                  onPressed: _discardChanges,
+                  backgroundColor: AppColors.purple50,
+                  textStyle: context.bodyLarge?.copyWith(
+                    color: AppColors.purple,
+                  ),
+                  title: 'Discard Changes',
+                ),
+              ],
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 
   Widget _buildDateSelector(BuildContext context) => Row(
     children: [
@@ -196,8 +296,9 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
                   )
                   .toList(),
               onChanged: (value) {
+                if (value == null) return;
                 ref.read(calendarProvider.notifier)
-                  ..setFrequency(value!)
+                  ..setFrequency(value)
                   ..setCalendarFormat(value);
                 _validateForm();
               },
@@ -335,7 +436,8 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
                 )
                 .toList(),
             onChanged: (v) {
-              setState(() => _color = v!);
+              if (v == null) return;
+              setState(() => _color = v);
               _validateForm();
             },
           ),
@@ -380,47 +482,12 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
     ),
   );
 
-  Future<void> _addReminder() async {
-    final calendarState = ref.watch(calendarProvider);
-
-    int hour = int.tryParse(_hourController.text) ?? 0;
-    final minute = int.tryParse(_minuteController.text) ?? 0;
-
-    // Convert 12h to 24h
-    if (_period == "PM" && hour != 12) {
-      hour += 12;
-    } else if (_period == "AM" && hour == 12) {
-      hour = 0;
+  Future<void> _handleMenuSelection(String value) async {
+    final reminder = ref.watch(calendarProvider).reminder;
+    if (value == 'delete') {
+      _reminderNotifier
+          .deleteReminder(id: reminder?.id ?? '')
+          .then((_) => PageNavigator.pop());
     }
-
-    final now = DateTime.now();
-    final baseTime = calendarState.weekDay != null
-        ? _calendarNotifier.nextWeekday(
-            weekday: calendarState.weekDay!,
-            hour: hour,
-            minute: minute,
-          )
-        : DateTime(now.year, now.month, now.day, hour, minute);
-
-    final reminder = ReminderEntity(
-      title: _titleController.text.trim(),
-      color: ReminderColor(
-        label: _color.label,
-        color: (_color.value as Color).toARGB32(),
-      ),
-      reminder: _enableAlert,
-      scheduledAt: baseTime,
-      scheduledDates: calendarState.dateRange(),
-    );
-
-    await _reminderNotifier.addReminder(entity: reminder);
-  }
-
-  void _discardChanges() {
-    _calendarNotifier.reset();
-    _hourController.clear();
-    _minuteController.clear();
-    _titleController.clear();
-    setState(() {});
   }
 }

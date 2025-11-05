@@ -52,54 +52,63 @@ class _AllRemindersViewState extends ConsumerState<AllRemindersView>
       elevation: 0,
       title: const Text('Reminders'),
     ),
-    body: Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 16.h),
+    body: Stack(
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 16.h),
 
-          // Search Bar
-          EditTextFieldWidget(
-            controller: _searchController,
-            prefix: const ImageWidget(
-              imageUrl: AppImage.searchIcon,
-              fit: BoxFit.none,
-            ),
-            label: 'Search Reminder',
-          ),
+              // Search Bar
+              EditTextFieldWidget(
+                controller: _searchController,
+                prefix: const ImageWidget(
+                  imageUrl: AppImage.searchIcon,
+                  fit: BoxFit.none,
+                ),
+                label: 'Search Reminder',
+              ),
 
-          SizedBox(height: 20.h),
+              SizedBox(height: 20.h),
 
-          // Tabs
-          TabBar(
-            controller: _tabController,
-            indicator: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: AppColors.purple)),
-            ),
-            isScrollable: true,
-            tabs: const [
-              Tab(text: 'All'),
-              Tab(text: 'Active'),
-              Tab(text: 'Inactive'),
+              // Tabs
+              TabBar(
+                controller: _tabController,
+                indicator: const BoxDecoration(
+                  border: Border(bottom: BorderSide(color: AppColors.purple)),
+                ),
+                isScrollable: true,
+                tabs: const [
+                  Tab(text: 'All'),
+                  Tab(text: 'Active'),
+                  Tab(text: 'Inactive'),
+                ],
+              ),
+
+              SizedBox(height: 16.h),
+
+              // Tab views
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildRemindersList(), // All
+                    _buildRemindersList(status: true), // Active (Upcoming)
+                    _buildRemindersList(status: false), // Inactive (Past)
+                  ],
+                ),
+              ),
             ],
           ),
-
-          SizedBox(height: 16.h),
-
-          // Tab views
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildRemindersList(), // All
-                _buildRemindersList(status: true), // Active (Upcoming)
-                _buildRemindersList(status: false), // Inactive (Past)
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+        // Create Button
+        FloatingSideButtonWidget(
+          title: 'Create New',
+          onTap: () => PageNavigator.pushRoute(const CreateReminderRoute()),
+        ),
+      ],
     ),
   );
 
@@ -111,45 +120,35 @@ class _AllRemindersViewState extends ConsumerState<AllRemindersView>
           searchText: _searchController.text.trim(),
         );
 
-    return Stack(
-      children: [
-        StreamBuilder<List<ReminderData>>(
-          stream: stream,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
+    return StreamBuilder<List<ReminderData>>(
+      stream: stream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-            if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text('No Reminders Found'));
-            }
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('No Reminders Found'));
+        }
 
-            final reminders = snapshot.data!;
+        final reminders = snapshot.data!;
 
-            return ListView.separated(
-              itemCount: reminders.length,
-              itemBuilder: (_, index) {
-                final reminder = reminders[index];
-                return ReminderTileWidget(
-                  isNotActive: status == false,
-                  title: reminder.title,
-                  date: 'Every ${reminder.scheduledAt?.weekDay}',
-                  time: reminder.scheduledAt?.time,
-                  color: reminder.colorValue?.toColor,
-                  onTap: () => _onTap(reminder),
-                );
-              },
-              separatorBuilder: (_, __) => SizedBox(height: 12.h),
+        return ListView.separated(
+          itemCount: reminders.length,
+          itemBuilder: (_, index) {
+            final reminder = reminders[index];
+            return ReminderTileWidget(
+              isNotActive: status == false,
+              title: reminder.title,
+              date: reminder.scheduledAt?.monthDateYear,
+              time: reminder.scheduledAt?.time,
+              color: reminder.colorValue?.toColor,
+              onTap: () => _onTap(reminder),
             );
           },
-        ),
-
-        // Create Button
-        FloatingSideButtonWidget(
-          title: 'Create New',
-          onTap: () => PageNavigator.pushRoute(const CreateReminderRoute()),
-        ),
-      ],
+          separatorBuilder: (_, __) => SizedBox(height: 12.h),
+        );
+      },
     );
   }
 

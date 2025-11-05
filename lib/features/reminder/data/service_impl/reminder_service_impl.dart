@@ -1,6 +1,5 @@
 import 'package:disciple/app/config/app_logger.dart';
 import 'package:disciple/app/core/database/app_database.dart';
-import 'package:disciple/features/reminder/data/model/reminder_model.dart';
 import 'package:disciple/features/reminder/domain/entity/reminder_entity.dart';
 import 'package:disciple/features/reminder/domain/repository/reminder_repository.dart';
 import 'package:disciple/features/reminder/domain/service/reminder_service.dart';
@@ -36,7 +35,7 @@ class ReminderServiceImpl implements ReminderService {
         return entity.copyWith(scheduledAt: scheduledDateTime);
       }).toList();
 
-
+      /// TODO: Implement notification reminder
       await Future.wait(
         reminders.map((r) => _repository.addReminder(entity: r)),
       );
@@ -55,25 +54,21 @@ class ReminderServiceImpl implements ReminderService {
 
   @override
   Future<void> deleteReminder({required String id}) {
-    // TODO: implement deleteReminder
-    throw UnimplementedError();
+    try {
+      return _repository.deleteReminder(id: id);
+    } catch (e, st) {
+      _logger.e('Error deleting reminder: $e\n$st');
+      rethrow;
+    }
   }
 
   @override
-  Future<Reminder?> getReminderById({required String id}) {
-    // TODO: implement getReminderById
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<Reminder>> getReminders() {
-    // TODO: implement getReminders
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Reminder> updateReminder({required ReminderEntity entity}) {
-    // TODO: implement updateReminder
-    throw UnimplementedError();
+  Future<bool> updateReminder({required ReminderEntity entity}) {
+    try {
+      return _repository.updateReminder(entity: entity);
+    } catch (e, st) {
+      _logger.e('Error updating reminder: $e\n$st');
+      rethrow;
+    }
   }
 }

@@ -1,6 +1,5 @@
 import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/core/database/module/app_database_module.dart';
-import 'package:disciple/features/notes/domain/entity/note_entity.dart';
 import 'package:disciple/features/reminder/data/mapper/module/module.dart';
 import 'package:disciple/features/reminder/data/mapper/reminder_mapper.dart';
 import 'package:disciple/features/reminder/data/model/reminder_model.dart';
@@ -60,26 +59,20 @@ class ReminderRepoImpl implements ReminderRepository {
   }
 
   @override
-  Future<void> deleteNote({required String id}) {
-    // TODO: implement deleteNote
-    throw UnimplementedError();
+  Future<void> deleteReminder({required String id}) async {
+    await (_database.delete(
+      _database.reminder,
+    )..where((tbl) => tbl.id.equals(id))).go();
   }
 
   @override
-  Future<Reminder?> getReminderById({required String id}) {
-    // TODO: implement getReminderById
-    throw UnimplementedError();
-  }
+  Future<bool> updateReminder({required ReminderEntity entity}) async {
+    final companion = _reminderMapper.update(entity);
 
-  @override
-  Future<List<Reminder>> getReminders() {
-    // TODO: implement getReminders
-    throw UnimplementedError();
-  }
+    final result = await (_database.update(
+      _database.reminder,
+    )..where((tbl) => tbl.id.equals(entity.id ?? ''))).write(companion);
 
-  @override
-  Future<Reminder> updateReminder({required NoteEntity entity}) {
-    // TODO: implement updateReminder
-    throw UnimplementedError();
+    return result > 0;
   }
 }
