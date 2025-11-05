@@ -17,6 +17,10 @@ import 'package:overlay_support/overlay_support.dart';
 import 'package:disciple/app/core/theme/provider/theme_provider.dart';
 
 extension DateTimeExtensions on DateTime {
+  String get time => DateFormat('hh:mm a').format(this);
+
+  String get weekDay => DateFormat('EEEE').format(this);
+
   String get monthTime => DateFormat('MMM dd, yyyy | hh:mm a').format(this);
 
   String get yyyyMMdd => DateFormat('yyyy-MM-dd').format(this);
@@ -214,4 +218,8 @@ extension RefExtension on Ref {
     invalidate(connectivityManagerInstanceProvider);
     invalidate(bibleToCompanionMapperProvider);
   }
+}
+
+extension IntExtension on int {
+  Color get toColor => Color(this);
 }

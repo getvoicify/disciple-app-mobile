@@ -20,11 +20,6 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
   late PageController _pageController;
   final RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.toggledOn;
 
-  DateTime? _rangeStart;
-  DateTime? _rangeEnd;
-  DateTime? _selectedDay;
-  DateTime _focusedDay = DateTime.now();
-  String? _weekDay;
   final DateTime _present = DateTime.now();
 
   // --- Helpers ---
@@ -59,7 +54,7 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (calendarState.calendarFrequency != CalendarFrequency.weekly) ...[
-          _buildHeader(),
+          _buildHeader(calendarState),
           SizedBox(height: 8.h),
         ],
         _buildCalendarContainer(baseTextStyle, calendarState),
@@ -68,7 +63,7 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
   }
 
   // --- UI Builders ---
-  Widget _buildHeader() => Row(
+  Widget _buildHeader(CalendarNotifier calendarState) => Row(
     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
     children: [
       IconButton(
@@ -76,7 +71,7 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
         icon: const Icon(Icons.navigate_before),
       ),
       Text(
-        _focusedDay.monthYear,
+        calendarState.focusedDay.monthYear,
         style: context.headlineLarge?.copyWith(
           fontSize: 16.sp,
           fontWeight: FontWeight.w500,
@@ -105,37 +100,35 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
       transitionBuilder: (child, animation) =>
           SizeTransition(sizeFactor: animation, child: child),
       child: calendarState.calendarFrequency == CalendarFrequency.weekly
-          ? _buildWeekdays(baseTextStyle)
+          ? _buildWeekdays(baseTextStyle, calendarState)
           : TableCalendar(
               firstDay: DateTime(_present.year, _present.month),
               lastDay: DateTime(_present.year + 5, _present.month, 0),
-              focusedDay: _focusedDay,
+              focusedDay: calendarState.focusedDay,
               headerVisible: false,
               startingDayOfWeek: StartingDayOfWeek.monday,
               onCalendarCreated: (controller) => _pageController = controller,
               calendarFormat: calendarState.calendarFormat,
-              selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-              rangeStartDay: _rangeStart,
-              rangeEndDay: _rangeEnd,
+              selectedDayPredicate: (day) =>
+                  isSameDay(calendarState.selectedDay, day),
+              rangeStartDay: calendarState.rangeStart,
+              rangeEndDay: calendarState.rangeEnd,
               onPageChanged: (focusedDay) =>
-                  setState(() => _focusedDay = focusedDay),
+                  ref.read(calendarProvider.notifier).setFocusedDay(focusedDay),
               // Disable past dates
               enabledDayPredicate: (day) => !_isPastDay(day),
 
               onDaySelected: (selectedDay, focusedDay) {
                 if (_isPastDay(selectedDay)) return;
-                setState(() {
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
-                });
+                ref.read(calendarProvider.notifier)
+                  ..setSelectedDay(selectedDay)
+                  ..setFocusedDay(selectedDay);
               },
               onRangeSelected: (start, end, focusedDay) {
                 if (start != null && _isPastDay(start)) return;
-                setState(() {
-                  _rangeStart = start;
-                  _rangeEnd = end;
-                  _focusedDay = focusedDay;
-                });
+                ref.read(calendarProvider.notifier)
+                  ..setFocusedDay(focusedDay)
+                  ..setRange(start, end);
               },
               daysOfWeekVisible:
                   calendarState.calendarFrequency != CalendarFrequency.monthly,
@@ -150,30 +143,34 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
     ),
   );
 
-  Row _buildWeekdays(TextStyle baseTextStyle) => Row(
-    mainAxisAlignment: MainAxisAlignment.spaceAround,
-    children: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((weekday) {
-      final isSelected = _weekDay == weekday;
-      return GestureDetector(
-        onTap: () => setState(() => _weekDay = weekday),
-        child: Container(
-          height: 47.h,
-          width: 47.w,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: isSelected ? AppColors.purple : Colors.transparent,
-          ),
-          child: Text(
-            weekday,
-            style: baseTextStyle.copyWith(
-              color: isSelected ? AppColors.white : AppColors.grey800,
+  Row _buildWeekdays(TextStyle baseTextStyle, CalendarNotifier calendarState) =>
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((
+          weekday,
+        ) {
+          final isSelected = calendarState.weekDay == weekday;
+          return GestureDetector(
+            onTap: () =>
+                ref.read(calendarProvider.notifier).setWeekDay(weekday),
+            child: Container(
+              height: 47.h,
+              width: 47.w,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isSelected ? AppColors.purple : Colors.transparent,
+              ),
+              child: Text(
+                weekday,
+                style: baseTextStyle.copyWith(
+                  color: isSelected ? AppColors.white : AppColors.grey800,
+                ),
+              ),
             ),
-          ),
-        ),
+          );
+        }).toList(),
       );
-    }).toList(),
-  );
 
   CalendarStyle _calendarStyle(TextStyle baseTextStyle) {
     final mutedText = baseTextStyle.copyWith(
@@ -203,6 +200,7 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
       rangeEndTextStyle: circleText,
       withinRangeTextStyle: circleText,
       rangeHighlightColor: Colors.transparent,
+      isTodayHighlighted: false,
     );
   }
 

@@ -13,6 +13,21 @@ class CalendarNotifier extends ChangeNotifier {
   CalendarFrequency _calendarFrequency = CalendarFrequency.daily;
   CalendarFrequency get calendarFrequency => _calendarFrequency;
 
+  DateTime? _rangeStart;
+  DateTime? _rangeEnd;
+
+  DateTime? get rangeStart => _rangeStart;
+  DateTime? get rangeEnd => _rangeEnd;
+
+  DateTime _focusedDay = DateTime.now();
+  DateTime get focusedDay => _focusedDay;
+
+  DateTime? _selectedDay;
+  DateTime? get selectedDay => _selectedDay;
+
+  String? _weekDay;
+  String? get weekDay => _weekDay;
+
   void setCalendarFormat(String format) {
     switch (format) {
       case "Daily":
@@ -26,6 +41,58 @@ class CalendarNotifier extends ChangeNotifier {
         _calendarFormat = CalendarFormat.month;
       default:
     }
+    notifyListeners();
+  }
+
+  void setRange(DateTime? start, DateTime? end) {
+    _rangeStart = start;
+    _rangeEnd = end;
+    notifyListeners();
+  }
+
+  void setFocusedDay(DateTime day) {
+    _focusedDay = day;
+    notifyListeners();
+  }
+
+  void setSelectedDay(DateTime day) {
+    _selectedDay = day;
+    notifyListeners();
+  }
+
+  List<DateTime> dateRange() {
+    final List<DateTime> dates = [];
+
+    if (rangeStart == null) return dates;
+
+    // If no rangeEnd is provided, just return the single date
+    final end = rangeEnd ?? rangeStart!;
+
+    // Add all dates from start to end inclusive
+    for (
+      DateTime date = rangeStart!;
+      date.isBefore(end) || date.isAtSameMomentAs(end);
+      date = date.add(const Duration(days: 1))
+    ) {
+      dates.add(date);
+    }
+
+    return dates;
+  }
+
+  void setWeekDay(String day) {
+    _weekDay = day;
+    notifyListeners();
+  }
+
+  void reset() {
+    _calendarFrequency = CalendarFrequency.daily;
+    _calendarFormat = CalendarFormat.month;
+    _rangeStart = null;
+    _rangeEnd = null;
+    _focusedDay = DateTime.now();
+    _selectedDay = null;
+    _weekDay = null;
     notifyListeners();
   }
 }

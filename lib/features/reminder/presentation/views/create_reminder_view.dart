@@ -1,11 +1,12 @@
-// Cleaned version of CreateReminderView
-// (logic and UI preserved, redundant code removed, structure improved)
-
 import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/app/utils/field_validator.dart';
+import 'package:disciple/features/reminder/data/model/reminder_model.dart';
+import 'package:disciple/features/reminder/domain/entity/reminder_entity.dart';
+import 'package:disciple/features/reminder/presentation/notifier/reminder_notifier.dart';
+import 'package:disciple/widgets/back_arrow_widget.dart';
 import 'package:disciple/widgets/calendar/calendar_widget.dart';
 import 'package:disciple/widgets/calendar/module/calendar_notifier.dart';
 import 'package:disciple/widgets/edit_text_field_with.dart';
@@ -27,10 +28,7 @@ class CreateReminderView extends ConsumerStatefulWidget {
 
 class _CreateReminderViewState extends ConsumerState<CreateReminderView>
     with SingleTickerProviderStateMixin {
-  late final TabController _tabController = TabController(
-    length: 3,
-    vsync: this,
-  );
+  late final TabController _tabController;
   final _searchController = TextEditingController();
   final _hourController = TextEditingController();
   final _minuteController = TextEditingController();
@@ -39,6 +37,7 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
   String _frequency = 'Daily';
   String period = 'AM';
   bool _enableAlert = false;
+  late final CalendarNotifier _calendarNotifier;
 
   PopupMenuItemData _color = const PopupMenuItemData(
     value: AppColors.lightPink,
@@ -53,6 +52,21 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
     PopupMenuItemData(value: AppColors.skyBlue, label: "Sky Blue"),
   ];
 
+  late ReminderNotifier _reminderNotifier;
+
+  bool _isFormValid = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+    _reminderNotifier = ref.read(reminderProvider.notifier);
+    _calendarNotifier = ref.read(calendarProvider.notifier);
+
+    // Listen to calendar changes to validate form
+    _calendarNotifier.addListener(_validateForm);
+  }
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -60,13 +74,26 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
     _hourController.dispose();
     _minuteController.dispose();
     _titleController.dispose();
+    _calendarNotifier.removeListener(_validateForm);
     super.dispose();
+  }
+
+  void _validateForm() {
+    final hour = int.tryParse(_hourController.text) ?? -1;
+    final minute = int.tryParse(_minuteController.text) ?? -1;
+    final titleValid = _titleController.text.trim().isNotEmpty;
+    final timeValid = hour >= 1 && hour <= 12 && minute >= 0 && minute <= 59;
+    final calendarValid = _calendarNotifier.dateRange().isNotEmpty;
+
+    setState(() {
+      _isFormValid = titleValid && timeValid && calendarValid;
+    });
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      leading: const ImageWidget(imageUrl: AppImage.backIcon, fit: BoxFit.none),
+      leading: const BackArrowWidget(),
       elevation: 0,
       title: const Text('Create Reminder'),
     ),
@@ -82,10 +109,13 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
             SizedBox(height: 32.h),
             _buildDetailsSection(context),
             SizedBox(height: 60.h),
-            ElevatedButtonIconWidget(onPressed: () {}, title: 'Save Reminder'),
+            ElevatedButtonIconWidget(
+              onPressed: _isFormValid ? _addReminder : null,
+              title: 'Save Reminder',
+            ),
             SizedBox(height: 18.h),
             ElevatedButtonIconWidget(
-              onPressed: () {},
+              onPressed: _discardChanges,
               backgroundColor: AppColors.purple50,
               textStyle: context.bodyLarge?.copyWith(color: AppColors.purple),
               title: 'Discard Changes',
@@ -124,6 +154,7 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
           onChanged: (value) {
             setState(() => _frequency = value!);
             ref.read(calendarProvider.notifier).setCalendarFormat(_frequency);
+            _validateForm();
           },
         ),
       ),
@@ -137,9 +168,9 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
       SizedBox(height: 12.h),
       EditTextFieldWidget(
         title: 'Title',
-        validator: FieldValidator.validateString(error: 'Title is required.'),
-        keyboardType: TextInputType.name,
         controller: _titleController,
+        onChanged: (_) => _validateForm(),
+        validator: FieldValidator.validateString(error: 'Title is required.'),
       ),
       SizedBox(height: 16.h),
       Row(
@@ -164,9 +195,9 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
       SizedBox(height: 4.h),
       Row(
         children: [
-          _buildTimeField(_hourController),
+          _buildTimeField(_hourController, 12),
           SizedBox(width: 12.w),
-          _buildTimeField(_minuteController),
+          _buildTimeField(_minuteController, 59),
           SizedBox(width: 12.w),
           _amPmSelector(context),
         ],
@@ -174,7 +205,7 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
     ],
   );
 
-  Widget _buildTimeField(TextEditingController controller) => SizedBox(
+  Widget _buildTimeField(TextEditingController controller, int max) => SizedBox(
     width: 52.w,
     height: 52.h,
     child: TextFormField(
@@ -184,29 +215,8 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
         FilteringTextInputFormatter.digitsOnly,
         context.limit(max: 2),
       ],
+      onChanged: (_) => _validateForm(),
       validator: FieldValidator.validateString(),
-      onChanged: (value) {
-        // Hour/Minute range validation
-        if (controller == _hourController) {
-          final intVal = int.tryParse(value) ?? 0;
-          if (intVal > 12) {
-            controller
-              ..text = '12'
-              ..selection = TextSelection.fromPosition(
-                const TextPosition(offset: 2),
-              );
-          }
-        } else if (controller == _minuteController) {
-          final intVal = int.tryParse(value) ?? 0;
-          if (intVal > 59) {
-            controller
-              ..text = '59'
-              ..selection = TextSelection.fromPosition(
-                const TextPosition(offset: 2),
-              );
-          }
-        }
-      },
       textAlign: TextAlign.center,
       decoration: InputDecoration(
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(4.r)),
@@ -224,6 +234,7 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
         value: period,
         isExpanded: true,
         icon: const SizedBox.shrink(),
+        style: context.bodyMedium?.copyWith(fontSize: 16.sp),
         selectedItemBuilder: (_) => ['AM', 'PM']
             .map((t) => Center(child: Text(t, style: context.bodyMedium)))
             .toList(),
@@ -235,7 +246,10 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
               ),
             )
             .toList(),
-        onChanged: (v) => setState(() => period = v!),
+        onChanged: (v) {
+          setState(() => period = v!);
+          _validateForm();
+        },
       ),
     ),
   );
@@ -273,7 +287,10 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
                   ),
                 )
                 .toList(),
-            onChanged: (v) => setState(() => _color = v!),
+            onChanged: (v) {
+              setState(() => _color = v!);
+              _validateForm();
+            },
           ),
         ),
       ),
@@ -293,7 +310,10 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
       ),
       Switch.adaptive(
         value: _enableAlert,
-        onChanged: (value) => setState(() => _enableAlert = value),
+        onChanged: (value) => setState(() {
+          _enableAlert = value;
+          _validateForm();
+        }),
       ),
     ],
   );
@@ -312,4 +332,35 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
       child: DropdownButtonHideUnderline(child: child),
     ),
   );
+
+  Future<void> _addReminder() async {
+    final calendarState = ref.watch(calendarProvider);
+
+    final hour = int.tryParse(_hourController.text) ?? 0;
+    final minute = int.tryParse(_minuteController.text) ?? 0;
+
+    final now = DateTime.now();
+    final baseTime = DateTime(now.year, now.month, now.day, hour, minute);
+
+    final reminder = ReminderEntity(
+      title: _titleController.text.trim(),
+      color: ReminderColor(
+        label: _color.label,
+        color: (_color.value as Color).toARGB32(),
+      ),
+      reminder: _enableAlert,
+      scheduledAt: baseTime,
+      scheduledDates: calendarState.dateRange(),
+    );
+
+    await _reminderNotifier.addReminder(entity: reminder);
+  }
+
+  void _discardChanges() {
+    _calendarNotifier.reset();
+    _hourController.clear();
+    _minuteController.clear();
+    _titleController.clear();
+    setState(() {});
+  }
 }

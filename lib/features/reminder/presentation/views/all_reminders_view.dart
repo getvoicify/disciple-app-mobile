@@ -1,7 +1,11 @@
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
+import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/core/routes/app_router.gr.dart';
 import 'package:disciple/app/core/routes/page_navigator.dart';
+import 'package:disciple/app/utils/extension.dart';
+import 'package:disciple/features/reminder/presentation/notifier/reminder_notifier.dart';
+import 'package:disciple/widgets/back_arrow_widget.dart';
 import 'package:disciple/widgets/edit_text_field_with.dart';
 import 'package:disciple/widgets/floating_side_action_button.dart';
 import 'package:disciple/widgets/image_widget.dart';
@@ -42,7 +46,7 @@ class _AllRemindersViewState extends ConsumerState<AllRemindersView>
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      leading: const ImageWidget(imageUrl: AppImage.backIcon, fit: BoxFit.none),
+      leading: const BackArrowWidget(),
       elevation: 0,
       title: const Text('Reminders'),
     ),
@@ -75,10 +79,6 @@ class _AllRemindersViewState extends ConsumerState<AllRemindersView>
               Tab(text: 'Active'),
               Tab(text: 'Inactive'),
             ],
-            onTap: (index) {
-              // Handle tab selection
-              setState(() {});
-            },
           ),
           SizedBox(height: 16.h),
 
@@ -102,18 +102,48 @@ class _AllRemindersViewState extends ConsumerState<AllRemindersView>
     ),
   );
 
-  Widget _buildRemindersList({bool? isActive}) => Stack(
-    children: [
-      ListView.separated(
-        itemCount: Colors.primaries.length,
-        shrinkWrap: true,
-        itemBuilder: (_, index) => const ReminderTileWidget(),
-        separatorBuilder: (context, index) => SizedBox(height: 12.h),
-      ),
-      FloatingSideButtonWidget(
-        title: 'Create New',
-        onTap: () => PageNavigator.pushRoute(const CreateReminderRoute()),
-      ),
-    ],
-  );
+  Widget _buildRemindersList({bool? isActive}) {
+    final remindersStream = ref
+        .watch(reminderProvider.notifier)
+        .watchReminder();
+
+    return Stack(
+      children: [
+        StreamBuilder<List<ReminderData>>(
+          stream: remindersStream,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('No Reminders Found'));
+            }
+
+            final reminders = snapshot.data ?? [];
+
+            return ListView.separated(
+              itemCount: reminders.length,
+              shrinkWrap: true,
+              itemBuilder: (_, index) {
+                final reminder = reminders[index];
+
+                return ReminderTileWidget(
+                  title: reminder.title,
+                  date: 'Every ${reminder.scheduledAt?.weekDay}',
+                  time: reminder.scheduledAt?.time,
+                  color: reminder.colorValue?.toColor,
+                );
+              },
+              separatorBuilder: (context, index) => SizedBox(height: 12.h),
+            );
+          },
+        ),
+        FloatingSideButtonWidget(
+          title: 'Create New',
+          onTap: () => PageNavigator.pushRoute(const CreateReminderRoute()),
+        ),
+      ],
+    );
+  }
 }

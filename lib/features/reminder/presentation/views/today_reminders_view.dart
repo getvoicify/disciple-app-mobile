@@ -1,4 +1,5 @@
 import 'package:disciple/app/common/app_colors.dart';
+import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/widgets/floating_side_action_button.dart';
 import 'package:flutter/material.dart';
@@ -99,7 +100,12 @@ class _TodayRemindersViewState extends ConsumerState<TodayRemindersView> {
                 itemCount: Colors.primaries.length,
                 padding: EdgeInsetsGeometry.symmetric(horizontal: 16.w),
                 shrinkWrap: true,
-                itemBuilder: (_, index) => const ReminderTileWidget(),
+                itemBuilder: (_, index) => const ReminderTileWidget(
+                  title: 'Reminder',
+                  date: '12:00 PM',
+                  time: '12:00 PM',
+                  color: Colors.purple,
+                ),
                 separatorBuilder: (context, index) => SizedBox(height: 12.h),
               ),
               const FloatingSideButtonWidget(title: 'Create New'),

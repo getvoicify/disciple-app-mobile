@@ -10,6 +10,7 @@ import 'package:disciple/features/notes/data/tables/note.dart';
 import 'package:disciple/features/bible/data/tables/bible.dart';
 import 'package:disciple/features/community/data/tables/churches_table.dart';
 import 'package:disciple/features/bible/data/tables/daily_scripture.dart';
+import 'package:disciple/features/reminder/data/tables/reminder.dart';
 
 part 'app_database.g.dart';
 
@@ -29,6 +30,7 @@ part 'app_database.g.dart';
     ChurchOtherLinks, // Other links for churches
     Bookmarks, // Bookmarks table
     DailyScripture, // Daily scripture table
+    Reminder, // Reminders table
   ],
 )
 class AppDatabase extends _$AppDatabase {
