@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 import 'package:disciple/features/bookmarks/data/tables/bookmark.dart';
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 import 'package:drift/drift.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
@@ -9,30 +6,6 @@ import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqlite3/sqlite3.dart';
 import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
-<<<<<<< HEAD
-import 'package:disciple/features/notes/data/model/note.dart';
-
-part 'app_database.g.dart';
-
-@DriftDatabase(tables: [Note])
-class AppDatabase extends _$AppDatabase {
-  // After generating code, this class needs to define a `schemaVersion` getter
-  // and a constructor telling drift where the database should be stored.
-  // These are described in the getting started guide: https://drift.simonbinder.eu/setup/
-  AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
-
-  @override
-  int get schemaVersion => 1;
-
-  // the LazyDatabase util lets us find the right location for the file async.
-  static LazyDatabase _openConnection() => LazyDatabase(() async {
-    // put the database file, called db.sqlite here, into the documents folder
-    // for your app.
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'db.sqlite'));
-
-    // Also work around limitations on old Android versions
-=======
 import 'package:disciple/features/notes/data/tables/note.dart';
 import 'package:disciple/features/bible/data/tables/bible.dart';
 import 'package:disciple/features/community/data/tables/churches_table.dart';
@@ -84,22 +57,10 @@ class AppDatabase extends _$AppDatabase {
     final file = File(p.join(dbFolder.path, 'app.sqlite'));
 
     // Android compatibility for older SQLite versions
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
     if (Platform.isAndroid) {
       await applyWorkaroundToOpenSqlite3OnOldAndroidVersions();
     }
 
-<<<<<<< HEAD
-    // Make sqlite3 pick a more suitable location for temporary files - the
-    // one from the system may be inaccessible due to sandboxing.
-    final cachebase = (await getTemporaryDirectory()).path;
-    // We can't access /tmp on Android, which sqlite3 would try by default.
-    // Explicitly tell it about the correct temporary directory.
-    sqlite3.tempDirectory = cachebase;
-
-    return NativeDatabase.createInBackground(file);
-  });
-=======
     // Set a safe temporary directory for SQLite temp storage
     final cachebase = (await getTemporaryDirectory()).path;
     sqlite3.tempDirectory = cachebase;
@@ -131,5 +92,4 @@ class AppDatabase extends _$AppDatabase {
 
     onUpgrade: (m, from, to) async {},
   );
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 }

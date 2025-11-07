@@ -1,11 +1,6 @@
 import 'package:auto_route/auto_route.dart';
-<<<<<<< HEAD
-import 'package:flutter/material.dart';
-import 'package:disciple/app/core/routes/app_router.gr.dart';
-=======
 import 'package:disciple/app/core/routes/app_router.gr.dart';
 import 'package:flutter/material.dart';
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -20,11 +15,6 @@ class AppRouter extends RootStackRouter {
 
   @override
   List<AutoRoute> get routes => [
-<<<<<<< HEAD
-    AutoRoute(page: NotesRoute.page, initial: true),
-    AutoRoute(page: NoteDetailsRoute.page),
-    AutoRoute(page: NewNotesRoute.page),
-=======
     AutoRoute(page: HomeboardingRoute.page),
     AutoRoute(page: SplashRoute.page, initial: true),
     AutoRoute(
@@ -47,6 +37,5 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: ChurchRoute.page),
     AutoRoute(page: CreateReminderRoute.page),
     AutoRoute(page: AllRemindersRoute.page),
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   ];
 }

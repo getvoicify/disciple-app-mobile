@@ -57,10 +57,6 @@ dependencies:
   sqlite3_flutter_libs: ^0.5.39
   uuid: ^4.3.3
   auto_route: ^10.1.2
-<<<<<<< HEAD
-  retrofit: ^4.7.2
-  pretty_dio_logger: ^1.4.0
-=======
   pretty_dio_logger: ^1.4.0
   keycloak_wrapper: ^1.4.6
   collection: ^1.19.1
@@ -74,15 +70,10 @@ dependencies:
   google_maps_flutter: ^2.13.1
   shimmer: ^3.0.0
   table_calendar: ^3.2.0
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-<<<<<<< HEAD
-  retrofit_generator: ^10.0.0
-=======
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   auto_route_generator: ^10.2.4
   flutter_lints: ^6.0.0
   drift_dev: ^2.28.2

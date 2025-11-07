@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-import 'package:disciple/app/config/app_logger.dart';
-
-class AppHelper {
-  static final logger = getLogger("AppHelper");
-=======
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -46,5 +40,4 @@ class AppHelper {
       return null;
     }
   }
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 }

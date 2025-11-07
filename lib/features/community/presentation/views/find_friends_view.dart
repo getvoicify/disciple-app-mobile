@@ -5,17 +5,6 @@ import 'package:disciple/widgets/floating_side_action_button.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-<<<<<<< HEAD
-
-class FindFriendsView extends StatefulWidget {
-  const FindFriendsView({super.key});
-
-  @override
-  State<FindFriendsView> createState() => _FindFriendsViewState();
-}
-
-class _FindFriendsViewState extends State<FindFriendsView> {
-=======
 import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -28,7 +17,6 @@ class FindFriendsView extends ConsumerStatefulWidget {
 }
 
 class _FindFriendsViewState extends ConsumerState<FindFriendsView> {
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
@@ -53,11 +41,7 @@ class _FindFriendsViewState extends ConsumerState<FindFriendsView> {
                 Expanded(
                   child: ListView.separated(
                     itemCount: 20,
-<<<<<<< HEAD
-                    itemBuilder: (_, _) => const BuildFriendsTileWidget(),
-=======
                     itemBuilder: (_, index) => const BuildFriendsTileWidget(),
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
                     separatorBuilder: (context, index) =>
                         SizedBox(height: 12.h),
                   ),

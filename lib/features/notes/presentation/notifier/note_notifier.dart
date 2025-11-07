@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-=======
 import 'package:dio/dio.dart';
 import 'package:disciple/app/common/app_strings.dart';
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/features/notes/domain/entity/note_entity.dart';
@@ -10,10 +7,7 @@ import 'package:disciple/features/notes/domain/entity/parsed_note_data.dart';
 import 'package:disciple/features/notes/domain/usecase/module/module.dart';
 import 'package:disciple/features/notes/domain/usecase/watch_notes_usecase.dart';
 import 'package:disciple/features/notes/presentation/state/note_state.dart';
-<<<<<<< HEAD
-=======
 import 'package:disciple/widgets/notification/notification_tray.dart';
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'note_notifier.g.dart';
@@ -25,15 +19,6 @@ class NoteNotifier extends _$NoteNotifier {
 
   ParsedNoteData? _noteData;
 
-<<<<<<< HEAD
-  Future<void> addNote({required NoteEntity entity}) async {
-    state = state.copyWith(isAddingNote: true);
-    try {
-      await ref.read(addNoteUseCaseImpl).execute(parameter: entity);
-
-      PageNavigator.pop();
-    } catch (_) {
-=======
   Future<void> addNote({
     required NoteEntity entity,
     CancelToken? cancelToken,
@@ -46,7 +31,6 @@ class NoteNotifier extends _$NoteNotifier {
       triggerNotificationTray(AppString.noteAddedSuccessfully);
     } catch (e) {
       triggerNotificationTray(e.toString(), error: true);
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
     } finally {
       state = state.copyWith(isAddingNote: false);
     }
@@ -55,25 +39,15 @@ class NoteNotifier extends _$NoteNotifier {
   Stream<List<NoteData>> watchNotes({String? query, int offset = 0}) =>
       ref
               .watch(watchNotesUseCaseImpl)
-<<<<<<< HEAD
-              .execute(
-                parameter: WatchNotesParams(query: query, offset: offset),
-              )
-=======
               .execute(parameter: WatchNotesParams(query: query))
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
           as Stream<List<NoteData>>;
 
   Future<void> getNoteById({required String id}) async {
     state = state.copyWith(isLoadingNote: true);
     try {
       _noteData = await ref.read(getNoteByIdUseCaseImpl).execute(parameter: id);
-<<<<<<< HEAD
-    } catch (_) {
-=======
     } catch (e) {
       triggerNotificationTray(e.toString(), error: true);
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
     } finally {
       state = state.copyWith(isLoadingNote: false, note: _noteData);
     }
@@ -84,25 +58,13 @@ class NoteNotifier extends _$NoteNotifier {
     try {
       await ref.read(deleteNoteUseCaseImpl).execute(parameter: id);
       PageNavigator.pop();
-<<<<<<< HEAD
-    } catch (_) {
-=======
     } catch (e) {
       triggerNotificationTray(e.toString(), error: true);
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
     } finally {
       state = state.copyWith(isDeletingNote: false);
     }
   }
 
-<<<<<<< HEAD
-  Future<void> updateNote({required NoteEntity entity}) async {
-    state = state.copyWith(isUpdatingNote: true);
-    try {
-      await ref.read(updateNoteUseCaseImpl).execute(parameter: entity);
-      PageNavigator.pop();
-    } catch (_) {
-=======
   Future<void> updateNote({
     required NoteEntity entity,
     CancelToken? cancelToken,
@@ -115,13 +77,10 @@ class NoteNotifier extends _$NoteNotifier {
       PageNavigator.pop();
     } catch (e) {
       triggerNotificationTray(e.toString(), error: true);
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
     } finally {
       state = state.copyWith(isUpdatingNote: false);
     }
   }
-<<<<<<< HEAD
-=======
 
   Future<void> getNotes({
     String? query,
@@ -141,5 +100,4 @@ class NoteNotifier extends _$NoteNotifier {
       state = state.copyWith(isLoadingNotes: false);
     }
   }
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 }

@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-import 'package:disciple/app/common/app_colors.dart';
-import 'package:disciple/app/utils/extension.dart';
-import 'package:disciple/widgets/floating_side_action_button.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import 'package:disciple/features/reminder/presentation/widget/reminder_tile_widget.dart';
-
-class TodayRemindersView extends StatefulWidget {
-  const TodayRemindersView({super.key});
-
-  @override
-  State<TodayRemindersView> createState() => _TodayRemindersViewState();
-}
-
-class _TodayRemindersViewState extends State<TodayRemindersView> {
-=======
 import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/utils/extension.dart';
@@ -34,7 +16,6 @@ class TodayRemindersView extends ConsumerStatefulWidget {
 }
 
 class _TodayRemindersViewState extends ConsumerState<TodayRemindersView> {
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
@@ -116,16 +97,12 @@ class _TodayRemindersViewState extends ConsumerState<TodayRemindersView> {
                 itemCount: Colors.primaries.length,
                 padding: EdgeInsetsGeometry.symmetric(horizontal: 16.w),
                 shrinkWrap: true,
-<<<<<<< HEAD
-                itemBuilder: (_, index) => const ReminderTileWidget(),
-=======
                 itemBuilder: (_, index) => const ReminderTileWidget(
                   title: 'Reminder',
                   date: '12:00 PM',
                   time: '12:00 PM',
                   color: Colors.purple,
                 ),
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
                 separatorBuilder: (context, index) => SizedBox(height: 12.h),
               ),
               const FloatingSideButtonWidget(title: 'Create New'),

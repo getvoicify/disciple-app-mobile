@@ -1,22 +1,3 @@
-<<<<<<< HEAD
-import 'package:disciple/app/common/app_images.dart';
-import 'package:disciple/features/community/presentation/tabs/channels_tabs.dart';
-import 'package:disciple/widgets/decorated_tab.dart';
-import 'package:disciple/widgets/image_widget.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import 'package:disciple/features/community/presentation/tabs/church_tab.dart';
-
-class CommunityView extends StatefulWidget {
-  const CommunityView({super.key});
-
-  @override
-  State<CommunityView> createState() => _CommunityViewState();
-}
-
-class _CommunityViewState extends State<CommunityView>
-=======
 import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/features/community/presentation/tabs/channels_tabs.dart';
@@ -37,7 +18,6 @@ class CommunityView extends ConsumerStatefulWidget {
 }
 
 class _CommunityViewState extends ConsumerState<CommunityView>
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
 
@@ -54,11 +34,7 @@ class _CommunityViewState extends ConsumerState<CommunityView>
       actions: [
         const ImageWidget(imageUrl: AppImage.notificationIcon),
         SizedBox(width: 16.w),
-<<<<<<< HEAD
-        const CircleAvatar(),
-=======
         const ProfileImageWidget(),
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
         SizedBox(width: 16.w),
       ],
       bottom: DecoratedTabBar(

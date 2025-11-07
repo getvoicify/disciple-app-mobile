@@ -23,18 +23,12 @@ class AppConfig {
   static bool get isDebug => _appEnv == AppEnv.development;
 
   static String get apiUrl =>
-<<<<<<< HEAD
-      dotenv.env[AppConstants.apiUrl] ?? '${AppConstants.apiUrl} $_notFound';
-=======
       dotenv.env[AppConstants.apiBaseUrl] ??
       '${AppConstants.apiBaseUrl} $_notFound';
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 
   static String get appName =>
       dotenv.env[AppConstants.appName] ?? '${AppConstants.appName} $_notFound';
 
-<<<<<<< HEAD
-=======
   static String get keycloakClientId =>
       dotenv.env[AppConstants.keycloakClientId] ??
       '${AppConstants.keycloakClientId} $_notFound';
@@ -55,17 +49,13 @@ class AppConfig {
       dotenv.env[AppConstants.apiBaseUrl] ??
       '${AppConstants.apiBaseUrl} $_notFound';
 
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   static String _getFileName() {
     if (_isDevelopment) return AppConstants.developmentEnv;
     if (_isTest) return AppConstants.testEnv;
     return AppConstants.liveEnv;
   }
-<<<<<<< HEAD
-=======
 
   static String get googleApiKey =>
       dotenv.env[AppConstants.googleApiKey] ??
       '${AppConstants.googleApiKey} $_notFound';
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 }

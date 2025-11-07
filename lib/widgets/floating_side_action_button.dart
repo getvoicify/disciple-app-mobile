@@ -13,22 +13,6 @@ class FloatingSideButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Align(
     alignment: Alignment.bottomRight,
-<<<<<<< HEAD
-    child: InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.only(
-          right: 24.w,
-          top: 13.h,
-          left: 24.w,
-          bottom: 13.h,
-        ),
-        margin: EdgeInsets.only(bottom: 70.h),
-        decoration: BoxDecoration(
-          color: AppColors.purple,
-          borderRadius: BorderRadius.horizontal(left: Radius.circular(24.r)),
-        ),
-=======
     child: Container(
       padding: EdgeInsets.only(
         right: 24.w,
@@ -43,7 +27,6 @@ class FloatingSideButtonWidget extends StatelessWidget {
       ),
       child: InkWell(
         onTap: onTap,
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

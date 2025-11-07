@@ -6,31 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MiniButtonWidget extends StatelessWidget {
-<<<<<<< HEAD
-  const MiniButtonWidget({super.key, required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-    decoration: BoxDecoration(
-      color: AppColors.purple,
-      borderRadius: BorderRadius.circular(8.r),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Flexible(
-          child: Text(
-            title,
-            style: context.bodyLarge?.copyWith(color: AppColors.white),
-          ),
-        ),
-        SizedBox(width: 13.w),
-        const ImageWidget(imageUrl: AppImage.forwardIcon),
-      ],
-=======
   const MiniButtonWidget({super.key, required this.title, this.onTap});
 
   final String title;
@@ -58,7 +33,6 @@ class MiniButtonWidget extends StatelessWidget {
           const ImageWidget(imageUrl: AppImage.forwardIcon),
         ],
       ),
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
     ),
   );
 }

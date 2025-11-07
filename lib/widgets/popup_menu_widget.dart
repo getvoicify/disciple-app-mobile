@@ -8,18 +8,12 @@ class PopupMenuItemData<T> {
     required this.value,
     required this.label,
     this.icon,
-<<<<<<< HEAD
-=======
     this.child,
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   });
   final T value;
   final String label;
   final String? icon;
-<<<<<<< HEAD
-=======
   final Widget? child;
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 }
 
 /// A reusable popup menu button widget.
@@ -29,10 +23,7 @@ class PopupMenuWidget<T> extends StatelessWidget {
     required this.items,
     required this.onSelected,
     this.icon,
-<<<<<<< HEAD
-=======
     this.child,
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   });
 
   /// The list of items to display in the menu.
@@ -44,11 +35,8 @@ class PopupMenuWidget<T> extends StatelessWidget {
   /// The icon to display for the button.
   final String? icon;
 
-<<<<<<< HEAD
-=======
   final Widget? child;
 
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   @override
   Widget build(BuildContext context) => PopupMenuButton<T>(
     onSelected: onSelected,
@@ -69,10 +57,6 @@ class PopupMenuWidget<T> extends StatelessWidget {
           ),
         )
         .toList(),
-<<<<<<< HEAD
-    icon: icon != null ? ImageWidget(imageUrl: icon!) : null,
-=======
     icon: child ?? (icon != null ? ImageWidget(imageUrl: icon!) : null),
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   );
 }

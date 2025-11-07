@@ -1,10 +1,7 @@
 import 'package:disciple/app/common/app_images.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-<<<<<<< HEAD
-=======
 import 'package:cached_network_image/cached_network_image.dart';
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 
 class ImageWidget extends StatelessWidget {
   const ImageWidget({
@@ -14,10 +11,7 @@ class ImageWidget extends StatelessWidget {
     this.height,
     this.fit = BoxFit.contain,
     this.onTap,
-<<<<<<< HEAD
-=======
     this.iconColor,
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   });
 
   final String imageUrl;
@@ -25,10 +19,7 @@ class ImageWidget extends StatelessWidget {
   final double? height;
   final BoxFit fit;
   final Function()? onTap;
-<<<<<<< HEAD
-=======
   final Color? iconColor;
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 
   @override
   Widget build(BuildContext context) {
@@ -42,12 +33,9 @@ class ImageWidget extends StatelessWidget {
           width: width,
           height: height,
           fit: fit,
-<<<<<<< HEAD
-=======
           colorFilter: iconColor == null
               ? null
               : ColorFilter.mode(iconColor!, BlendMode.srcIn),
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
         ),
       );
     }
@@ -55,9 +43,6 @@ class ImageWidget extends StatelessWidget {
     if (isAsset && imageUrl.endsWith('.png')) {
       return InkWell(
         onTap: onTap,
-<<<<<<< HEAD
-        child: Image.asset(imageUrl, width: width, height: height, fit: fit),
-=======
         child: Image.asset(
           imageUrl,
           width: width,
@@ -77,7 +62,6 @@ class ImageWidget extends StatelessWidget {
           height: height,
           fit: fit,
         ),
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
       );
     }
 

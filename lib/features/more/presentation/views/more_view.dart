@@ -1,21 +1,6 @@
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/app/common/app_strings.dart';
-<<<<<<< HEAD
-import 'package:disciple/app/utils/extension.dart';
-import 'package:disciple/widgets/image_widget.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-class MoreView extends StatefulWidget {
-  const MoreView({super.key});
-
-  @override
-  State<MoreView> createState() => _MoreViewState();
-}
-
-class _MoreViewState extends State<MoreView> {
-=======
 import 'package:disciple/app/core/manager/keycloak_manager.dart';
 import 'package:disciple/app/core/routes/app_router.gr.dart';
 import 'package:disciple/app/core/routes/page_navigator.dart';
@@ -37,7 +22,6 @@ class MoreView extends ConsumerStatefulWidget {
 }
 
 class _MoreViewState extends ConsumerState<MoreView> {
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   // Data models for menu items
   final List<MenuItemModel> quickLinks = [
     MenuItemModel(
@@ -50,21 +34,13 @@ class _MoreViewState extends ConsumerState<MoreView> {
       icon: AppImage.noteIcon,
       title: AppString.notes,
       hasArrow: true,
-<<<<<<< HEAD
-      onTap: () {},
-=======
       onTap: () => PageNavigator.pushRoute(const NotesRoute()),
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
     ),
     MenuItemModel(
       icon: AppImage.bookmark,
       title: AppString.bookmarks,
       hasArrow: true,
-<<<<<<< HEAD
-      onTap: () {},
-=======
       onTap: () => PageNavigator.pushRoute(const BookmarksRoute()),
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
     ),
   ];
 
@@ -96,151 +72,6 @@ class _MoreViewState extends ConsumerState<MoreView> {
   ];
 
   @override
-<<<<<<< HEAD
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(),
-    body: ListView(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      children: [
-        // Profile Card
-        CardContainer(
-          child: Row(
-            children: [
-              const CircleAvatar(key: Key('profile_avatar')),
-              SizedBox(width: 16.w),
-              Expanded(
-                child: Text(
-                  AppString.annabelle,
-                  style: context.headlineMedium?.copyWith(fontSize: 16.sp),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.left,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        SizedBox(height: 16.h),
-
-        // Friends Card
-        CardContainer(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                AppString.friends,
-                style: context.headlineMedium?.copyWith(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              SizedBox(height: 8.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      AppString.friendCount,
-                      style: context.headlineMedium?.copyWith(fontSize: 20.sp),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 8.w,
-                      vertical: 4.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.purple,
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    child: Text(
-                      AppString.inviteFriends,
-                      style: context.headlineMedium?.copyWith(
-                        fontSize: 12.sp,
-                        color: AppColors.white,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-
-        SizedBox(height: 16.h),
-
-        // Quick Links Card
-        CardContainer(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                AppString.quickLinks,
-                style: context.headlineLarge?.copyWith(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.left,
-              ),
-              SizedBox(height: 20.h),
-              // Using ListView.separated for better performance
-              ListView.separated(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                itemCount: quickLinks.length,
-                separatorBuilder: (context, index) => const Divider(),
-                itemBuilder: (context, index) => MenuItemTile(
-                  item: quickLinks[index],
-                  key: ValueKey('quick_link_$index'),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        SizedBox(height: 16.h),
-
-        // Manage Account Card
-        CardContainer(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                AppString.manageAccount,
-                style: context.headlineLarge?.copyWith(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.left,
-              ),
-              SizedBox(height: 20.h),
-              // Using ListView.separated for better performance
-              ListView.separated(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                itemCount: accountSettings.length,
-                separatorBuilder: (context, index) => const Divider(),
-                itemBuilder: (context, index) => MenuItemTile(
-                  item: accountSettings[index],
-                  key: ValueKey('account_setting_$index'),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
-=======
   Widget build(BuildContext context) {
     final user = ref.watch(keycloakManagerProvider).value?.user;
     return Scaffold(
@@ -389,7 +220,6 @@ class _MoreViewState extends ConsumerState<MoreView> {
       ),
     );
   }
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 }
 
 // Reusable card container widget

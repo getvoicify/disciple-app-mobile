@@ -1,26 +1,3 @@
-<<<<<<< HEAD
-import 'package:disciple/app/common/app_colors.dart';
-import 'package:disciple/app/common/app_images.dart';
-import 'package:disciple/app/utils/extension.dart';
-import 'package:disciple/widgets/build_tile_widget.dart';
-import 'package:disciple/widgets/edit_text_field_with.dart';
-import 'package:disciple/widgets/image_widget.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-class BookmarksView extends StatefulWidget {
-  const BookmarksView({super.key});
-
-  @override
-  State<BookmarksView> createState() => _BookmarksViewState();
-}
-
-class _BookmarksViewState extends State<BookmarksView> {
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text('Bookmarks'),
-=======
 import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
@@ -56,7 +33,6 @@ class _BookmarksViewState extends ConsumerState<BookmarksView> {
         fit: BoxFit.none,
         onTap: () => PageNavigator.pop(),
       ),
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
       actions: [
         const ImageWidget(imageUrl: AppImage.menuIcon),
         SizedBox(width: 16.w),
@@ -66,14 +42,6 @@ class _BookmarksViewState extends ConsumerState<BookmarksView> {
       minimum: EdgeInsets.symmetric(horizontal: 16.w),
       child: Column(
         children: [
-<<<<<<< HEAD
-          const EditTextFieldWidget(
-            prefix: ImageWidget(
-              imageUrl: AppImage.searchIcon,
-              fit: BoxFit.none,
-            ),
-            label: 'Search by title',
-=======
           EditTextFieldWidget(
             prefix: const ImageWidget(
               imageUrl: AppImage.searchIcon,
@@ -82,7 +50,6 @@ class _BookmarksViewState extends ConsumerState<BookmarksView> {
             label: AppString.searchBookmarksByTitle,
             onChanged: (value) =>
                 ref.read(bookmarkSearchProvider.notifier).state = value,
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
           ),
           SizedBox(height: 20.h),
           Container(
@@ -102,23 +69,11 @@ class _BookmarksViewState extends ConsumerState<BookmarksView> {
           ),
           SizedBox(height: 32.h),
 
-<<<<<<< HEAD
-          Expanded(
-            child: ListView.separated(
-              itemCount: 20,
-              itemBuilder: (_, _) => const BuildTileWidget(),
-              separatorBuilder: (context, index) => SizedBox(height: 12.h),
-            ),
-          ),
-=======
           Expanded(child: _buildBookmarksList()),
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
         ],
       ),
     ),
   );
-<<<<<<< HEAD
-=======
 
   StreamBuilder<List<BookmarkWithVersion>> _buildBookmarksList() {
     final search = ref.watch(bookmarkSearchProvider);
@@ -156,5 +111,4 @@ class _BookmarksViewState extends ConsumerState<BookmarksView> {
       },
     );
   }
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 }

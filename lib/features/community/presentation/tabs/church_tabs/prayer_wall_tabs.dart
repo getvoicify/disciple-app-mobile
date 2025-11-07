@@ -14,11 +14,7 @@ class _PrayerWallTabsState extends State<PrayerWallTabs> {
   Widget build(BuildContext context) => ListView.separated(
     itemCount: 20,
     padding: EdgeInsets.symmetric(horizontal: 16.w),
-<<<<<<< HEAD
-    itemBuilder: (_, _) => const CommuityTIleWidget(),
-=======
     itemBuilder: (_, index) => const CommuityTIleWidget(),
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
     separatorBuilder: (context, index) => SizedBox(height: 12.h),
   );
 }

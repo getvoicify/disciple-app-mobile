@@ -4,20 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ActionButtonWidget extends StatelessWidget {
-<<<<<<< HEAD
-  const ActionButtonWidget({super.key, required this.icon});
-
-  final String icon;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: EdgeInsets.all(3.w),
-    decoration: const BoxDecoration(
-      shape: BoxShape.circle,
-      color: AppColors.purple,
-    ),
-    child: ImageWidget(imageUrl: icon, height: 17.h, width: 17.w),
-=======
   const ActionButtonWidget({super.key, required this.icon, this.onTap});
 
   final String icon;
@@ -39,6 +25,5 @@ class ActionButtonWidget extends StatelessWidget {
         iconColor: AppColors.white,
       ),
     ),
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   );
 }

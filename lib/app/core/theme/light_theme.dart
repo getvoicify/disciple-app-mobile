@@ -12,13 +12,9 @@ ThemeData lightTheme = ThemeData.light(useMaterial3: false).copyWith(
     surfaceTintColor: AppColors.white,
     titleTextStyle: headlineLarge.copyWith(fontSize: 24.sp),
     centerTitle: true,
-<<<<<<< HEAD
-  ),
-=======
     iconTheme: const IconThemeData(color: AppColors.black),
   ),
   cardColor: AppColors.white,
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   textTheme: TextTheme(
     headlineLarge: headlineLarge,
     headlineMedium: headlineMedium,
@@ -62,10 +58,6 @@ ThemeData lightTheme = ThemeData.light(useMaterial3: false).copyWith(
       }),
     ),
   ),
-<<<<<<< HEAD
-=======
-
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   inputDecorationTheme: InputDecorationTheme(
     labelStyle: bodyMedium.copyWith(
       overflow: TextOverflow.ellipsis,
@@ -158,8 +150,6 @@ ThemeData lightTheme = ThemeData.light(useMaterial3: false).copyWith(
     textStyle: bodyMedium.copyWith(fontWeight: FontWeight.w500),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
   ),
-<<<<<<< HEAD
-=======
   bottomNavigationBarTheme: BottomNavigationBarThemeData(
     backgroundColor: AppColors.purple25,
     elevation: 10,
@@ -186,5 +176,4 @@ ThemeData lightTheme = ThemeData.light(useMaterial3: false).copyWith(
       borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
     ),
   ),
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 );

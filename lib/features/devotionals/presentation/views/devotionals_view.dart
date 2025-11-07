@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-import 'package:disciple/app/common/app_colors.dart';
-import 'package:disciple/app/common/app_images.dart';
-import 'package:disciple/app/utils/extension.dart';
-=======
 import 'package:dio/dio.dart';
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
@@ -11,22 +6,10 @@ import 'package:disciple/features/devotionals/presentation/notifier/devotional_n
 import 'package:disciple/features/devotionals/presentation/views/skeleton/devotional_skeleton.dart';
 import 'package:disciple/features/devotionals/presentation/widget/devotional_widget.dart';
 import 'package:disciple/widgets/back_arrow_widget.dart';
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 import 'package:disciple/widgets/edit_text_field_with.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-<<<<<<< HEAD
-
-class DevotionalsView extends StatefulWidget {
-  const DevotionalsView({super.key});
-
-  @override
-  State<DevotionalsView> createState() => _DevotionalsViewState();
-}
-
-class _DevotionalsViewState extends State<DevotionalsView> {
-=======
 import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -60,16 +43,11 @@ class _DevotionalsViewState extends ConsumerState<DevotionalsView> {
     super.dispose();
   }
 
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: const Text('Devotionals'),
-<<<<<<< HEAD
-      leading: const ImageWidget(imageUrl: AppImage.backIcon, fit: BoxFit.none),
-=======
       leading: const BackArrowWidget(),
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
       actions: [
         const ImageWidget(imageUrl: AppImage.menuIcon),
         SizedBox(width: 16.w),
@@ -117,65 +95,6 @@ class _DevotionalsViewState extends ConsumerState<DevotionalsView> {
           ),
           SizedBox(height: 32.h),
 
-<<<<<<< HEAD
-          Expanded(
-            child: ListView.separated(
-              itemCount: 20,
-              itemBuilder: (_, _) => Row(
-                children: [
-                  Container(
-                    height: 126.h,
-                    width: 126.w,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12.r),
-                      color: AppColors.red50,
-                    ),
-                  ),
-                  SizedBox(width: 16.w),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Potter’s Heart',
-                          style: context.headlineLarge?.copyWith(
-                            fontSize: 16.sp,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: 4.h),
-                        Text(
-                          'by Potter’sVille Church',
-                          style: context.bodyMedium,
-                        ),
-                        SizedBox(height: 2.h),
-                        Text(
-                          'Author: Pastor kayode Oguta',
-                          style: context.bodyMedium?.copyWith(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        SizedBox(height: 8.h),
-                        const Divider(),
-                        SizedBox(height: 8.h),
-                        Row(
-                          children: [
-                            const ImageWidget(imageUrl: AppImage.likeIcon3),
-                            SizedBox(width: 16.w),
-                            const ImageWidget(imageUrl: AppImage.shareIcon2),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              separatorBuilder: (context, index) => SizedBox(height: 20.h),
-            ),
-=======
           Consumer(
             builder: (_, ref, _) {
               final state = ref.watch(devotionalProvider);
@@ -197,7 +116,6 @@ class _DevotionalsViewState extends ConsumerState<DevotionalsView> {
                 ),
               );
             },
->>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
           ),
         ],
       ),
