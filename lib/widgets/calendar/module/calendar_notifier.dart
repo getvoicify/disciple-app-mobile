@@ -9,10 +9,10 @@ final calendarProvider = ChangeNotifierProvider((ref) => CalendarNotifier());
 
 class CalendarNotifier extends ChangeNotifier {
   // --- core state ---
-  CalendarFormat _calendarFormat = CalendarFormat.month;
+  CalendarFormat _calendarFormat = CalendarFormat.week;
   CalendarFormat get calendarFormat => _calendarFormat;
 
-  CalendarFrequency _calendarFrequency = CalendarFrequency.daily;
+  CalendarFrequency _calendarFrequency = CalendarFrequency.weekly;
   CalendarFrequency get calendarFrequency => _calendarFrequency;
 
   DateTime? _rangeStart;
@@ -29,7 +29,7 @@ class CalendarNotifier extends ChangeNotifier {
   String? _weekDay;
   String? get weekDay => _weekDay;
 
-  String _frequency = 'Daily';
+  String _frequency = 'Weekly';
   String get frequency => _frequency;
 
   ReminderData? _reminder;
@@ -50,7 +50,7 @@ class CalendarNotifier extends ChangeNotifier {
 
   // --- API / setters ---
 
-  void setCalendarFormat(String format) {
+  void setCalendarFormat(String format, {bool notify = true}) {
     switch (format) {
       case "Daily":
         _calendarFrequency = CalendarFrequency.daily;
@@ -68,7 +68,7 @@ class CalendarNotifier extends ChangeNotifier {
     // resetting weekday selection when changing format
     _weekDay = null;
     _frequency = format;
-    notifyListeners();
+    if (notify) notifyListeners();
   }
 
   void setRange(DateTime? start, DateTime? end) {
@@ -165,14 +165,14 @@ class CalendarNotifier extends ChangeNotifier {
 
   /// reset to defaults
   void reset() {
-    _calendarFrequency = CalendarFrequency.daily;
-    _calendarFormat = CalendarFormat.month;
+    _calendarFrequency = CalendarFrequency.weekly;
+    _calendarFormat = CalendarFormat.week;
     _rangeStart = null;
     _rangeEnd = null;
     _focusedDay = DateTime.now();
     _selectedDay = null;
     _weekDay = null;
-    _frequency = 'Daily';
+    _frequency = 'Weekly';
     _reminder = null;
     WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
   }

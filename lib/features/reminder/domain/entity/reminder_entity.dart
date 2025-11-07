@@ -3,7 +3,7 @@ import 'package:disciple/features/reminder/domain/interface/i_reminder.dart';
 
 class ReminderEntity implements IReminder {
   @override
-  final String? id;
+  int? id;
 
   @override
   final ReminderColor? color;
@@ -38,7 +38,7 @@ class ReminderEntity implements IReminder {
   });
 
   ReminderEntity copyWith({
-    String? id,
+    int? id,
     ReminderColor? color,
     DateTime? createdAt,
     DateTime? scheduledAt,
@@ -59,6 +59,10 @@ class ReminderEntity implements IReminder {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> json = {};
+
+    if (id != null) {
+      json.addAll({'id': id});
+    }
 
     if (title != null) {
       json.addAll({'title': title});

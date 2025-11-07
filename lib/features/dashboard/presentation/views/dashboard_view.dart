@@ -1,7 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:collection/collection.dart';
 import 'package:disciple/app/common/app_colors.dart';
-import 'package:disciple/app/core/manager/notification_manager.dart';
 import 'package:disciple/features/dashboard/data/bottom_navigations.dart';
 import 'package:disciple/features/notes/data/resync/module/module.dart';
 import 'package:disciple/widgets/image_widget.dart';

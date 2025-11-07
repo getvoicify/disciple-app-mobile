@@ -10,7 +10,7 @@ class ReminderToCompanionMapper<T extends ReminderEntity>
     implements Mapper<T, ReminderCompanion> {
   @override
   ReminderCompanion insert(T input) => ReminderCompanion(
-    id: Value(DriftUtils.generateId(input.id)),
+    id: Value(DriftUtils.generateUniqueId(input.id)),
     title: Value(input.title),
     scheduledAt: Value(DriftUtils.timestampOrNow(input.scheduledAt)),
     reminder: Value(input.reminder),
@@ -22,7 +22,7 @@ class ReminderToCompanionMapper<T extends ReminderEntity>
 
   @override
   ReminderCompanion update(T input) => ReminderCompanion(
-    id: Value(input.id),
+    id: Value(input.id!),
     title: Value(input.title),
     scheduledAt: Value(DriftUtils.timestampOrNow(input.scheduledAt)),
     reminder: Value(input.reminder),

@@ -7,7 +7,7 @@ part 'reminder_model.g.dart';
 @freezed
 abstract class Reminder with _$Reminder implements IReminder {
   const factory Reminder({
-    String? id,
+    int? id,
     String? title,
     DateTime? scheduledAt,
     bool? reminder,

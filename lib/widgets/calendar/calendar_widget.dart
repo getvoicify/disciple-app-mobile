@@ -1,6 +1,7 @@
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_fonts.dart';
 import 'package:disciple/app/utils/extension.dart';
+import 'package:disciple/widgets/calendar/custom_table_calendar.dart';
 import 'package:disciple/widgets/calendar/module/calendar_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,30 +19,12 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
   late PageController _pageController;
   final RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.toggledOn;
 
-  final DateTime _present = DateTime.now();
-
-  // --- Helpers ---
-  DateTime get _today {
-    final now = DateTime.now();
-    return DateTime(now.year, now.month, now.day);
-  }
-
-  bool _isPastDay(DateTime day) =>
-      day.isBefore(_today) &&
-      day.month == _today.month &&
-      day.year == _today.year;
-
   TextStyle _dayTextStyle(BuildContext context) =>
       context.headlineLarge!.copyWith(
         fontSize: 16.sp,
         fontWeight: FontWeight.w500,
         fontFamily: AppFonts.inter,
       );
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +43,6 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
     );
   }
 
-  // --- UI Builders ---
   Widget _buildHeader(CalendarNotifier calendarState) => Row(
     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
     children: [
@@ -99,44 +81,11 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
           SizeTransition(sizeFactor: animation, child: child),
       child: calendarState.calendarFrequency == CalendarFrequency.weekly
           ? _buildWeekdays(baseTextStyle, calendarState)
-          : TableCalendar(
-              firstDay: DateTime(_present.year, _present.month),
-              lastDay: DateTime(_present.year + 5, _present.month, 0),
-              focusedDay: calendarState.focusedDay,
-              headerVisible: false,
-              startingDayOfWeek: StartingDayOfWeek.monday,
-              onCalendarCreated: (controller) => _pageController = controller,
+          : CustomTableCalendar(
               calendarFormat: calendarState.calendarFormat,
-              selectedDayPredicate: (day) =>
-                  isSameDay(calendarState.selectedDay, day),
-              rangeStartDay: calendarState.rangeStart,
-              rangeEndDay: calendarState.rangeEnd,
-              onPageChanged: (focusedDay) =>
-                  ref.read(calendarProvider.notifier).setFocusedDay(focusedDay),
-              // Disable past dates
-              enabledDayPredicate: (day) => !_isPastDay(day),
-
-              onDaySelected: (selectedDay, focusedDay) {
-                if (_isPastDay(selectedDay)) return;
-                ref.read(calendarProvider.notifier)
-                  ..setSelectedDay(selectedDay)
-                  ..setFocusedDay(selectedDay);
-              },
-              onRangeSelected: (start, end, focusedDay) {
-                if (start != null && _isPastDay(start)) return;
-                ref.read(calendarProvider.notifier)
-                  ..setFocusedDay(focusedDay)
-                  ..setRange(start, end);
-              },
-              daysOfWeekVisible:
-                  calendarState.calendarFrequency != CalendarFrequency.monthly,
-              daysOfWeekStyle: DaysOfWeekStyle(
-                weekdayStyle: baseTextStyle,
-                weekendStyle: baseTextStyle,
-              ),
+              pageControllerCallback: (controller) =>
+                  _pageController = controller,
               rangeSelectionMode: _rangeSelectionMode,
-              daysOfWeekHeight: 50.h,
-              calendarStyle: _calendarStyle(baseTextStyle),
             ),
     ),
   );
@@ -170,39 +119,6 @@ class _CalendarWidgetState extends ConsumerState<CalendarWidget> {
         }).toList(),
       );
 
-  CalendarStyle _calendarStyle(TextStyle baseTextStyle) {
-    final mutedText = baseTextStyle.copyWith(
-      color: AppColors.grey250,
-      fontWeight: FontWeight.w400,
-    );
-
-    final dayText = baseTextStyle.copyWith(color: AppColors.grey800);
-
-    const circleDecoration = BoxDecoration(
-      shape: BoxShape.circle,
-      color: AppColors.purple,
-    );
-
-    final circleText = baseTextStyle.copyWith(color: AppColors.white);
-
-    return CalendarStyle(
-      outsideTextStyle: mutedText,
-      todayDecoration: circleDecoration,
-      defaultTextStyle: dayText,
-      weekendTextStyle: dayText,
-      cellMargin: EdgeInsets.all(1.5.w),
-      rangeStartDecoration: circleDecoration,
-      rangeEndDecoration: circleDecoration,
-      withinRangeDecoration: circleDecoration,
-      rangeStartTextStyle: circleText,
-      rangeEndTextStyle: circleText,
-      withinRangeTextStyle: circleText,
-      rangeHighlightColor: Colors.transparent,
-      isTodayHighlighted: false,
-    );
-  }
-
-  // --- Navigation ---
   Future<void> _handlePreviousPage() async {
     await _pageController.previousPage(
       duration: const Duration(milliseconds: 300),

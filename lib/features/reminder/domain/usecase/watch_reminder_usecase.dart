@@ -6,8 +6,9 @@ import 'package:disciple/features/reminder/domain/service/reminder_service.dart'
 class WatchReminderParams {
   final bool? status;
   final String? searchText;
+  final bool? isToday;
 
-  WatchReminderParams({this.status, this.searchText});
+  WatchReminderParams({this.status, this.searchText, this.isToday});
 }
 
 class WatchReminderUseCaseImpl
