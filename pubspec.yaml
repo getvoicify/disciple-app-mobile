@@ -70,6 +70,10 @@ dependencies:
   google_maps_flutter: ^2.13.1
   shimmer: ^3.0.0
   table_calendar: ^3.2.0
+  flutter_local_notifications: ^19.5.0
+  timezone: ^0.10.1
+  device_info_plus: ^11.3.0
+  android_intent_plus: ^6.0.0
 
 dev_dependencies:
   flutter_test:
