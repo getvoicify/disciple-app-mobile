@@ -234,8 +234,14 @@ jobs:
           echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
           echo "storeFile=upload-keystore.jks" >> android/key.properties
 
+      - name: Create .env file
+        run: echo "${{ secrets.DOT_ENV }}" > .env
+
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Build generated files
+        run:  dart run build_runner build
 
       - name: Build AAB
         run: |
