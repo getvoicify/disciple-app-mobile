@@ -76,4 +76,18 @@ class AppImage {
       "${_imagePath}fluent_dark-theme-24-regular.svg";
   static const String downloadIcon = "${_imagePath}proicons_arrow-download.svg";
   static const String deleteIcon = "${_imagePath}fluent_delete-20-regular.svg";
+<<<<<<< HEAD
+=======
+  static const String homeIcon = "${_imagePath}li_home.svg";
+  static const String bibleIcon = "${_imagePath}akar-icons_book-close.svg";
+  static const String communityIcon = "${_imagePath}octicon_people-24.svg";
+  static const String reminderIcon = "${_imagePath}mdi_event-blank-outline.svg";
+  static const String moreIcon = "${_imagePath}hugeicons_more-or-less.svg";
+  static const String discipleIcon = "${_imagePath}disciple.svg";
+  static const String devotionalsImage = "${_imagePath}bible.png";
+  static const String gradient = "${_imagePath}gradient.png";
+  static const String locationDot = "${_imagePath}fluent-mdl2_location.svg";
+  static const String locationIconThin =
+      "${_imagePath}iconamoon_location-thin.svg";
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 }

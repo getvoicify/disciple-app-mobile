@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'dart:convert';
 import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/features/notes/data/model/scripture_reference.dart';
@@ -11,6 +12,25 @@ class NoteEntity {
   final List<ScriptureReference> scriptureReferences;
   final List<String> images;
   final DateTime? createdAt;
+=======
+import 'package:disciple/features/notes/data/model/scripture_reference.dart';
+import 'package:disciple/features/notes/domain/interface/i_note.dart';
+
+class NoteEntity implements INote {
+  @override
+  final String? id;
+  @override
+  final String? title;
+  @override
+  final String? content;
+  @override
+  final List<ScriptureReference> scriptureReferences;
+  @override
+  final List<String> images;
+  @override
+  final DateTime? createdAt;
+  @override
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   final DateTime? updatedAt;
 
   NoteEntity({
@@ -42,6 +62,7 @@ class NoteEntity {
     updatedAt: updatedAt ?? this.updatedAt,
   );
 
+<<<<<<< HEAD
   /// 🔑 Convert to Drift Companion
   NoteCompanion toCompanion() {
     final now = DateTime.now();
@@ -87,4 +108,31 @@ class NoteEntity {
         .toList(),
     'images': images,
   };
+=======
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> json = {};
+
+    if (title != null) {
+      json.addAll({'title': title});
+    }
+
+    if (content != null) {
+      json.addAll({'content': content});
+    }
+
+    if (scriptureReferences.isNotEmpty) {
+      json.addAll({
+        'scriptureReferences': scriptureReferences
+            .map((ref) => ref.toJson())
+            .toList(),
+      });
+    }
+
+    if (images.isNotEmpty) {
+      json.addAll({'images': images});
+    }
+
+    return json;
+  }
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 }

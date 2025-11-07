@@ -1,6 +1,16 @@
 import 'dart:io';
 import 'dart:math';
 
+<<<<<<< HEAD
+=======
+import 'package:disciple/app/core/database/module/app_database_module.dart';
+import 'package:disciple/app/core/manager/connectivity_manager.dart';
+import 'package:disciple/app/core/manager/keycloak_manager.dart';
+import 'package:disciple/features/bible/data/mapper/module/module.dart';
+import 'package:disciple/features/notes/data/mapper/module/module.dart';
+import 'package:disciple/features/notes/data/resync/module/module.dart';
+import 'package:disciple/features/notes/data/source_impl/module/module.dart';
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -10,8 +20,23 @@ import 'package:overlay_support/overlay_support.dart';
 import 'package:disciple/app/core/theme/provider/theme_provider.dart';
 
 extension DateTimeExtensions on DateTime {
+<<<<<<< HEAD
   String get monthTime => DateFormat('MMM dd, yyyy | hh:mm a').format(this);
 
+=======
+  String get time => DateFormat('hh:mm a').format(this);
+
+  String get weekDay => DateFormat('EEEE').format(this);
+
+  String get monthTime => DateFormat('MMM dd, yyyy | hh:mm a').format(this);
+
+  String get yyyyMMdd => DateFormat('yyyy-MM-dd').format(this);
+
+  String get monthYear => DateFormat('MMMM yyyy').format(this);
+
+  String get monthDateYear => DateFormat('MMMM dd, yyyy').format(this);
+
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   String get timeAgo {
     final now = DateTime.now();
     final difference = now.difference(this);
@@ -159,12 +184,31 @@ extension ContextExtensions on BuildContext {
 
   TextInputFormatter get digitsOnly => FilteringTextInputFormatter.digitsOnly;
 
+<<<<<<< HEAD
   Future<dynamic> navigateTo1(String route) async {}
 
   void replaceNamed(String route, {Object? arguments}) {}
 }
 
 extension RefExtension on WidgetRef {
+=======
+  String greetings(String name) {
+    final hour = DateTime.now().hour;
+
+    if (hour >= 5 && hour < 12) {
+      return "Goodmorning $name";
+    } else if (hour >= 12 && hour < 17) {
+      return "Goodafternoon $name";
+    } else if (hour >= 17 && hour < 21) {
+      return "Goodevening $name";
+    } else {
+      return "Goodnight $name";
+    }
+  }
+}
+
+extension RefExtension on Ref {
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   // Get system brightness using SchedulerBinding
   Brightness get _brightness =>
       SchedulerBinding.instance.platformDispatcher.platformBrightness;
@@ -182,5 +226,23 @@ extension RefExtension on WidgetRef {
       _themeMode == ThemeMode.dark ||
       (_themeMode == ThemeMode.system && _brightness == Brightness.dark);
 
+<<<<<<< HEAD
   void reset() {}
+=======
+  bool get isloggedIn =>
+      watch(keycloakManagerProvider).value?.isAuthenticated ?? false;
+
+  void reset() {
+    invalidate(noteSourceModule);
+    invalidate(noteToCompanionMapperProvider);
+    invalidate(appDatabaseProvider);
+    invalidate(syncManagerProvider);
+    invalidate(connectivityManagerInstanceProvider);
+    invalidate(bibleToCompanionMapperProvider);
+  }
+}
+
+extension IntExtension on int {
+  Color get toColor => Color(this);
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 }

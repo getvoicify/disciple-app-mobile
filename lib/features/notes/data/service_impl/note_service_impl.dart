@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+import 'package:dio/dio.dart';
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 import 'package:disciple/app/config/app_logger.dart';
 import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/features/notes/domain/entity/note_entity.dart';
@@ -15,9 +19,21 @@ class NoteServiceImpl implements NoteService {
     : _repository = repository;
 
   @override
+<<<<<<< HEAD
   Future<void> addNote({required NoteEntity entity}) async {
     try {
       final id = await _repository.addNote(entity: entity);
+=======
+  Future<void> addNote({
+    required NoteEntity entity,
+    CancelToken? cancelToken,
+  }) async {
+    try {
+      final id = await _repository.addNote(
+        entity: entity,
+        cancelToken: cancelToken,
+      );
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
       _logger.i('Note added successfully with id: $id');
     } catch (e) {
       _logger.e('An error occurred adding note: $e');
@@ -26,6 +42,7 @@ class NoteServiceImpl implements NoteService {
   }
 
   @override
+<<<<<<< HEAD
   Stream<List<NoteData>> watchNotes({WatchNotesParams? parameter}) =>
       _repository.watchNotes(
         limit: parameter?.limit ?? 20,
@@ -39,6 +56,25 @@ class NoteServiceImpl implements NoteService {
 
     try {
       final noteData = await _repository.getNoteById(id: id);
+=======
+  Stream<List<NoteData>> watchNotes({
+    WatchNotesParams? parameter,
+    CancelToken? cancelToken,
+  }) => _repository.watchNotes(params: parameter, cancelToken: cancelToken);
+
+  @override
+  Future<ParsedNoteData?> getNoteById({
+    required String id,
+    CancelToken? cancelToken,
+  }) async {
+    ParsedNoteData? note;
+
+    try {
+      final noteData = await _repository.getNoteById(
+        id: id,
+        cancelToken: cancelToken,
+      );
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 
       note = ParsedNoteData(noteData);
       _logger.i('Note retrieved successfully with id: $id');
@@ -50,10 +86,20 @@ class NoteServiceImpl implements NoteService {
   }
 
   @override
+<<<<<<< HEAD
   Future<bool> deleteNote({required String id}) async {
     bool result = false;
     try {
       result = await _repository.deleteNote(id: id);
+=======
+  Future<bool> deleteNote({
+    required String id,
+    CancelToken? cancelToken,
+  }) async {
+    bool result = false;
+    try {
+      result = await _repository.deleteNote(id: id, cancelToken: cancelToken);
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
       _logger.i('Note with id: $id deleted successfully');
     } catch (e) {
       _logger.e('An error occurred deleting note: $e');
@@ -63,10 +109,23 @@ class NoteServiceImpl implements NoteService {
   }
 
   @override
+<<<<<<< HEAD
   Future<bool> updateNote({required NoteEntity entity}) async {
     bool result = false;
     try {
       result = await _repository.updateNote(entity: entity);
+=======
+  Future<bool> updateNote({
+    required NoteEntity entity,
+    CancelToken? cancelToken,
+  }) async {
+    bool result = false;
+    try {
+      result = await _repository.updateNote(
+        entity: entity,
+        cancelToken: cancelToken,
+      );
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
       _logger.i('Note with id: ${entity.id} updated successfully');
     } catch (e) {
       _logger.e('An error occurred updating note: $e');
@@ -74,4 +133,20 @@ class NoteServiceImpl implements NoteService {
     }
     return result;
   }
+<<<<<<< HEAD
+=======
+
+  @override
+  Future<void> getNotes({
+    WatchNotesParams? parameter,
+    CancelToken? cancelToken,
+  }) async {
+    try {
+      await _repository.getNotes(params: parameter, cancelToken: cancelToken);
+    } catch (e) {
+      _logger.e('An error occurred getting notes: $e');
+      rethrow;
+    }
+  }
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 }

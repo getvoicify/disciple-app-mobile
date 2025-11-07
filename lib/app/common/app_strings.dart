@@ -42,6 +42,11 @@ class AppString {
   static String newNote = 'New Note';
   static String save = 'Save';
   static String searchNotesByTitle = 'Search notes by title';
+<<<<<<< HEAD
+=======
+  static String searchBookmarksByTitle = 'Search bookmarks by title';
+
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   static String all = 'All';
   static String editNote = 'Edit Note';
 
@@ -54,4 +59,28 @@ class AppString {
   static String requestCancelled = 'Request Cancelled';
   static String unknownError = 'Unknown Error';
   static String badResponse = 'Bad Response';
+<<<<<<< HEAD
+=======
+  static String feed = 'Feed';
+
+  static String pickFromLibrary = 'Pick From Library';
+  static String pickFromPhoto = 'Take A Photo';
+  static String cancel = 'Cancel';
+  static String noteAddedSuccessfully = 'Note added successfully';
+  static String searchChurchByName = 'Search church by name';
+  static String noChurchesFound = 'No churches found';
+  static String allChurches = 'All Churches';
+  static String searchResults = 'Search Results';
+  static String locationFilter = 'Location Filter';
+  static String searchScriptureByWords = 'Search scripture by words';
+  static String bookmarkAddedSuccessfully = 'Bookmark added successfully';
+  static String dailyScripture = 'Daily Scripture';
+  static String seletBiblePassage = "Select Bible Passage";
+  static String goToPassage = 'Go to Passage';
+  static String contactUs = 'Contact Us';
+  static String ourFriendlyTeamWouldLoveToHearFromYou =
+      'Our friendly team would love to hear from you.';
+  static String sendEmail = 'Send Email';
+  static String connectWithUsOnOurSocials = 'Connect with us on our socials';
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 }

@@ -1,10 +1,22 @@
+<<<<<<< HEAD
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/app/utils/extension.dart';
+=======
+import 'package:dio/dio.dart';
+import 'package:disciple/app/common/app_colors.dart';
+import 'package:disciple/app/common/app_images.dart';
+import 'package:disciple/app/utils/extension.dart';
+import 'package:disciple/features/devotionals/presentation/notifier/devotional_notifier.dart';
+import 'package:disciple/features/devotionals/presentation/views/skeleton/devotional_skeleton.dart';
+import 'package:disciple/features/devotionals/presentation/widget/devotional_widget.dart';
+import 'package:disciple/widgets/back_arrow_widget.dart';
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 import 'package:disciple/widgets/edit_text_field_with.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+<<<<<<< HEAD
 
 class DevotionalsView extends StatefulWidget {
   const DevotionalsView({super.key});
@@ -14,11 +26,50 @@ class DevotionalsView extends StatefulWidget {
 }
 
 class _DevotionalsViewState extends State<DevotionalsView> {
+=======
+import 'package:auto_route/auto_route.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+@RoutePage()
+class DevotionalsView extends ConsumerStatefulWidget {
+  const DevotionalsView({super.key});
+
+  @override
+  ConsumerState<DevotionalsView> createState() => _DevotionalsViewState();
+}
+
+class _DevotionalsViewState extends ConsumerState<DevotionalsView> {
+  late DevotionalNotifier _devotionalNotifier;
+  final CancelToken _cancelToken = CancelToken();
+
+  @override
+  void initState() {
+    _devotionalNotifier = ref.read(devotionalProvider.notifier);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _devotionalNotifier.getDevotionals(
+        date: DateTime(2024, 01, 16),
+        cancelToken: _cancelToken,
+      );
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _cancelToken.cancel();
+    super.dispose();
+  }
+
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: const Text('Devotionals'),
+<<<<<<< HEAD
       leading: const ImageWidget(imageUrl: AppImage.backIcon, fit: BoxFit.none),
+=======
+      leading: const BackArrowWidget(),
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
       actions: [
         const ImageWidget(imageUrl: AppImage.menuIcon),
         SizedBox(width: 16.w),
@@ -66,6 +117,7 @@ class _DevotionalsViewState extends State<DevotionalsView> {
           ),
           SizedBox(height: 32.h),
 
+<<<<<<< HEAD
           Expanded(
             child: ListView.separated(
               itemCount: 20,
@@ -123,6 +175,29 @@ class _DevotionalsViewState extends State<DevotionalsView> {
               ),
               separatorBuilder: (context, index) => SizedBox(height: 20.h),
             ),
+=======
+          Consumer(
+            builder: (_, ref, _) {
+              final state = ref.watch(devotionalProvider);
+              return Expanded(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder: (child, animation) =>
+                      FadeTransition(opacity: animation, child: child),
+                  child: state.isLoadingDevotionals
+                      ? const DevotionalSkeletonList()
+                      : ListView.separated(
+                          itemCount: state.devotionals.length,
+                          itemBuilder: (_, index) => DevotionalWidget(
+                            devotional: state.devotionals[index],
+                          ),
+                          separatorBuilder: (context, index) =>
+                              SizedBox(height: 20.h),
+                        ),
+                ),
+              );
+            },
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
           ),
         ],
       ),

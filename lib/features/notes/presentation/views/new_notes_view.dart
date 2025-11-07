@@ -1,7 +1,16 @@
 import 'package:auto_route/auto_route.dart';
+<<<<<<< HEAD
 import 'package:disciple/app/common/app_strings.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/app/utils/field_validator.dart';
+=======
+import 'package:dio/dio.dart';
+import 'package:disciple/app/common/app_strings.dart';
+import 'package:disciple/app/core/routes/page_navigator.dart';
+import 'package:disciple/app/utils/extension.dart';
+import 'package:disciple/app/utils/field_validator.dart';
+import 'package:disciple/app/utils/image_picker.dart';
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 import 'package:disciple/features/notes/data/model/scripture_reference.dart';
 import 'package:disciple/features/notes/domain/entity/note_entity.dart';
 import 'package:disciple/features/notes/domain/entity/parsed_note_data.dart';
@@ -9,6 +18,10 @@ import 'package:disciple/features/notes/presentation/notifier/note_notifier.dart
 import 'package:disciple/features/notes/presentation/widget/add_scripture_section.dart';
 import 'package:disciple/features/notes/presentation/widget/scripture_chips.dart';
 import 'package:disciple/features/notes/presentation/widget/upload_image_section.dart';
+<<<<<<< HEAD
+=======
+import 'package:disciple/features/uploads/presentation/notifier/upload_notifier.dart';
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 import 'package:disciple/widgets/back_arrow_widget.dart';
 import 'package:disciple/widgets/edit_text_field_with.dart';
 import 'package:disciple/widgets/elevated_button_widget.dart';
@@ -17,8 +30,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 /// TODO: Implement functionalities for getting Scriptures to be added
+<<<<<<< HEAD
 /// TODO: Implement functionalities for image uploading
 
+=======
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 @RoutePage()
 class NewNotesView extends ConsumerStatefulWidget {
   const NewNotesView({super.key, this.existingNote});
@@ -42,7 +58,13 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
 
   bool get _isUpdating => widget.existingNote != null;
 
+<<<<<<< HEAD
   bool _hasScriptures = false;
+=======
+  final ImagePickerHandler _imagePickerHandler = ImagePickerHandler();
+  List<String> _successfulUploads = [];
+  final CancelToken _cancelToken = CancelToken();
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 
   @override
   void initState() {
@@ -57,6 +79,10 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
 
   @override
   void dispose() {
+<<<<<<< HEAD
+=======
+    _cancelToken.cancel();
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
     _titleContoller.dispose();
     _detailContoller.dispose();
     _titleFocusNode.dispose();
@@ -69,6 +95,7 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
       if (!_scriptures.add(scripture)) {
         _scriptures.remove(scripture);
       }
+<<<<<<< HEAD
       _hasScriptures = false;
     });
   }
@@ -85,15 +112,35 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
 
     // If either check fails, do not proceed.
     if (!isFormValid || !hasScriptures) return;
+=======
+    });
+  }
+
+  Future<void> _pickImage() async {
+    final images = await _imagePickerHandler.pickMultipleImages();
+    if (!mounted || images.isEmpty) return;
+
+    _successfulUploads = await ref
+        .read(uploadProvider.notifier)
+        .uploadAll(files: images, cancelToken: _cancelToken);
+  }
+
+  Future<void> _saveNote() async {
+    if (!_formKey.currentState!.validate()) return;
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 
     final entity = NoteEntity(
       title: _titleContoller.text.trim(),
       content: _detailContoller.text.trim(),
       scriptureReferences: _scriptures.toList(),
+<<<<<<< HEAD
       images: const [
         'https://via.placeholder.com/150',
         'https://via.placeholder.com/150',
       ],
+=======
+      images: _successfulUploads,
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
@@ -103,9 +150,18 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
     if (_isUpdating) {
       await provider.updateNote(
         entity: entity.copyWith(id: widget.existingNote?.id),
+<<<<<<< HEAD
       );
     } else {
       await provider.addNote(entity: entity);
+=======
+        cancelToken: _cancelToken,
+      );
+    } else {
+      provider
+          .addNote(entity: entity, cancelToken: _cancelToken)
+          .then((_) => PageNavigator.pop());
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
     }
   }
 
@@ -146,10 +202,14 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
 
             SizedBox(height: 8.h),
 
+<<<<<<< HEAD
             AddScriptureSection(
               onAdd: _toggleScripture,
               hasError: _hasScriptures,
             ),
+=======
+            AddScriptureSection(onAdd: _toggleScripture, hasError: false),
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 
             SizedBox(height: 14.h),
 
@@ -165,6 +225,7 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
 
             SizedBox(height: 14.h),
 
+<<<<<<< HEAD
             const UploadImageSection(),
 
             SizedBox(height: 56.h),
@@ -172,6 +233,24 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
             ElevatedButtonIconWidget(
               title: AppString.save,
               onPressed: _saveNote,
+=======
+            UploadImageSection(onPickImage: _pickImage),
+
+            SizedBox(height: 56.h),
+
+            Consumer(
+              builder: (context, ref, child) {
+                final isBusy =
+                    ref.watch(noteProvider).isAddingNote ||
+                    ref.watch(noteProvider).isUpdatingNote ||
+                    ref.watch(uploadProvider).isUploading;
+                return ElevatedButtonIconWidget(
+                  title: AppString.save,
+                  isBusy: isBusy,
+                  onPressed: _saveNote,
+                );
+              },
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
             ),
           ],
         ),

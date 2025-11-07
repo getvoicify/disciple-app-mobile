@@ -5,17 +5,33 @@ import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+<<<<<<< HEAD
 
 class SecondDevotionalsDetailsView extends StatefulWidget {
   const SecondDevotionalsDetailsView({super.key});
 
   @override
   State<SecondDevotionalsDetailsView> createState() =>
+=======
+import 'package:auto_route/auto_route.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+@RoutePage()
+class SecondDevotionalsDetailsView extends ConsumerStatefulWidget {
+  const SecondDevotionalsDetailsView({super.key});
+
+  @override
+  ConsumerState<SecondDevotionalsDetailsView> createState() =>
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
       _SecondDevotionalsDetailsViewState();
 }
 
 class _SecondDevotionalsDetailsViewState
+<<<<<<< HEAD
     extends State<SecondDevotionalsDetailsView> {
+=======
+    extends ConsumerState<SecondDevotionalsDetailsView> {
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(

@@ -6,7 +6,13 @@ import 'package:disciple/features/community/presentation/widget/sender_chat_bubl
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+<<<<<<< HEAD
 
+=======
+import 'package:auto_route/auto_route.dart';
+
+@RoutePage()
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 class ChatsView extends StatefulWidget {
   const ChatsView({super.key});
 
@@ -39,7 +45,11 @@ class _ChatsViewState extends State<ChatsView> {
           SizedBox(height: 16.h),
           Expanded(
             child: ListView.separated(
+<<<<<<< HEAD
               separatorBuilder: (_, _) => SizedBox(height: 16.h),
+=======
+              separatorBuilder: (_, index) => SizedBox(height: 16.h),
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
               itemBuilder: (context, index) {
                 if (index.isEven) return const ReceiverChatBubleWidget();
                 return const SenderChatBubleWidget();

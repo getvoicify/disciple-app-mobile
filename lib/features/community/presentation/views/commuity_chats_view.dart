@@ -9,7 +9,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:disciple/features/community/presentation/widget/message_entry_widget.dart';
+<<<<<<< HEAD
 
+=======
+import 'package:auto_route/auto_route.dart';
+
+@RoutePage()
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
 class CommunityChatsView extends StatefulWidget {
   const CommunityChatsView({super.key});
 
@@ -50,7 +56,11 @@ class _CommunityChatsViewState extends State<CommunityChatsView>
     body: SafeArea(
       minimum: EdgeInsets.symmetric(horizontal: 16.w),
       child: NestedScrollView(
+<<<<<<< HEAD
         headerSliverBuilder: (_, _) => [
+=======
+        headerSliverBuilder: (_, innerBoxIsScrolled) => [
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
           SliverToBoxAdapter(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -140,7 +150,11 @@ class _CommunityChatsViewState extends State<CommunityChatsView>
       SizedBox(height: 16.h),
       Expanded(
         child: ListView.separated(
+<<<<<<< HEAD
           separatorBuilder: (_, _) => SizedBox(height: 16.h),
+=======
+          separatorBuilder: (_, index) => SizedBox(height: 16.h),
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
           itemBuilder: (context, index) {
             if (index.isEven) return const ReceiverChatBubleWidget();
             return const SenderChatBubleWidget();
@@ -155,7 +169,11 @@ class _CommunityChatsViewState extends State<CommunityChatsView>
 
   Widget _buildMembersTab() => ListView.separated(
     itemCount: _memberCount,
+<<<<<<< HEAD
     separatorBuilder: (_, _) => SizedBox(height: 12.h),
+=======
+    separatorBuilder: (_, index) => SizedBox(height: 12.h),
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
     itemBuilder: (context, index) =>
         _buildMemberItem(name: 'Member ${index + 1}', isAdmin: index == 0),
   );

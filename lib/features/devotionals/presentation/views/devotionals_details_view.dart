@@ -7,6 +7,7 @@ import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+<<<<<<< HEAD
 class DevotionalsDetailsView extends StatefulWidget {
   const DevotionalsDetailsView({super.key});
 
@@ -15,6 +16,22 @@ class DevotionalsDetailsView extends StatefulWidget {
 }
 
 class _DevotionalsDetailsViewState extends State<DevotionalsDetailsView> {
+=======
+import 'package:auto_route/auto_route.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+@RoutePage()
+class DevotionalsDetailsView extends ConsumerStatefulWidget {
+  const DevotionalsDetailsView({super.key});
+
+  @override
+  ConsumerState<DevotionalsDetailsView> createState() =>
+      _DevotionalsDetailsViewState();
+}
+
+class _DevotionalsDetailsViewState
+    extends ConsumerState<DevotionalsDetailsView> {
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   @override
   Widget build(BuildContext context) => Scaffold(
     body: Column(
@@ -157,7 +174,11 @@ class _DevotionalsDetailsViewState extends State<DevotionalsDetailsView> {
                     itemCount: 20,
                     padding: EdgeInsets.zero,
                     shrinkWrap: true,
+<<<<<<< HEAD
                     itemBuilder: (_, _) => const BuildTileWidget(),
+=======
+                    itemBuilder: (_, index) => const BuildTileWidget(),
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
                     separatorBuilder: (context, index) =>
                         SizedBox(height: 12.h),
                   ),

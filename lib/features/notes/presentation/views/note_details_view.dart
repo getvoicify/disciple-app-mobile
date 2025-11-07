@@ -23,11 +23,32 @@ class NoteDetailsView extends ConsumerStatefulWidget {
 }
 
 class _NoteDetailsViewState extends ConsumerState<NoteDetailsView> {
+<<<<<<< HEAD
   final List<Map> menus = [
     {"icon": AppImage.penIcon, "title": "Edit Note", "value": "edit"},
     {"icon": AppImage.downloadIcon, "title": "Download", "value": "download"},
     {"icon": AppImage.deleteIcon, "title": "Delete", "value": "delete"},
   ];
+=======
+  final List<PopupMenuItemData<String>> menus = const [
+    PopupMenuItemData<String>(
+      value: 'edit',
+      label: 'Edit Note',
+      icon: AppImage.penIcon,
+    ),
+    PopupMenuItemData<String>(
+      value: 'download',
+      label: 'Download',
+      icon: AppImage.downloadIcon,
+    ),
+    PopupMenuItemData<String>(
+      value: 'delete',
+      label: 'Delete',
+      icon: AppImage.deleteIcon,
+    ),
+  ];
+
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
   late String _id;
 
   @override
@@ -57,9 +78,15 @@ class _NoteDetailsViewState extends ConsumerState<NoteDetailsView> {
             items: menus
                 .map(
                   (menu) => PopupMenuItemData(
+<<<<<<< HEAD
                     icon: menu['icon'] as String?,
                     value: menu['value'] as String,
                     label: menu['title'] as String,
+=======
+                    icon: menu.icon,
+                    value: menu.value,
+                    label: menu.label,
+>>>>>>> b05cc9c14293b73379b299e1f81efe7ebc10826b
                   ),
                 )
                 .toList(),
