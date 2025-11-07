@@ -4,43 +4,70 @@ import 'package:disciple/features/reminder/domain/entity/reminder_entity.dart';
 import 'package:disciple/features/reminder/domain/repository/reminder_repository.dart';
 import 'package:disciple/features/reminder/domain/service/reminder_service.dart';
 import 'package:disciple/features/reminder/domain/usecase/watch_reminder_usecase.dart';
+import 'package:disciple/app/core/manager/notification_manager.dart';
 
 class ReminderServiceImpl implements ReminderService {
   final _logger = getLogger('ReminderServiceImpl');
 
   final ReminderRepository _repository;
 
-  ReminderServiceImpl({required ReminderRepository repository})
-    : _repository = repository;
+  final NotificationManager _notificationManager;
+
+  ReminderServiceImpl({
+    required ReminderRepository repository,
+    required NotificationManager notificationManager,
+  }) : _repository = repository,
+       _notificationManager = notificationManager;
 
   @override
   Future<void> addReminder({required ReminderEntity entity}) async {
     try {
-      final time = entity.scheduledAt ?? DateTime.now();
-      final dates = entity.scheduledDates ?? [];
+      final now = DateTime.now();
+      final time = entity.scheduledAt ?? now;
+      final targetDates = (entity.scheduledDates?.isNotEmpty ?? false)
+          ? entity.scheduledDates!
+          : [entity.scheduledAt!];
 
-      // If no date range, just insert the single reminder
-      final targetDates = dates.isEmpty ? [entity.scheduledAt!] : dates;
+      // Build reminders with correct times and filter out past dates
+      final reminders = targetDates
+          .map((date) {
+            final scheduledDateTime = DateTime(
+              date.year,
+              date.month,
+              date.day,
+              time.hour,
+              time.minute,
+            );
+            return entity.copyWith(scheduledAt: scheduledDateTime);
+          })
+          .where((r) => r.scheduledAt!.isAfter(now))
+          .toList();
 
-      // Build reminders with correct time
-      final reminders = targetDates.map((date) {
-        final scheduledDateTime = DateTime(
-          date.year,
-          date.month,
-          date.day,
-          time.hour,
-          time.minute,
+      const chunkSize = 5; // Adjustable concurrency limit
+
+      for (var i = 0; i < reminders.length; i += chunkSize) {
+        final chunk = reminders.skip(i).take(chunkSize);
+
+        // Run DB + notification operations in parallel per batch
+        await Future.wait(
+          chunk.map((r) async {
+            await _repository.addReminder(entity: r);
+
+            if (r.reminder ?? false) {
+              await _notificationManager.scheduleNotificationAt(
+                id: r.hashCode,
+                title: 'Reminder',
+                body: r.title ?? '',
+                scheduledAt: r.scheduledAt!,
+              );
+            }
+          }),
         );
+      }
 
-        return entity.copyWith(scheduledAt: scheduledDateTime);
-      }).toList();
-
-      /// TODO: Implement notification reminder
-      await Future.wait(
-        reminders.map((r) => _repository.addReminder(entity: r)),
+      _logger.i(
+        "${reminders.length} reminder(s) saved and scheduled successfully.",
       );
-
-      _logger.i("${reminders.length} reminder(s) saved");
     } catch (e, st) {
       _logger.e('Error adding reminder: $e\n$st');
       rethrow;

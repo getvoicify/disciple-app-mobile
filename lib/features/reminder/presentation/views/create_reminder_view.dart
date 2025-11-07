@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
+import 'package:disciple/app/core/manager/notification_manager.dart';
 import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/app/utils/field_validator.dart';
@@ -458,10 +459,13 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
       ),
       Switch.adaptive(
         value: _enableAlert,
-        onChanged: (value) => setState(() {
-          _enableAlert = value;
-          _validateForm();
-        }),
+        onChanged: (value) {
+          setState(() {
+            _enableAlert = value;
+            _validateForm();
+          });
+          _enablePermissions();
+        },
       ),
     ],
   );
@@ -487,6 +491,12 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
       _reminderNotifier
           .deleteReminder(id: reminder?.id ?? '')
           .then((_) => PageNavigator.pop());
+    }
+  }
+
+  Future<void> _enablePermissions() async {
+    if (_enableAlert) {
+      await ref.read(notificationManagerProvider).setNotificationSettings();
     }
   }
 }
