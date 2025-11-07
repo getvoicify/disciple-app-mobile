@@ -4,8 +4,6 @@ import 'dart:io';
 import 'package:disciple/app/config/app_config.dart';
 import 'package:disciple/app/config/app_logger.dart';
 import 'package:disciple/app/core/manager/model/user.dart';
-import 'package:disciple/app/core/routes/app_router.gr.dart';
-import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keycloak_wrapper/keycloak_wrapper.dart';
