@@ -58,7 +58,6 @@ ThemeData lightTheme = ThemeData.light(useMaterial3: false).copyWith(
       }),
     ),
   ),
-
   inputDecorationTheme: InputDecorationTheme(
     labelStyle: bodyMedium.copyWith(
       overflow: TextOverflow.ellipsis,

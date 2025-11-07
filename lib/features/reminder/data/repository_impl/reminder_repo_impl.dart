@@ -29,36 +29,45 @@ class ReminderRepoImpl implements ReminderRepository {
     required WatchReminderParams parameter,
   }) {
     final select = _database.select(_database.reminder);
-
-    // Current time reference
     final now = DateTime.now();
 
-    // Filter by status (upcoming / past)
+    final endOfToday = DateTime(now.year, now.month, now.day, 23, 59, 59);
+
+    // --- Filter by status ---
     if (parameter.status != null) {
       if (parameter.status == true) {
-        // Upcoming reminders
+        // Upcoming reminders (today or later)
         select.where((tbl) => tbl.scheduledAt.isBiggerOrEqualValue(now));
       } else {
-        // Past reminders
+        // Past reminders (strictly before now)
         select.where((tbl) => tbl.scheduledAt.isSmallerThanValue(now));
       }
     }
 
-    // Filter by search text
+    // --- Filter for today's upcoming reminders only ---
+    if (parameter.isToday == true) {
+      select.where(
+        (tbl) =>
+            tbl.scheduledAt.isBiggerOrEqualValue(now) &
+            tbl.scheduledAt.isSmallerOrEqualValue(endOfToday),
+      );
+    }
+
+    // --- Filter by search text ---
     if (parameter.searchText != null &&
         parameter.searchText!.trim().isNotEmpty) {
       final q = parameter.searchText!.trim();
       select.where((tbl) => tbl.title.like('$q%'));
     }
 
-    // Sort by most recently updated
+    // --- Sort by most recently updated ---
     select.orderBy([(tbl) => OrderingTerm.desc(tbl.updatedAt)]);
 
     return select.watch();
   }
 
   @override
-  Future<void> deleteReminder({required String id}) async {
+  Future<void> deleteReminder({required int id}) async {
     await (_database.delete(
       _database.reminder,
     )..where((tbl) => tbl.id.equals(id))).go();
@@ -70,7 +79,7 @@ class ReminderRepoImpl implements ReminderRepository {
 
     final result = await (_database.update(
       _database.reminder,
-    )..where((tbl) => tbl.id.equals(entity.id ?? ''))).write(companion);
+    )..where((tbl) => tbl.id.equals(entity.id ?? 0))).write(companion);
 
     return result > 0;
   }
