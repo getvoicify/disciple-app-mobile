@@ -140,7 +140,7 @@ class NotificationManager {
   /// Schedule a notification for a specific time
   Future<void> scheduleNotificationAt({
     required int id,
-    required String title,
+    String title = 'Reminder',
     required String body,
     required DateTime scheduledAt,
   }) async {
@@ -171,5 +171,10 @@ class NotificationManager {
     await _plugin.cancelAll();
     await _plugin.cancelAllPendingNotifications();
     logger.i('🧹 All notifications canceled');
+  }
+
+  Future<void> cancel(int id) async {
+    await _plugin.cancel(id);
+    logger.i('🧹 Notification canceled');
   }
 }

@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 
 class Reminder extends Table {
-  TextColumn get id => text().nullable()(); // Freezed model uses nullable id
+  IntColumn get id => integer()();
 
   TextColumn get title => text().nullable()();
 

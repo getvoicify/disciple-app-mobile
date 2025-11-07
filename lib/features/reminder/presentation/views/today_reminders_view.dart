@@ -6,7 +6,7 @@ import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/features/reminder/presentation/notifier/reminder_notifier.dart';
 import 'package:disciple/features/reminder/presentation/widget/reminder_tile_widget.dart';
-import 'package:disciple/widgets/calendar/calendar_widget.dart';
+import 'package:disciple/widgets/calendar/custom_table_calendar.dart';
 import 'package:disciple/widgets/calendar/module/calendar_notifier.dart';
 import 'package:disciple/widgets/floating_side_action_button.dart';
 import 'package:flutter/material.dart';
@@ -22,14 +22,6 @@ class TodayRemindersView extends ConsumerStatefulWidget {
 }
 
 class _TodayRemindersViewState extends ConsumerState<TodayRemindersView> {
-  late final CalendarNotifier _calendarNotifier;
-
-  @override
-  void initState() {
-    _calendarNotifier = ref.read(calendarProvider.notifier);
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
@@ -59,7 +51,7 @@ class _TodayRemindersViewState extends ConsumerState<TodayRemindersView> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'August 1',
+                                DateTime.now().monthDate,
                                 style: context.bodyMedium?.copyWith(
                                   fontSize: 16.sp,
                                 ),
@@ -76,12 +68,17 @@ class _TodayRemindersViewState extends ConsumerState<TodayRemindersView> {
                           ),
                         ),
 
-                        Text(
-                          'See All',
-                          style: context.bodyMedium?.copyWith(
-                            fontSize: 14.sp,
-                            color: AppColors.purple,
-                            fontWeight: FontWeight.w500,
+                        GestureDetector(
+                          onTap: () => PageNavigator.pushRoute(
+                            const AllRemindersRoute(),
+                          ),
+                          child: Text(
+                            'See All',
+                            style: context.bodyMedium?.copyWith(
+                              fontSize: 14.sp,
+                              color: AppColors.purple,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ],
@@ -90,13 +87,20 @@ class _TodayRemindersViewState extends ConsumerState<TodayRemindersView> {
                   SizedBox(height: 16.h),
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 16.w),
-                    height: 130.h,
                     width: double.infinity,
                     child: Card(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadiusGeometry.circular(8.r),
                       ),
-                      // child: const CalendarWidget(),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.w,
+                          vertical: 16.h,
+                        ),
+                        child: const CustomTableCalendar(
+                          isTodayHighlighted: true,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -124,7 +128,7 @@ class _TodayRemindersViewState extends ConsumerState<TodayRemindersView> {
   Widget _buildRemindersList() {
     final stream = ref
         .read(reminderProvider.notifier)
-        .watchReminder(status: true);
+        .watchReminder(isToday: true);
 
     return StreamBuilder<List<ReminderData>>(
       stream: stream,

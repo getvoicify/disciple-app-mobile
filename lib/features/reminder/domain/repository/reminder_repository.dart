@@ -5,7 +5,7 @@ import 'package:disciple/features/reminder/domain/usecase/watch_reminder_usecase
 abstract class ReminderRepository {
   Future<int> addReminder({required ReminderEntity entity});
   Future<bool> updateReminder({required ReminderEntity entity});
-  Future<void> deleteReminder({required String id});
+  Future<void> deleteReminder({required int id});
   Stream<List<ReminderData>> watchReminder({
     required WatchReminderParams parameter,
   });

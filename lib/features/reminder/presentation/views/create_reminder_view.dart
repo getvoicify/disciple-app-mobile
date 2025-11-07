@@ -73,10 +73,13 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
     // store provider notifiers once for safe dispose usage
     _calendarNotifier = ref.read(calendarProvider.notifier);
     _reminderNotifier = ref.read(reminderProvider.notifier);
+    _calendarNotifier.setCalendarFormat('Daily', notify: false);
 
     // If calendarProvider has a reminder preloaded (edit mode),
     // populate UI after first frame with read (not watch).
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadEditData());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadEditData();
+    });
 
     // listen to calendar changes to revalidate
     _calendarNotifier.addListener(_validateForm);
@@ -459,12 +462,12 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
       ),
       Switch.adaptive(
         value: _enableAlert,
-        onChanged: (value) {
+        onChanged: (value) async {
           setState(() {
             _enableAlert = value;
             _validateForm();
           });
-          _enablePermissions();
+          await _enablePermissions();
         },
       ),
     ],
@@ -489,7 +492,7 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
     final reminder = ref.watch(calendarProvider).reminder;
     if (value == 'delete') {
       _reminderNotifier
-          .deleteReminder(id: reminder?.id ?? '')
+          .deleteReminder(id: reminder?.id ?? 0)
           .then((_) => PageNavigator.pop());
     }
   }
