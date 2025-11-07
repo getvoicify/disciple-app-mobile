@@ -20,6 +20,7 @@ class NotificationManager {
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
   final logger = getLogger('NotificationManager');
+  static const String _appIcon = 'mipmap/app_icon';
 
   Future<void> setNotificationSettings() async {
     final initialized = await _initialize();
@@ -34,7 +35,7 @@ class NotificationManager {
     tz.initializeTimeZones();
     tz.setLocalLocation(tz.getLocation('Africa/Lagos'));
 
-    const androidSettings = AndroidInitializationSettings('app_icon');
+    const androidSettings = AndroidInitializationSettings(_appIcon);
     const iosSettings = DarwinInitializationSettings();
 
     const initSettings = InitializationSettings(
@@ -117,7 +118,7 @@ class NotificationManager {
           'Notifications that appear instantly or at a specific date/time',
       importance: Importance.max,
       priority: Priority.high,
-      icon: 'app_icon',
+      icon: _appIcon,
     ),
     iOS: DarwinNotificationDetails(),
   );
