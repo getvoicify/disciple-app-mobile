@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
+import 'package:disciple/app/core/manager/notification_manager.dart';
 import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/app/utils/field_validator.dart';
@@ -72,10 +73,13 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
     // store provider notifiers once for safe dispose usage
     _calendarNotifier = ref.read(calendarProvider.notifier);
     _reminderNotifier = ref.read(reminderProvider.notifier);
+    _calendarNotifier.setCalendarFormat('Daily', notify: false);
 
     // If calendarProvider has a reminder preloaded (edit mode),
     // populate UI after first frame with read (not watch).
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadEditData());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadEditData();
+    });
 
     // listen to calendar changes to revalidate
     _calendarNotifier.addListener(_validateForm);
@@ -458,10 +462,13 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
       ),
       Switch.adaptive(
         value: _enableAlert,
-        onChanged: (value) => setState(() {
-          _enableAlert = value;
-          _validateForm();
-        }),
+        onChanged: (value) async {
+          setState(() {
+            _enableAlert = value;
+            _validateForm();
+          });
+          await _enablePermissions();
+        },
       ),
     ],
   );
@@ -485,8 +492,14 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
     final reminder = ref.watch(calendarProvider).reminder;
     if (value == 'delete') {
       _reminderNotifier
-          .deleteReminder(id: reminder?.id ?? '')
+          .deleteReminder(id: reminder?.id ?? 0)
           .then((_) => PageNavigator.pop());
+    }
+  }
+
+  Future<void> _enablePermissions() async {
+    if (_enableAlert) {
+      await ref.read(notificationManagerProvider).setNotificationSettings();
     }
   }
 }

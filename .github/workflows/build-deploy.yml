@@ -31,6 +31,7 @@ env:
   FLUTTER_VERSION: '3.35.0'
   JAVA_VERSION: '17'
   RUBY_VERSION: '3.2'
+  APP_ENV: 'production'
 
 jobs:
   version:
@@ -234,8 +235,16 @@ jobs:
           echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
           echo "storeFile=upload-keystore.jks" >> android/key.properties
 
+      - name: Create .env file
+        run: |
+          echo "${{ secrets.DOT_ENV }}" > .env
+          echo "${{ secrets.DOT_ENV }}" > .env_development
+
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Build generated files
+        run:  dart run build_runner build
 
       - name: Build AAB
         run: |

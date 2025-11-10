@@ -7,10 +7,15 @@ import 'package:disciple/app/common/app_fonts.dart';
 import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/app/common/app_strings.dart';
 import 'package:disciple/app/config/app_helper.dart';
+import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/core/manager/keycloak_manager.dart';
+import 'package:disciple/app/core/routes/app_router.gr.dart';
+import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/features/bible/presentation/notifier/bible_notifier.dart';
+import 'package:disciple/features/reminder/presentation/notifier/reminder_notifier.dart';
 import 'package:disciple/widgets/action_button_widget.dart';
+import 'package:disciple/widgets/calendar/module/calendar_notifier.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:disciple/widgets/mini_button_widget.dart';
 import 'package:disciple/widgets/profile_image_widget.dart';
@@ -263,6 +268,35 @@ class _HomeViewState extends ConsumerState<HomeView> {
               ),
             ),
             SizedBox(height: 24.h),
+
+            _buildRemindersList(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRemindersList() {
+    final stream = ref
+        .read(reminderProvider.notifier)
+        .watchReminder(status: true);
+
+    return StreamBuilder<List<ReminderData>>(
+      stream: stream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final items = snapshot.data ?? [];
+
+        if (items.isEmpty) return const SizedBox.shrink();
+
+        final reminders = items.take(4).toList();
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
             Row(
               children: [
                 Expanded(
@@ -279,13 +313,17 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Flexible(
-                      child: Text(
-                        'All Reminders',
-                        style: context.headlineMedium?.copyWith(
-                          fontSize: 14.sp,
-                          color: AppColors.purple,
+                      child: GestureDetector(
+                        onTap: () =>
+                            PageNavigator.pushRoute(const AllRemindersRoute()),
+                        child: Text(
+                          'All Reminders',
+                          style: context.headlineMedium?.copyWith(
+                            fontSize: 14.sp,
+                            color: AppColors.purple,
+                          ),
+                          textAlign: TextAlign.right,
                         ),
-                        textAlign: TextAlign.right,
                       ),
                     ),
                     SizedBox(width: 4.w),
@@ -295,103 +333,92 @@ class _HomeViewState extends ConsumerState<HomeView> {
               ],
             ),
             SizedBox(height: 19.h),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildQuickLinksWidget(
-                    title: 'Family Prayer',
-                    date: 'Family Prayer',
-                    time: '6:00AM',
-                    color: AppColors.green50,
-                  ),
-                ),
-                SizedBox(width: 24.w),
-                Expanded(
-                  child: _buildQuickLinksWidget(
-                    title: 'Weekly Prayer',
-                    date: 'Tomorrow',
-                    time: '6:00AM',
-                    color: AppColors.red50,
-                  ),
-                ),
-              ],
-            ),
 
-            SizedBox(height: 19.h),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildQuickLinksWidget(
-                    title: 'Peniel Hour',
-                    date: 'Tomorrow',
-                    time: '6:00AM',
-                    color: AppColors.blueLight50,
-                    borderColor: AppColors.grey200,
-                  ),
-                ),
-                SizedBox(width: 24.w),
-                Expanded(
-                  child: _buildQuickLinksWidget(
-                    title: 'Home Church',
-                    date: 'Saturday',
-                    time: '6:00AM',
-                    color: AppColors.indigo,
-                    borderColor: AppColors.grey200,
-                  ),
-                ),
-              ],
+            GridView.builder(
+              itemCount: reminders.length,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (_, index) {
+                final reminder = reminders[index];
+                return _buildQuickLinksWidget(
+                  reminder: reminder,
+                  onTap: () async {
+                    ref
+                        .read(calendarProvider.notifier)
+                        .setOtherValues(reminder);
+                    await PageNavigator.pushRoute(const CreateReminderRoute());
+                  },
+                );
+              },
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 20.h,
+                crossAxisSpacing: 24.w,
+                mainAxisExtent: 120.h,
+              ),
             ),
           ],
-        ),
-      ),
+        );
+      },
     );
   }
 
-  Container _buildQuickLinksWidget({
-    required String title,
-    required String date,
-    required String time,
-    required Color color,
-    Color? borderColor,
-  }) => Container(
-    padding: EdgeInsets.only(left: 20.w, top: 20.h, right: 20.w, bottom: 17.h),
-    width: double.infinity,
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(8.r),
-      color: color,
-      border: Border.all(color: borderColor ?? Colors.transparent),
-    ),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: context.headlineLarge?.copyWith(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        SizedBox(height: 4.h),
-        Text(date, style: context.headlineMedium?.copyWith(fontSize: 12.sp)),
-        SizedBox(height: 15.h),
-        Row(
-          children: [
-            const ImageWidget(imageUrl: AppImage.clockIcon),
-            SizedBox(width: 6.w),
-            Expanded(
-              child: Text(
-                time,
-                style: context.headlineMedium?.copyWith(fontSize: 12.sp),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
+  GestureDetector _buildQuickLinksWidget({
+    required ReminderData reminder,
+    required void Function() onTap,
+  }) => GestureDetector(
+    onTap: onTap,
+    child: Container(
+      padding: EdgeInsets.only(
+        left: 20.w,
+        top: 20.h,
+        right: 20.w,
+        bottom: 17.h,
+      ),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.r),
+        color: reminder.colorValue?.toColor ?? Colors.transparent,
+        border: Border.all(color: AppColors.grey200, width: 1.w),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            reminder.title ?? '',
+            style: context.headlineLarge?.copyWith(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w600,
             ),
-            SizedBox(width: 6.w),
-            const ImageWidget(imageUrl: AppImage.forwardIcon),
-          ],
-        ),
-      ],
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          SizedBox(height: 4.h),
+          Text(
+            reminder.title ?? '',
+            style: context.headlineMedium?.copyWith(fontSize: 12.sp),
+            maxLines: 1,
+          ),
+          SizedBox(height: 15.h),
+          Row(
+            children: [
+              const ImageWidget(imageUrl: AppImage.clockIcon),
+              SizedBox(width: 6.w),
+              Expanded(
+                child: Text(
+                  reminder.scheduledAt?.time ?? '',
+                  style: context.headlineMedium?.copyWith(fontSize: 12.sp),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              SizedBox(width: 6.w),
+              const ImageWidget(imageUrl: AppImage.forwardIcon),
+            ],
+          ),
+        ],
+      ),
     ),
   );
 

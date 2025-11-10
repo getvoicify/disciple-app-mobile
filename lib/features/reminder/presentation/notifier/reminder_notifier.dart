@@ -29,6 +29,7 @@ class ReminderNotifier extends _$ReminderNotifier {
 
   Stream<List<ReminderData>> watchReminder({
     bool? status,
+    bool? isToday,
     String? searchText,
   }) =>
       ref
@@ -36,6 +37,7 @@ class ReminderNotifier extends _$ReminderNotifier {
               .execute(
                 parameter: WatchReminderParams(
                   status: status,
+                  isToday: isToday,
                   searchText: searchText,
                 ),
               )
@@ -54,7 +56,7 @@ class ReminderNotifier extends _$ReminderNotifier {
     }
   }
 
-  Future<void> deleteReminder({required String id}) async {
+  Future<void> deleteReminder({required int id}) async {
     state = state.copyWith(isBusy: true);
     try {
       await ref.read(deleteReminderUseCaseImpl).execute(parameter: id);
