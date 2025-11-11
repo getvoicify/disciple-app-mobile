@@ -52,7 +52,9 @@ class BibleNotifier extends _$BibleNotifier {
     }
   }
 
-  Future<void> searchBibleChapters(BibleSearchParams params) async {
+  Future<List<ChapterInfo?>> searchBibleChapters(
+    BibleSearchParams params,
+  ) async {
     try {
       _chapters = await ref
           .read(searchBibleChaptersUseCaseImpl)
@@ -61,6 +63,7 @@ class BibleNotifier extends _$BibleNotifier {
     } finally {
       state = state.copyWith(chapters: _chapters);
     }
+    return _chapters;
   }
 
   Future<void> getDailyScripture() async {

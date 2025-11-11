@@ -1,22 +1,21 @@
 import 'dart:async';
+
 import 'package:disciple/app/common/app_fonts.dart';
 import 'package:disciple/app/common/app_strings.dart';
 import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/app/utils/extension.dart';
-import 'package:disciple/features/bible/data/model/chapter_model.dart';
 import 'package:disciple/features/bible/domain/param/bible_search_params.dart';
 import 'package:disciple/features/bible/presentation/notifier/bible_notifier.dart';
 import 'package:disciple/features/bible/presentation/widget/listview_wheel.dart';
+import 'package:disciple/main.dart';
 import 'package:disciple/widgets/elevated_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-// TODO: Fix issue with getting the complete version counts when i visit this page
 class GetBibleBooksSheet extends ConsumerStatefulWidget {
   const GetBibleBooksSheet({super.key, required this.searchParams});
-
   final BibleSearchParams searchParams;
 
   @override
@@ -27,13 +26,9 @@ class _GetBibleBooksSheetState extends ConsumerState<GetBibleBooksSheet> {
   late final BibleNotifier _bibleNotifier;
   late BibleSearchParams _searchParams;
 
-  // Scroll controllers
-  final FixedExtentScrollController _bookController =
-      FixedExtentScrollController();
-  final FixedExtentScrollController _chapterController =
-      FixedExtentScrollController();
-  final FixedExtentScrollController _verseController =
-      FixedExtentScrollController();
+  final _bookController = ScrollController();
+  final _chapterController = ScrollController();
+  final _verseController = ScrollController();
 
   int selectedVersion = 0;
   int selectedBook = 0;
@@ -42,23 +37,21 @@ class _GetBibleBooksSheetState extends ConsumerState<GetBibleBooksSheet> {
   int verseCount = 0;
 
   bool _hasAnimatedOnce = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     _searchParams = widget.searchParams;
     _bibleNotifier = ref.read(bibleProvider.notifier);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _initializeBibleData();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initializeBibleData());
   }
 
   Future<void> _initializeBibleData() async {
     await _bibleNotifier.getVersions();
     final bibleState = ref.read(bibleProvider);
 
-    // ✅ Pre-select version
+    // Load version
     if (_searchParams.versionId != null) {
       final versionIndex = bibleState.versions.indexWhere(
         (v) => v.id == _searchParams.versionId,
@@ -67,8 +60,12 @@ class _GetBibleBooksSheetState extends ConsumerState<GetBibleBooksSheet> {
       await _bibleNotifier.getBooks(_searchParams.versionId!);
     }
 
-    // ✅ Pre-select book
+    // Wait briefly to ensure state propagation
+    await Future.delayed(const Duration(milliseconds: 100));
+
     final books = ref.read(bibleProvider).books;
+
+    // Preselect book/chapter/verse if available
     if (_searchParams.bookName != null && books.isNotEmpty) {
       final bookIndex = books.indexWhere(
         (b) => b.toLowerCase() == _searchParams.bookName!.toLowerCase(),
@@ -76,77 +73,81 @@ class _GetBibleBooksSheetState extends ConsumerState<GetBibleBooksSheet> {
       if (bookIndex >= 0) {
         selectedBook = bookIndex;
 
-        // Load chapters for the selected book
-        await _bibleNotifier.searchBibleChapters(
-          BibleSearchParams(
-            versionId: _searchParams.versionId,
-            bookName: books[bookIndex],
-          ),
+        final params = BibleSearchParams(
+          versionId: _searchParams.versionId,
+          bookName: books[bookIndex],
         );
 
-        // Wait for the chapters to be loaded
-        await Future.delayed(const Duration(milliseconds: 100));
+        final updatedChapters = await _bibleNotifier.searchBibleChapters(
+          params,
+        );
 
-        // Get the updated chapters
-        final updatedChapters = ref.read(bibleProvider).chapters;
         if (updatedChapters.isNotEmpty) {
-          // Find the chapter that matches our search params
           final chapterIndex = updatedChapters.indexWhere(
             (c) => c?.chapter == _searchParams.chapter,
           );
-
           if (chapterIndex >= 0) {
             selectedChapter = chapterIndex;
-            // Update verse count from the chapter info
-            final chapter = updatedChapters[chapterIndex];
-            if (chapter != null) {
-              verseCount = chapter.verseCount;
-            }
+            verseCount = updatedChapters[chapterIndex]?.verseCount ?? 0;
           }
         }
       }
     }
 
-    // ✅ Pre-select verse (if given)
-    if (_searchParams.startVerse > 0 && verseCount > 0) {
-      selectedVerse = (_searchParams.startVerse - 1).clamp(0, verseCount - 1);
-    } else {
-      selectedVerse = 0;
-    }
+    // Preselect verse
+    selectedVerse = (_searchParams.startVerse > 0 && verseCount > 0)
+        ? (_searchParams.startVerse - 1).clamp(0, verseCount - 1)
+        : 0;
 
+    if (!mounted) return;
     setState(() {});
-    Future.delayed(const Duration(milliseconds: 300), _animateToSelectedItems);
+
+    // Smooth scroll to selections after first frame
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _animateToSelectedItems(),
+    );
   }
 
   Future<void> _animateToSelectedItems() async {
-    if (_hasAnimatedOnce) return; // ✅ Prevents repeat animation
+    if (_hasAnimatedOnce) return;
     _hasAnimatedOnce = true;
 
-    const duration = Duration(milliseconds: 400);
+    const duration = Duration(milliseconds: 180);
     const curve = Curves.easeOutCubic;
 
+    final tasks = <Future<void>>[];
+
     if (_bookController.hasClients) {
-      _bookController.animateToItem(
-        selectedBook,
-        duration: duration,
-        curve: curve,
+      tasks.add(
+        _bookController.animateTo(
+          selectedBook * 40, // 40px per item height
+          duration: duration,
+          curve: curve,
+        ),
       );
     }
+
     if (_chapterController.hasClients) {
-      _chapterController.animateToItem(
-        selectedChapter,
-        duration: duration,
-        curve: curve,
+      tasks.add(
+        _chapterController.animateTo(
+          selectedChapter * 40,
+          duration: duration,
+          curve: curve,
+        ),
       );
     }
 
     if (_verseController.hasClients && verseCount > 0) {
-      _verseController.animateToItem(
-        selectedVerse,
-        duration: duration,
-        curve: curve,
+      tasks.add(
+        _verseController.animateTo(
+          selectedVerse * 40,
+          duration: duration,
+          curve: curve,
+        ),
       );
     }
+
+    await Future.wait(tasks);
   }
 
   @override
@@ -165,7 +166,7 @@ class _GetBibleBooksSheetState extends ConsumerState<GetBibleBooksSheet> {
     final chapters = bibleState.chapters;
 
     return SafeArea(
-      minimum: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+      minimum: EdgeInsets.symmetric(vertical: 16.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -181,7 +182,7 @@ class _GetBibleBooksSheetState extends ConsumerState<GetBibleBooksSheet> {
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: ['Book', 'Chapter', 'Verse']
+            children: ['Version', 'Book', 'Chapter', 'Verse']
                 .map(
                   (label) => Flexible(
                     child: Text(
@@ -199,79 +200,135 @@ class _GetBibleBooksSheetState extends ConsumerState<GetBibleBooksSheet> {
           ),
           SizedBox(height: 20.h),
 
-          SizedBox(
-            height: 180.h,
-            child: Row(
-              children: [
-                BuildListviewWheel(
-                  controller: _bookController,
-                  itemCount: books.length,
-                  selectedIndex: selectedBook,
-                  itemBuilder: (i) => books[i],
-                  onSelected: (i) => _onBookSelected(books, i, versions),
-                ),
-                BuildListviewWheel(
-                  controller: _chapterController,
-                  itemCount: chapters.length,
-                  selectedIndex: selectedChapter,
-                  itemBuilder: (i) => chapters[i]?.chapter.toString() ?? '',
-                  onSelected: (i) => _onChapterSelected(chapters, i),
-                ),
-                BuildListviewWheel(
-                  controller: _verseController,
-                  itemCount: verseCount,
-                  selectedIndex: selectedVerse,
-                  itemBuilder: (i) => '${i + 1}',
-                  onSelected: (i) => setState(() => selectedVerse = i),
-                ),
-              ],
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: SizedBox(
+              key: ValueKey('$selectedVersion-$selectedBook'),
+              height: 300.h,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  BuildListviewWheel(
+                    pageStorageKey: const PageStorageKey('versionWheel'),
+                    itemCount: versions.length,
+                    selectedIndex: selectedVersion,
+                    itemBuilder: (i) => versions[i].abbreviation,
+                    onSelected: (i) => _onVersionSelected(i, versions),
+                  ),
+                  BuildListviewWheel(
+                    pageStorageKey: const PageStorageKey('bookWheel'),
+                    itemCount: books.length,
+                    selectedIndex: selectedBook,
+                    itemBuilder: (i) => books[i],
+                    onSelected: _onBookSelected,
+                  ),
+                  BuildListviewWheel(
+                    pageStorageKey: const PageStorageKey('chapterWheel'),
+                    itemCount: chapters.length,
+                    selectedIndex: selectedChapter,
+                    itemBuilder: (i) => '${chapters[i]?.chapter ?? 0}',
+                    onSelected: _onChapterSelected,
+                  ),
+                  BuildListviewWheel(
+                    pageStorageKey: const PageStorageKey('verseWheel'),
+                    itemCount: chapters.isEmpty
+                        ? 0
+                        : chapters[selectedChapter]?.verseCount ?? 0,
+                    selectedIndex: selectedVerse,
+                    itemBuilder: (i) => '${i + 1}',
+                    onSelected: (i) => setState(() => selectedVerse = i),
+                  ),
+                ],
+              ),
             ),
           ),
+
           SizedBox(height: 24.h),
 
-          ElevatedButtonIconWidget(
-            title: AppString.goToPassage,
-            onPressed: () async {
-              if (versions.isEmpty || books.isEmpty || chapters.isEmpty) return;
-              final result = BibleSearchParams(
-                versionId: versions[selectedVersion].id,
-                bookName: books[selectedBook],
-                chapter: chapters[selectedChapter]?.chapter ?? 1,
-                startVerse: selectedVerse + 1,
-              );
-              PageNavigator.pop(result);
-            },
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
+            child: ElevatedButtonIconWidget(
+              title: AppString.goToPassage,
+              onPressed: (versions.isEmpty || books.isEmpty || chapters.isEmpty)
+                  ? null
+                  : () async {
+                      await PageNavigator.pop(
+                        BibleSearchParams(
+                          versionId: versions[selectedVersion].id,
+                          bookName: books[selectedBook],
+                          chapter: chapters[selectedChapter]?.chapter ?? 1,
+                          startVerse: selectedVerse + 1,
+                        ),
+                      );
+                    },
+            ),
           ),
         ],
       ),
     );
   }
 
-  void _onBookSelected(List<String> books, int index, List<Version> versions) {
-    setState(() => selectedBook = index);
-    final params = BibleSearchParams(
-      versionId: versions[selectedVersion].id,
-      bookName: books[index],
-    );
-    unawaited(_bibleNotifier.searchBibleChapters(params));
+  Future<void> _onVersionSelected(int index, List<Version> versions) async {
+    if (_isLoading || index == selectedVersion) return;
+    setState(() => _isLoading = true);
+
+    selectedVersion = index;
+    selectedBook = 0;
+    selectedChapter = 0;
+    selectedVerse = 0;
+    verseCount = 0;
+
+    await _bibleNotifier.getBooks(versions[index].id);
+
+    if (!mounted) return;
+    setState(() => _isLoading = false);
   }
 
-  void _onChapterSelected(List<ChapterInfo?> chapters, int i) {
+  Future<void> _onBookSelected(int index) async {
+    if (_isLoading) return;
+    setState(() => _isLoading = true);
+
+    final books = ref.read(bibleProvider).books;
+    if (index < 0 || index >= books.length) return;
+
+    final selectedBookName = books[index];
+    selectedBook = index;
+    selectedChapter = 0;
+    selectedVerse = 0;
+    verseCount = 0;
+
+    await Future.delayed(const Duration(milliseconds: 80));
+    await _bibleNotifier.searchBibleChapters(
+      BibleSearchParams(
+        versionId: _searchParams.versionId,
+        bookName: selectedBookName,
+      ),
+    );
+
+    final chapters = ref.read(bibleProvider).chapters;
+    if (mounted) {
+      setState(() {
+        verseCount = chapters.isNotEmpty ? chapters.first?.verseCount ?? 0 : 0;
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _onChapterSelected(int index) {
+    final chapters = ref.read(bibleProvider).chapters;
+    if (index < 0 || index >= chapters.length) return;
+    final chapter = chapters[index];
+    final chapterNumber = chapter?.chapter ?? 1;
+
     setState(() {
-      selectedChapter = i;
-      verseCount = chapters[i]?.verseCount ?? 0;
-      // selectedVerse = 0;
+      selectedChapter = index;
+      selectedVerse = 0;
+      verseCount = chapter?.verseCount ?? 0;
     });
 
-    // ✅ Only scroll when changing chapters, not on open
-    Future.delayed(const Duration(milliseconds: 250), () async {
-      if (_verseController.hasClients) {
-        await _verseController.animateToItem(
-          selectedVerse,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOutCubic,
-        );
-      }
-    });
+    _searchParams = _searchParams.copyWith(
+      chapter: chapterNumber,
+      startVerse: 1,
+    );
   }
 }
