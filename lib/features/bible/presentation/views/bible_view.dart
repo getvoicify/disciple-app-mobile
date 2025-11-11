@@ -179,7 +179,6 @@ class _BibleViewState extends ConsumerState<BibleView> {
               ],
             ),
 
-            /// TODO: Add audio controller widget
             // const BuildAudioControllerWidget(),
           ],
         ),
