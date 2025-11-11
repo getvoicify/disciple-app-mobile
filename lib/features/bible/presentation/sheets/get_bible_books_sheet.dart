@@ -8,7 +8,6 @@ import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/features/bible/domain/param/bible_search_params.dart';
 import 'package:disciple/features/bible/presentation/notifier/bible_notifier.dart';
 import 'package:disciple/features/bible/presentation/widget/listview_wheel.dart';
-import 'package:disciple/main.dart';
 import 'package:disciple/widgets/elevated_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,18 +25,11 @@ class _GetBibleBooksSheetState extends ConsumerState<GetBibleBooksSheet> {
   late final BibleNotifier _bibleNotifier;
   late BibleSearchParams _searchParams;
 
-  final _bookController = ScrollController();
-  final _chapterController = ScrollController();
-  final _verseController = ScrollController();
-
   int selectedVersion = 0;
   int selectedBook = 0;
   int selectedChapter = 0;
   int selectedVerse = 0;
   int verseCount = 0;
-
-  bool _hasAnimatedOnce = false;
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -101,61 +93,6 @@ class _GetBibleBooksSheetState extends ConsumerState<GetBibleBooksSheet> {
 
     if (!mounted) return;
     setState(() {});
-
-    // Smooth scroll to selections after first frame
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => _animateToSelectedItems(),
-    );
-  }
-
-  Future<void> _animateToSelectedItems() async {
-    if (_hasAnimatedOnce) return;
-    _hasAnimatedOnce = true;
-
-    const duration = Duration(milliseconds: 180);
-    const curve = Curves.easeOutCubic;
-
-    final tasks = <Future<void>>[];
-
-    if (_bookController.hasClients) {
-      tasks.add(
-        _bookController.animateTo(
-          selectedBook * 40, // 40px per item height
-          duration: duration,
-          curve: curve,
-        ),
-      );
-    }
-
-    if (_chapterController.hasClients) {
-      tasks.add(
-        _chapterController.animateTo(
-          selectedChapter * 40,
-          duration: duration,
-          curve: curve,
-        ),
-      );
-    }
-
-    if (_verseController.hasClients && verseCount > 0) {
-      tasks.add(
-        _verseController.animateTo(
-          selectedVerse * 40,
-          duration: duration,
-          curve: curve,
-        ),
-      );
-    }
-
-    await Future.wait(tasks);
-  }
-
-  @override
-  void dispose() {
-    _bookController.dispose();
-    _chapterController.dispose();
-    _verseController.dispose();
-    super.dispose();
   }
 
   @override
@@ -269,8 +206,7 @@ class _GetBibleBooksSheetState extends ConsumerState<GetBibleBooksSheet> {
   }
 
   Future<void> _onVersionSelected(int index, List<Version> versions) async {
-    if (_isLoading || index == selectedVersion) return;
-    setState(() => _isLoading = true);
+    if (index == selectedVersion) return;
 
     selectedVersion = index;
     selectedBook = 0;
@@ -279,15 +215,9 @@ class _GetBibleBooksSheetState extends ConsumerState<GetBibleBooksSheet> {
     verseCount = 0;
 
     await _bibleNotifier.getBooks(versions[index].id);
-
-    if (!mounted) return;
-    setState(() => _isLoading = false);
   }
 
   Future<void> _onBookSelected(int index) async {
-    if (_isLoading) return;
-    setState(() => _isLoading = true);
-
     final books = ref.read(bibleProvider).books;
     if (index < 0 || index >= books.length) return;
 
@@ -309,7 +239,6 @@ class _GetBibleBooksSheetState extends ConsumerState<GetBibleBooksSheet> {
     if (mounted) {
       setState(() {
         verseCount = chapters.isNotEmpty ? chapters.first?.verseCount ?? 0 : 0;
-        _isLoading = false;
       });
     }
   }

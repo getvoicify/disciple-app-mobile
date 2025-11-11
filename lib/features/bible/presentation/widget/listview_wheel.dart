@@ -16,7 +16,7 @@ class BuildListviewWheel extends StatefulWidget {
     required this.itemBuilder,
     required this.onSelected,
     this.pageStorageKey,
-    this.itemExtent = 48.0,
+    this.itemExtent = 50.0,
   });
 
   @override
@@ -24,48 +24,10 @@ class BuildListviewWheel extends StatefulWidget {
 }
 
 class _BuildListviewWheelState extends State<BuildListviewWheel> {
-  late final ScrollController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = ScrollController();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.selectedIndex > 0) {
-        _scrollToIndex(widget.selectedIndex);
-      }
-    });
-  }
-
-  @override
-  void didUpdateWidget(covariant BuildListviewWheel oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.selectedIndex != widget.selectedIndex) {
-      _scrollToIndex(widget.selectedIndex);
-    }
-  }
-
-  void _scrollToIndex(int index) {
-    if (_controller.hasClients) {
-      // _controller.animateTo(
-      //   index * (widget.itemExtent ?? 48.0),
-      //   duration: const Duration(milliseconds: 300),
-      //   curve: Curves.easeOut,
-      // );
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) => Flexible(
     child: ListView.builder(
       key: widget.pageStorageKey,
-      controller: _controller,
       physics: const AlwaysScrollableScrollPhysics(),
       itemCount: widget.itemCount,
       itemExtent: widget.itemExtent,
