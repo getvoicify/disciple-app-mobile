@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:disciple/app/config/app_config.dart';
 import 'package:disciple/app/config/app_logger.dart';
+import 'package:disciple/app/core/http/module/http_client_module.dart';
+import 'package:disciple/app/core/http/request_queue.dart';
 import 'package:disciple/app/core/manager/model/user.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,6 +17,7 @@ final keycloakManagerProvider = FutureProvider<KeycloakManager>(
 class KeycloakManager {
   final KeycloakWrapper _keycloakWrapper;
   Timer? _refreshTimer;
+  final _logger = getLogger('KeycloakManager');
 
   KeycloakManager._(this._keycloakWrapper);
 
@@ -127,13 +130,35 @@ class KeycloakManager {
       return;
     }
 
-    getLogger(
-      'KeycloakService',
-    ).i("⏰ Scheduling token refresh in ${delay.inSeconds} seconds");
+    _logger.i("⏰ Scheduling token refresh in ${delay.inSeconds} seconds");
 
     _refreshTimer = Timer(delay, () async {
-      getLogger('KeycloakService').i("🔄 Auto refreshing token...");
+      _logger.i("🔄 Auto refreshing token...");
       await exchangeTokens();
     });
+  }
+
+  Future<bool> requireLogin() async {
+    if (isAuthenticated) return true;
+
+    return await login();
+  }
+
+  // Add this to your KeycloakManager class
+  Future<void> retryPendingRequests(Ref ref) async {
+    final dio = ref.read(dioProvider);
+    final requestQueue = ref.read(requestQueueProvider);
+
+    final requests = requestQueue.getAll();
+    for (final request in requests) {
+      try {
+        // Mark as retry to prevent infinite loops
+        request.extra['_retry'] = true;
+        await dio.fetch(request);
+      } catch (e) {
+        _logger.e('Failed to retry request: ${e.toString()}');
+      }
+    }
+    requestQueue.clear();
   }
 }

@@ -437,10 +437,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
       final file = await File('${tempDir.path}/daily_scripture.png').create();
       await file.writeAsBytes(bytes);
 
-      /// TODO: Share the file
-      // await SharePlus.instance.share(
-      //   ShareParams(files: [XFile(file.path)], text: "Today's Scripture 📖"),
-      // );
+      AppHelper.shareFile(file);
     }
   }
 }
