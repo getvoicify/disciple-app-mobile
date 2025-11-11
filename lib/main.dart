@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 final appRouter = AppRouter();
+final PageStorageBucket bucket = PageStorageBucket();
 
 void main() async {
   const envString = String.fromEnvironment(

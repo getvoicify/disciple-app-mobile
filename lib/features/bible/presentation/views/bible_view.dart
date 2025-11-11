@@ -179,7 +179,6 @@ class _BibleViewState extends ConsumerState<BibleView> {
               ],
             ),
 
-            /// TODO: Add audio controller widget
             // const BuildAudioControllerWidget(),
           ],
         ),
@@ -220,8 +219,14 @@ class _BibleViewState extends ConsumerState<BibleView> {
   }
 
   Future<void> _searchBibleSheet() async {
+    final parentBucket = PageStorage.of(context);
+
     final result = await Sheets.showSheet<BibleSearchParams>(
-      child: GetBibleBooksSheet(searchParams: _searchParams),
+      child: PageStorage(
+        bucket: parentBucket,
+
+        child: GetBibleBooksSheet(searchParams: _searchParams),
+      ),
     );
     if (result != null) {
       _searchParams = result;

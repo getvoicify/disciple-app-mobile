@@ -14,7 +14,7 @@ class ProfileImageWidget extends ConsumerWidget {
     final user = ref.watch(keycloakManagerProvider).value?.user;
 
     return GestureDetector(
-      onTap: () => ref.read(keycloakManagerProvider).value?.login(),
+      onTap: () {},
       child: CircleAvatar(
         backgroundColor: AppColors.grey200,
         child: Text(
