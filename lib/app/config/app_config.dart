@@ -58,4 +58,8 @@ class AppConfig {
   static String get googleApiKey =>
       dotenv.env[AppConstants.googleApiKey] ??
       '${AppConstants.googleApiKey} $_notFound';
+
+  static String get socketIoUrl =>
+      dotenv.env[AppConstants.socketIoUrl] ??
+      '${AppConstants.socketIoUrl} $_notFound';
 }

@@ -9,4 +9,5 @@ class AppConstants {
   static String keycloakClientRealm = 'KEYCLOAK_CLIENT_REALM';
   static String keycloakBundleIdentifier = 'KEYCLOAK_BUNDLE_IDENTIFIER';
   static String googleApiKey = 'GOOGLE_API_KEY';
+  static String socketIoUrl = 'SOCKET_IO_URL';
 }

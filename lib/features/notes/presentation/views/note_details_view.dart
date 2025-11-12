@@ -29,11 +29,11 @@ class _NoteDetailsViewState extends ConsumerState<NoteDetailsView> {
       label: 'Edit Note',
       icon: AppImage.penIcon,
     ),
-    PopupMenuItemData<String>(
-      value: 'download',
-      label: 'Download',
-      icon: AppImage.downloadIcon,
-    ),
+    // PopupMenuItemData<String>(
+    //   value: 'download',
+    //   label: 'Download',
+    //   icon: AppImage.downloadIcon,
+    // ),
     PopupMenuItemData<String>(
       value: 'delete',
       label: 'Delete',
@@ -182,10 +182,6 @@ class _NoteDetailsViewState extends ConsumerState<NoteDetailsView> {
     if (option == 'edit') {
       await PageNavigator.pushRoute(NewNotesRoute(existingNote: note));
       _fetchNoteDetails();
-    }
-
-    if (option == 'download') {
-      // TODO: implement download
     }
 
     if (option == 'delete') {
