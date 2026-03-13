@@ -8,6 +8,8 @@ class AppImage {
   static const String onboarding1 = "${_imagePath}onboarding-1.png";
   static const String onboarding2 = "${_imagePath}onboarding-2.png";
   static const String onboarding3 = "${_imagePath}onboarding-3.png";
+  static const String coloredLikeIcon =
+      "${_imagePath}colored-weui_like-outlined.svg";
   static const String likeIcon = "${_imagePath}weui_like-outlined.svg";
   static const String shareIcon = "${_imagePath}famicons_share-outline.svg";
   static const String expandIcon = "${_imagePath}oui_expand.svg";
@@ -19,7 +21,6 @@ class AppImage {
   static const String menuIcon = "${_imagePath}hugeicons_menu-02.svg";
   static const String arrowDownIcon = "${_imagePath}ep_arrow-down.svg";
   static const String searchIcon = "${_imagePath}iconamoon_search-thin.svg";
-  static const String likeIcon2 = "${_imagePath}weui_like-outlined.svg";
   static const String editIcon =
       "${_imagePath}material-symbols-light_edit-note-outline-sharp.svg";
   static const String playIcon = "${_imagePath}mage_play-fill.svg";
@@ -45,7 +46,7 @@ class AppImage {
       "${_imagePath}fa7-solid_user-friends.svg";
   static const String emailIcon = "${_imagePath}mdi-light_email.svg";
   static const String facebookIcon = "${_imagePath}facebook.svg";
-  static const String youtubeIcon = "${_imagePath}youtube.svg";
+  static const String youtubeIcon = "${_imagePath}logos_youtube-icon.svg";
   static const String instagramIcon = "${_imagePath}instagram.svg";
   static const String threadIcon = "${_imagePath}thread.svg";
   static const String xIcon = "${_imagePath}x.svg";
@@ -87,4 +88,8 @@ class AppImage {
   static const String locationDot = "${_imagePath}fluent-mdl2_location.svg";
   static const String locationIconThin =
       "${_imagePath}iconamoon_location-thin.svg";
+  static const String profilePlaceholder =
+      "${_imagePath}iconamoon_profile-fill.svg";
+  static const String community = "${_imagePath}community.svg";
+  static const String onboarding = "${_imagePath}onboarding.png";
 }

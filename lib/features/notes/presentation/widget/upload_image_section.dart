@@ -16,6 +16,7 @@ class UploadImageSection extends StatelessWidget {
     onTap: onPickImage,
     child: Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+      width: double.infinity,
       decoration: BoxDecoration(
         border: Border.all(color: AppColors.grey200, width: 1.w),
         borderRadius: BorderRadius.circular(8.r),

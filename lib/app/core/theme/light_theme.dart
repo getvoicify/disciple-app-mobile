@@ -153,11 +153,11 @@ ThemeData lightTheme = ThemeData.light(useMaterial3: false).copyWith(
   bottomNavigationBarTheme: BottomNavigationBarThemeData(
     backgroundColor: AppColors.purple25,
     elevation: 10,
-    type: BottomNavigationBarType.shifting,
+    type: BottomNavigationBarType.fixed,
     selectedLabelStyle: bodyMedium.copyWith(color: AppColors.purple),
     unselectedLabelStyle: bodyMedium.copyWith(color: AppColors.grey700),
     showSelectedLabels: true,
-    showUnselectedLabels: false,
+    showUnselectedLabels: true,
     selectedItemColor: AppColors.purple,
     unselectedItemColor: AppColors.grey300,
   ),

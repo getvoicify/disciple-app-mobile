@@ -33,10 +33,6 @@ class _BookmarksViewState extends ConsumerState<BookmarksView> {
         fit: BoxFit.none,
         onTap: () => PageNavigator.pop(),
       ),
-      actions: [
-        const ImageWidget(imageUrl: AppImage.menuIcon),
-        SizedBox(width: 16.w),
-      ],
     ),
     body: SafeArea(
       minimum: EdgeInsets.symmetric(horizontal: 16.w),
@@ -75,6 +71,52 @@ class _BookmarksViewState extends ConsumerState<BookmarksView> {
     ),
   );
 
+  Future<void> _showRemoveBookmarkDialog(
+    BuildContext context,
+    BookmarkEntity bookmark,
+  ) async {
+    final remove = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          AppString.bookmarks,
+          style: context.headlineLarge?.copyWith(fontSize: 20.sp),
+        ),
+        content: Text(
+          AppString.areYouSureYouWantToRemoveThisBookmark,
+          style: context.bodyLarge?.copyWith(
+            fontSize: 14.sp,
+            color: AppColors.grey500,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => PageNavigator.pop(false),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.red,
+              textStyle: context.headlineLarge?.copyWith(fontSize: 14.sp),
+            ),
+            child: Text(AppString.cancel),
+          ),
+          TextButton(
+            onPressed: () => PageNavigator.pop(true),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.purple,
+              textStyle: context.headlineLarge?.copyWith(fontSize: 14.sp),
+            ),
+            child: Text(AppString.removeBookmark),
+          ),
+        ],
+      ),
+    );
+
+    if (remove == true && context.mounted) {
+      await ref
+          .read(bookmarkProvider.notifier)
+          .removeBookmark(bookmark: bookmark);
+    }
+  }
+
   StreamBuilder<List<BookmarkWithVersion>> _buildBookmarksList() {
     final search = ref.watch(bookmarkSearchProvider);
 
@@ -91,12 +133,31 @@ class _BookmarksViewState extends ConsumerState<BookmarksView> {
 
         final bookmarksWithVersions = asyncSnapshot.data ?? [];
 
+        if (bookmarksWithVersions.isEmpty) {
+          return Center(
+            child: Text(
+              search.isNotEmpty
+                  ? AppString.noBookmarksFound
+                  : AppString.noBookmarksYet,
+              style: context.bodyLarge?.copyWith(
+                color: AppColors.grey500,
+                fontSize: 14.sp,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          );
+        }
+
         return ListView.separated(
           itemCount: bookmarksWithVersions.length,
           itemBuilder: (_, index) {
             final bookmarkWithVersion = bookmarksWithVersions[index];
             final bookmark = bookmarkWithVersion.bookmark;
             final verse = bookmarkWithVersion.verse;
+            final entity = BookmarkEntity(
+              id: bookmark.id,
+              bibleVerseId: bookmark.bibleVerseId,
+            );
 
             return BuildTileWidget(
               model: BuildTileModel(
@@ -104,6 +165,7 @@ class _BookmarksViewState extends ConsumerState<BookmarksView> {
                 content: verse.verseText,
                 date: bookmark.createdAt,
               ),
+              onTap: () => _showRemoveBookmarkDialog(context, entity),
             );
           },
           separatorBuilder: (context, index) => SizedBox(height: 12.h),

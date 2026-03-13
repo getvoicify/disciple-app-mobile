@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:disciple/app/common/app_strings.dart';
+import 'package:disciple/app/core/manager/keycloak_manager.dart';
 import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/app/utils/field_validator.dart';
@@ -16,11 +17,11 @@ import 'package:disciple/features/uploads/presentation/notifier/upload_notifier.
 import 'package:disciple/widgets/back_arrow_widget.dart';
 import 'package:disciple/widgets/edit_text_field_with.dart';
 import 'package:disciple/widgets/elevated_button_widget.dart';
+import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-/// TODO: Implement functionalities for getting Scriptures to be added
 @RoutePage()
 class NewNotesView extends ConsumerStatefulWidget {
   const NewNotesView({super.key, this.existingNote});
@@ -163,9 +164,43 @@ class _NewNotesViewState extends ConsumerState<NewNotesView> {
               validator: FieldValidator.validateString(),
             ),
 
-            SizedBox(height: 14.h),
+            Consumer(
+              builder: (context, ref, child) {
+                final isLoggedIn =
+                    ref.watch(keycloakManagerProvider).value?.isAuthenticated ??
+                    false;
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 16.h),
+                    isLoggedIn
+                        ? UploadImageSection(onPickImage: _pickImage)
+                        : const SizedBox.shrink(),
+                    SizedBox(height: 8.h),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
 
-            UploadImageSection(onPickImage: _pickImage),
+                        children: _successfulUploads
+                            .map(
+                              (element) => Container(
+                                margin: EdgeInsets.only(right: 16.w),
+                                child: ImageWidget(
+                                  imageUrl: element,
+                                  height: 50.h,
+                                  width: 50.w,
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
 
             SizedBox(height: 56.h),
 

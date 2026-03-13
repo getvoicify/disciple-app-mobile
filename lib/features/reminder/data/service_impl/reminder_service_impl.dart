@@ -51,11 +51,11 @@ class ReminderServiceImpl implements ReminderService {
         // Run DB + notification operations in parallel per batch
         await Future.wait(
           chunk.map((r) async {
-            await _repository.addReminder(entity: r);
+            final insertedId = await _repository.addReminder(entity: r);
 
             if (r.reminder ?? false) {
               await _notificationManager.scheduleNotificationAt(
-                id: r.id ?? 0,
+                id: insertedId,
                 body: r.title ?? '',
                 scheduledAt: r.scheduledAt!,
               );
@@ -94,16 +94,19 @@ class ReminderServiceImpl implements ReminderService {
   @override
   Future<bool> updateReminder({required ReminderEntity entity}) async {
     try {
-      final result = _repository.updateReminder(entity: entity);
+      final result = await _repository.updateReminder(entity: entity);
 
       final id = entity.id ?? 0;
 
       await _notificationManager.cancel(id);
-      await _notificationManager.scheduleNotificationAt(
-        id: id,
-        body: entity.title ?? '',
-        scheduledAt: entity.scheduledAt!,
-      );
+
+      if (entity.reminder ?? false) {
+        await _notificationManager.scheduleNotificationAt(
+          id: id,
+          body: entity.title ?? '',
+          scheduledAt: entity.scheduledAt!,
+        );
+      }
 
       return result;
     } catch (e, st) {

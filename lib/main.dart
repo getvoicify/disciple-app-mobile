@@ -1,6 +1,5 @@
 import 'package:disciple/app/config/app_config.dart';
 import 'package:disciple/app/core/routes/app_router.dart';
-import 'package:disciple/app/core/theme/dark_theme.dart';
 import 'package:disciple/app/core/theme/light_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -41,7 +40,7 @@ class MyApp extends ConsumerWidget {
       child: MaterialApp.router(
         title: AppConfig.appName,
         theme: lightTheme,
-        darkTheme: darkTheme,
+        darkTheme: lightTheme,
         debugShowCheckedModeBanner: false,
         routerConfig: appRouter.config(),
       ),

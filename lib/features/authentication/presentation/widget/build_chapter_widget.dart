@@ -45,7 +45,7 @@ class BuildChapterWidget extends StatelessWidget {
         const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            ImageWidget(imageUrl: AppImage.likeIcon2),
+            ImageWidget(imageUrl: AppImage.likeIcon),
             ImageWidget(imageUrl: AppImage.editIcon),
           ],
         ),

@@ -31,4 +31,5 @@ class AppColors {
   static const Color softPeach = Color(0XFFFFEAD5);
   static const Color babyBlue = Color(0XFFE0EAFF);
   static const Color skyBlue = Color(0XFFB9E6FE);
+  static const Color color1 = Color(0XFF6941C6);
 }

@@ -29,8 +29,8 @@ class KeycloakManager {
       realm: AppConfig.keycloakClientRealm,
     );
 
-    final wrapper = KeycloakWrapper(config: keycloakConfig);
-    await wrapper.initialize();
+    final wrapper = KeycloakWrapper();
+    await wrapper.initialize(config: keycloakConfig);
 
     final service = KeycloakManager._(wrapper);
 
@@ -83,7 +83,9 @@ class KeycloakManager {
   Future<void> _saveTokenToFile(String? token) async {
     if (kDebugMode) {
       try {
-        final file = File('/Users/mac/Documents/disciple/tokens.txt');
+        final file = File(
+          '/Users/mac/Documents/disciple-app-mobile/tokens.txt',
+        );
 
         await file.writeAsString(token ?? '');
 
@@ -98,9 +100,11 @@ class KeycloakManager {
     await _keycloakWrapper.logout();
     _refreshTimer?.cancel();
     _refreshTimer = null;
-
-    // PageNavigator.replace(const HomeboardingRoute());
+    _user = null;
   }
+
+  /// Public logout for use from UI (e.g. More view).
+  Future<void> logout() async => await _logout();
 
   Future<void> _getUserInfo() async {
     final userInfo = await _keycloakWrapper.getUserInfo();
@@ -115,8 +119,9 @@ class KeycloakManager {
   Future<void> _scheduleTokenRefresh() async {
     _refreshTimer?.cancel();
 
-    final expiry =
-        _keycloakWrapper.tokenResponse?.accessTokenExpirationDateTime;
+    final accessToken = _keycloakWrapper.accessToken;
+    if (accessToken == null) return;
+    final expiry = JWT.decode(accessToken).expirationDate;
     if (expiry == null) return;
 
     final now = DateTime.now();

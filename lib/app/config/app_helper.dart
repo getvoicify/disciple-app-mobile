@@ -13,18 +13,29 @@ class AppHelper {
 
   static Future<void> openUrl(
     String url, {
-    LaunchMode mode = LaunchMode.inAppWebView,
+    LaunchMode? mode,
   }) async {
-    if (url.isNotEmpty) {
-      try {
-        if (await canLaunchUrl(Uri.parse(url))) {
-          await launchUrl(Uri.parse(url), mode: mode);
-        } else {
-          logger.e('Url cannot be launched');
-        }
-      } catch (e) {
-        logger.e(e);
+    if (url.isEmpty) return;
+
+    try {
+      final uri = Uri.parse(url);
+      final scheme = uri.scheme.toLowerCase();
+
+      // mailto, tel, sms must use external app – canLaunchUrl often returns false
+      final useExternalMode = ['mailto', 'tel', 'sms'].contains(scheme);
+      final launchMode = mode ??
+          (useExternalMode ? LaunchMode.externalApplication : LaunchMode.inAppWebView);
+
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: launchMode);
+      } else if (useExternalMode) {
+        // Try anyway – canLaunchUrl is unreliable for these schemes on Android/iOS
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        logger.e('Url cannot be launched: $url');
       }
+    } catch (e) {
+      logger.e(e);
     }
   }
 

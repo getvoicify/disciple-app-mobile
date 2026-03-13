@@ -22,6 +22,9 @@ class AppConfig {
 
   static bool get isDebug => _appEnv == AppEnv.development;
 
+  /// TODO: Remove this when its finally available
+  static bool get isComingSoon => true;
+
   static String get apiUrl =>
       dotenv.env[AppConstants.apiBaseUrl] ??
       '${AppConstants.apiBaseUrl} $_notFound';
