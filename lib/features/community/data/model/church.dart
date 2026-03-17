@@ -63,5 +63,5 @@ abstract class SocialLink with _$SocialLink {
 
 extension ChurchExtension on Church {
   String get getAddress =>
-      '${address?.city}, ${address?.state}, ${address?.country}';
+      '${address?.city ?? ''} ${address?.state ?? ''} ${address?.country ?? ''}';
 }

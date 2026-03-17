@@ -21,6 +21,13 @@ class BookmarkRepoImpl implements IBookmarkRepository {
     required BookmarkEntity bookmark,
     CancelToken? cancelToken,
   }) async {
+    if (bookmark.bibleVerseId == null) return 0;
+
+    // Remove any existing bookmarks for this verse (idempotent, prevents duplicates)
+    await (_database.delete(_database.bookmarks)
+          ..where((tbl) => tbl.bibleVerseId.equals(bookmark.bibleVerseId!)))
+        .go();
+
     final database = _database.into(_database.bookmarks);
     return await database.insert(
       _bookmarkMapper.insert(bookmark),
@@ -40,11 +47,12 @@ class BookmarkRepoImpl implements IBookmarkRepository {
       ),
     ])..orderBy([OrderingTerm.desc(_database.bookmarks.createdAt)]);
 
-    // Apply filtering if search is not null/empty
+    // Apply filtering if search is not null/empty (Drift parameterizes LIKE)
     if (bookmark?.search != null && bookmark!.search!.isNotEmpty) {
+      final searchPattern = '%${bookmark.search}%';
       query.where(
-        _database.bibleVerses.verseText.like('%${bookmark.search}%') |
-            _database.bibleVerses.bookName.like('%${bookmark.search}%'),
+        _database.bibleVerses.verseText.like(searchPattern) |
+            _database.bibleVerses.bookName.like(searchPattern),
       );
     }
 
@@ -64,8 +72,14 @@ class BookmarkRepoImpl implements IBookmarkRepository {
   Future<bool> isBookmarked({
     required BookmarkEntity bookmark,
     CancelToken? cancelToken,
-  }) {
-    throw UnimplementedError();
+  }) async {
+    if (bookmark.bibleVerseId == null) return false;
+
+    final existing = await (_database.select(_database.bookmarks)
+          ..where((tbl) => tbl.bibleVerseId.equals(bookmark.bibleVerseId!)))
+        .get();
+
+    return existing.isNotEmpty;
   }
 
   @override
@@ -73,6 +87,10 @@ class BookmarkRepoImpl implements IBookmarkRepository {
     required BookmarkEntity bookmark,
     CancelToken? cancelToken,
   }) async {
-    throw UnimplementedError();
+    if (bookmark.bibleVerseId == null) return;
+
+    await (_database.delete(_database.bookmarks)
+          ..where((tbl) => tbl.bibleVerseId.equals(bookmark.bibleVerseId!)))
+        .go();
   }
 }

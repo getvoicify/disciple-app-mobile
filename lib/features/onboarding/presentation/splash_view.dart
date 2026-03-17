@@ -1,9 +1,7 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/app/core/routes/app_router.gr.dart';
 import 'package:disciple/app/core/routes/page_navigator.dart';
-import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/features/bible/presentation/notifier/bible_notifier.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
@@ -29,19 +27,12 @@ class _SplashViewState extends ConsumerState<SplashView> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    body: Container(
-      height: context.height,
-      width: context.width,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.purple, AppColors.purple26],
-        ),
-      ),
-      child: const ImageWidget(
-        imageUrl: AppImage.discipleIcon,
-        fit: BoxFit.scaleDown,
-      ),
+  Widget build(BuildContext context) => const Scaffold(
+    body: ImageWidget(
+      width: double.infinity,
+      height: double.infinity,
+      imageUrl: AppImage.onboarding,
+      fit: BoxFit.cover,
     ),
   );
 }

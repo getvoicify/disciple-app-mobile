@@ -1,4 +1,6 @@
+import 'package:disciple/app/config/app_config.dart';
 import 'package:disciple/features/community/presentation/widget/community_tile_widget.dart';
+import 'package:disciple/widgets/coming_soon_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -11,10 +13,15 @@ class PrayerWallTabs extends StatefulWidget {
 
 class _PrayerWallTabsState extends State<PrayerWallTabs> {
   @override
-  Widget build(BuildContext context) => ListView.separated(
-    itemCount: 3,
-    padding: EdgeInsets.symmetric(horizontal: 16.w),
-    itemBuilder: (_, index) => const CommuityTIleWidget(isJoined: true),
-    separatorBuilder: (context, index) => SizedBox(height: 12.h),
-  );
+  Widget build(BuildContext context) {
+    if (AppConfig.isComingSoon) {
+      return const ComingSoonWidget();
+    }
+    return ListView.separated(
+      itemCount: 3,
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      itemBuilder: (_, index) => const CommuityTIleWidget(isJoined: true),
+      separatorBuilder: (context, index) => SizedBox(height: 12.h),
+    );
+  }
 }

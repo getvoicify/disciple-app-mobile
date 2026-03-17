@@ -4,17 +4,22 @@ import 'package:auto_route/auto_route.dart';
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/app/common/app_strings.dart';
+import 'package:disciple/app/config/app_config.dart';
 import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/core/routes/app_router.gr.dart';
 import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/app/utils/debouncer.dart';
 import 'package:disciple/features/bible/domain/param/bible_search_params.dart';
 import 'package:disciple/features/bible/presentation/notifier/bible_notifier.dart';
+import 'package:disciple/features/bookmarks/domain/entity/bookmark_entity.dart';
+import 'package:disciple/features/bookmarks/domain/usecase/module/module.dart';
+import 'package:disciple/features/bookmarks/presentation/notifier/bookmark_notifier.dart';
 import 'package:disciple/features/bible/presentation/sheets/get_bible_books_sheet.dart';
 import 'package:disciple/features/bible/presentation/widget/build_chapter_widget.dart';
 import 'package:disciple/features/notes/data/model/scripture_reference.dart';
 import 'package:disciple/features/notes/domain/entity/note_entity.dart';
 import 'package:disciple/features/notes/presentation/notifier/note_notifier.dart';
+import 'package:disciple/widgets/build_audio_controller_widget.dart';
 import 'package:disciple/widgets/drop_down_widget.dart';
 import 'package:disciple/widgets/edit_text_field_with.dart';
 import 'package:disciple/widgets/image_widget.dart';
@@ -34,7 +39,7 @@ class BibleView extends ConsumerStatefulWidget {
 
 class _BibleViewState extends ConsumerState<BibleView> {
   final List<PopupMenuItemData<String>> menus = const [
-    PopupMenuItemData<String>(value: 'devotionals', label: 'Devotionals'),
+    // PopupMenuItemData<String>(value: 'devotionals', label: 'Devotionals'),
     PopupMenuItemData<String>(value: 'notes', label: 'Notes'),
     PopupMenuItemData<String>(value: 'bookmarks', label: 'Bookmarks'),
   ];
@@ -164,13 +169,17 @@ class _BibleViewState extends ConsumerState<BibleView> {
                         final verse = verses[index];
                         final bool isFirst = index == 0;
                         final bool isLast = index == verses.length - 1;
+                        final bookmarkedIds =
+                            ref.watch(bookmarkedVerseIdsProvider).value ?? {};
                         return BuildChapterWidget(
                           isFirst: isFirst,
                           isLast: isLast,
                           verse: verse,
                           startVerse: _searchParams.startVerse,
                           searchTerm: _searchController.text.trim(),
-                          onBookmarkTap: () => _addToNote(verse),
+                          isBookmarked: bookmarkedIds.contains(verse.id),
+                          onBookmarkTap: () => _bookmarkVerse(verse),
+                          onEditTap: () => _addToNote(verse),
                         );
                       }),
                     ],
@@ -179,7 +188,9 @@ class _BibleViewState extends ConsumerState<BibleView> {
               ],
             ),
 
-            // const BuildAudioControllerWidget(),
+            if (!AppConfig.isComingSoon) ...[
+              const BuildAudioControllerWidget(),
+            ],
           ],
         ),
       ),
@@ -216,6 +227,27 @@ class _BibleViewState extends ConsumerState<BibleView> {
     );
 
     await ref.read(noteProvider.notifier).addNote(entity: entity);
+  }
+
+  Future<void> _bookmarkVerse(BibleVerse verse) async {
+    if (verse.id <= 0) return;
+
+    final bookmark = BookmarkEntity(bibleVerseId: verse.id);
+    final notifier = ref.read(bookmarkProvider.notifier);
+
+    try {
+      final isBookmarked = await ref
+          .read(isBookmarkedUseCaseImpl)
+          .execute(parameter: bookmark);
+
+      if (isBookmarked) {
+        await notifier.removeBookmark(bookmark: bookmark);
+      } else {
+        await notifier.addBookmark(bookmark: bookmark);
+      }
+    } catch (_) {
+      await notifier.addBookmark(bookmark: bookmark);
+    }
   }
 
   Future<void> _searchBibleSheet() async {

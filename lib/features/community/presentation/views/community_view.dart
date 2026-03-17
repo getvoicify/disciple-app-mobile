@@ -1,9 +1,8 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:disciple/app/common/app_images.dart';
+import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/features/community/presentation/tabs/channels_tabs.dart';
 import 'package:disciple/features/community/presentation/tabs/church_tab.dart';
 import 'package:disciple/widgets/decorated_tab.dart';
-import 'package:disciple/widgets/image_widget.dart';
 import 'package:disciple/widgets/profile_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -32,8 +31,8 @@ class _CommunityViewState extends ConsumerState<CommunityView>
     appBar: AppBar(
       title: const Text('Community'),
       actions: [
-        const ImageWidget(imageUrl: AppImage.notificationIcon),
-        SizedBox(width: 16.w),
+        // const ImageWidget(imageUrl: AppImage.notificationIcon),
+        // SizedBox(width: 16.w),
         const ProfileImageWidget(),
         SizedBox(width: 16.w),
       ],
@@ -41,6 +40,7 @@ class _CommunityViewState extends ConsumerState<CommunityView>
         tabBar: TabBar(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           controller: _tabController,
+          labelColor: AppColors.white,
           tabs: [
             'Church',
             'Channels',

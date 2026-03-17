@@ -6,6 +6,7 @@ import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_fonts.dart';
 import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/app/common/app_strings.dart';
+import 'package:disciple/app/config/app_config.dart';
 import 'package:disciple/app/config/app_helper.dart';
 import 'package:disciple/app/core/database/app_database.dart';
 import 'package:disciple/app/core/manager/keycloak_manager.dart';
@@ -13,6 +14,9 @@ import 'package:disciple/app/core/routes/app_router.gr.dart';
 import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/app/utils/extension.dart';
 import 'package:disciple/features/bible/presentation/notifier/bible_notifier.dart';
+import 'package:disciple/features/bookmarks/domain/entity/bookmark_entity.dart';
+import 'package:disciple/features/bookmarks/domain/usecase/module/module.dart';
+import 'package:disciple/features/bookmarks/presentation/notifier/bookmark_notifier.dart';
 import 'package:disciple/features/reminder/presentation/notifier/reminder_notifier.dart';
 import 'package:disciple/widgets/action_button_widget.dart';
 import 'package:disciple/widgets/calendar/module/calendar_notifier.dart';
@@ -45,6 +49,13 @@ class _HomeViewState extends ConsumerState<HomeView> {
     unawaited(_bibleNotifier.getDailyScripture());
   }
 
+  bool get _isDailyScriptureBookmarked {
+    final dailyScripture = ref.watch(bibleProvider).dailyScripture;
+    if (dailyScripture == null || dailyScripture.id <= 0) return false;
+    final bookmarkedIds = ref.watch(bookmarkedVerseIdsProvider).value ?? {};
+    return bookmarkedIds.contains(dailyScripture.id);
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(keycloakManagerProvider).value?.user;
@@ -56,8 +67,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
         title: Text(AppString.feed),
         centerTitle: false,
         actions: [
-          const ImageWidget(imageUrl: AppImage.notificationIcon),
-          SizedBox(width: 16.w),
+          /// TODO: Add notification icon back when it is ready
+          // const ImageWidget(imageUrl: AppImage.notificationIcon),
+          // SizedBox(width: 16.w),
           const ProfileImageWidget(),
           SizedBox(width: 16.w),
         ],
@@ -81,7 +93,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
             RepaintBoundary(
               key: _shareKey,
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 500),
+                duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOutCubic,
                 width: double.infinity,
                 padding: EdgeInsets.all(20.w),
@@ -100,7 +112,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   ],
                 ),
                 child: AnimatedSize(
-                  duration: const Duration(milliseconds: 500),
+                  duration: const Duration(milliseconds: 300),
                   curve: Curves.easeInOutCubic,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -134,9 +146,11 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        const ImageWidget(
-                                          imageUrl: AppImage.cancelIcon,
-                                        ),
+                                        if (!_hideActionsForCapture) ...[
+                                          const ImageWidget(
+                                            imageUrl: AppImage.cancelIcon,
+                                          ),
+                                        ],
                                         AnimatedSize(
                                           duration: const Duration(
                                             milliseconds: 400,
@@ -178,7 +192,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                           begin: _isExpanded ? 16.sp : 32.sp,
                           end: _isExpanded ? 32.sp : 16.sp,
                         ),
-                        duration: const Duration(milliseconds: 500),
+                        duration: const Duration(milliseconds: 300),
                         curve: Curves.easeInOutCubic,
                         builder: (context, animatedFontSize, child) => Text(
                           dailyScripture?.verseText ?? '',
@@ -198,11 +212,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
                       ),
 
                       // --- Action buttons fade in/out smoothly ---
-                      AnimatedOpacity(
-                        opacity: _hideActionsForCapture ? 0 : 1,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOutCubic,
-                        child: Center(
+                      if (!_hideActionsForCapture) ...[
+                        Center(
                           child: Container(
                             padding: EdgeInsets.symmetric(
                               horizontal: 28.w,
@@ -225,8 +236,11 @@ class _HomeViewState extends ConsumerState<HomeView> {
                               mainAxisSize: MainAxisSize.min,
                               spacing: 32.w,
                               children: [
-                                const ActionButtonWidget(
-                                  icon: AppImage.likeIcon2,
+                                ActionButtonWidget(
+                                  icon: _isDailyScriptureBookmarked
+                                      ? AppImage.likeIcon3
+                                      : AppImage.likeIcon,
+                                  onTap: () => _likeScripture(),
                                 ),
                                 ActionButtonWidget(
                                   icon: AppImage.shareIcon,
@@ -242,7 +256,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ],
                   ),
                 ),
@@ -264,7 +278,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
                 alignment: Alignment.bottomLeft,
-                child: MiniButtonWidget(title: AppString.devotionals),
+                child: AppConfig.isComingSoon
+                    ? const SizedBox.shrink()
+                    : MiniButtonWidget(title: AppString.devotionals),
               ),
             ),
             SizedBox(height: 24.h),
@@ -401,21 +417,23 @@ class _HomeViewState extends ConsumerState<HomeView> {
             maxLines: 1,
           ),
           SizedBox(height: 15.h),
-          Row(
-            children: [
-              const ImageWidget(imageUrl: AppImage.clockIcon),
-              SizedBox(width: 6.w),
-              Expanded(
-                child: Text(
-                  reminder.scheduledAt?.time ?? '',
-                  style: context.headlineMedium?.copyWith(fontSize: 12.sp),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+          Flexible(
+            child: Row(
+              children: [
+                const ImageWidget(imageUrl: AppImage.clockIcon),
+                SizedBox(width: 6.w),
+                Expanded(
+                  child: Text(
+                    reminder.scheduledAt?.time ?? '',
+                    style: context.headlineMedium?.copyWith(fontSize: 12.sp),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-              SizedBox(width: 6.w),
-              const ImageWidget(imageUrl: AppImage.forwardIcon),
-            ],
+                SizedBox(width: 6.w),
+                const ImageWidget(imageUrl: AppImage.forwardIcon),
+              ],
+            ),
           ),
         ],
       ),
@@ -438,6 +456,30 @@ class _HomeViewState extends ConsumerState<HomeView> {
       await file.writeAsBytes(bytes);
 
       AppHelper.shareFile(file);
+    }
+  }
+
+  Future<void> _likeScripture() async {
+    final dailyScripture = ref.read(bibleProvider).dailyScripture;
+    if (dailyScripture == null || dailyScripture.id <= 0) return;
+
+    final bookmark = BookmarkEntity(bibleVerseId: dailyScripture.id);
+    final notifier = ref.read(bookmarkProvider.notifier);
+
+    try {
+      final isBookmarked = await ref
+          .read(isBookmarkedUseCaseImpl)
+          .execute(parameter: bookmark);
+
+      if (isBookmarked) {
+        await notifier.removeBookmark(bookmark: bookmark);
+      } else {
+        await notifier.addBookmark(bookmark: bookmark);
+      }
+      if (mounted) setState(() {});
+    } catch (_) {
+      await notifier.addBookmark(bookmark: bookmark);
+      if (mounted) setState(() {});
     }
   }
 }

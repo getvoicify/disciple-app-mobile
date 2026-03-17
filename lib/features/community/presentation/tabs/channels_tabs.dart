@@ -57,6 +57,7 @@ class _ChannelsTabsState extends State<ChannelsTabs>
               fit: BoxFit.none,
             ),
             label: 'Search by title or church',
+            readOnly: true,
           ),
         ),
         SizedBox(height: 16.h),

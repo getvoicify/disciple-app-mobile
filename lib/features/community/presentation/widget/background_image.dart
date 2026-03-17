@@ -19,7 +19,7 @@ class BakgroundImage extends StatelessWidget {
         ImageWidget(
           height: 538.h,
           width: double.infinity,
-          imageUrl: _church.coverImageUrl ?? '',
+          imageUrl: _church.coverImageUrl ?? _church.logoUrl ?? '',
           fit: BoxFit.cover,
         ),
         Container(

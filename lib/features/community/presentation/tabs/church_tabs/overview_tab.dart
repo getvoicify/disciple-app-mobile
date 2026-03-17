@@ -131,25 +131,32 @@ class _OverviewTabState extends ConsumerState<OverviewTab> {
               ),
               SizedBox(height: 20.h),
               Align(
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6.r),
-                    color: AppColors.purple,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const ImageWidget(imageUrl: AppImage.emailIcon),
-                      SizedBox(width: 8.w),
-                      Text(
-                        AppString.sendEmail,
-                        style: context.bodyMedium?.copyWith(
-                          color: AppColors.white,
+                child: GestureDetector(
+                  onTap: () async =>
+                      await AppHelper.openUrl('mailto:${_church?.email ?? ''}'),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.w,
+                      vertical: 8.h,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6.r),
+                      color: AppColors.purple,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const ImageWidget(imageUrl: AppImage.emailIcon),
+                        SizedBox(width: 8.w),
+                        Text(
+                          AppString.sendEmail,
+                          style: context.bodyMedium?.copyWith(
+                            color: AppColors.white,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

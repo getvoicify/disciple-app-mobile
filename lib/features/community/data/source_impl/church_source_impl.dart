@@ -191,7 +191,6 @@ class ChurchSourceImpl implements ChurchSource {
       path: ApiPath.posts,
       requestType: RequestType.get,
       cancelToken: cancelToken,
-      queryParams: entity?.toMap(),
     );
     final data = response.data as Map<String, dynamic>;
     return (data as List<dynamic>)

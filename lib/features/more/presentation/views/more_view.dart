@@ -1,10 +1,12 @@
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
 import 'package:disciple/app/common/app_strings.dart';
+import 'package:disciple/app/config/app_config.dart';
 import 'package:disciple/app/core/manager/keycloak_manager.dart';
 import 'package:disciple/app/core/routes/app_router.gr.dart';
 import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/app/utils/extension.dart';
+import 'package:disciple/widgets/coming_soon_widget.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:disciple/widgets/profile_image_widget.dart';
 import 'package:flutter/material.dart';
@@ -24,12 +26,14 @@ class MoreView extends ConsumerStatefulWidget {
 class _MoreViewState extends ConsumerState<MoreView> {
   // Data models for menu items
   final List<MenuItemModel> quickLinks = [
-    MenuItemModel(
-      icon: AppImage.handsPrayingIcon,
-      title: AppString.prayerWall,
-      hasArrow: true,
-      onTap: () {},
-    ),
+    if (!AppConfig.isComingSoon) ...[
+      MenuItemModel(
+        icon: AppImage.handsPrayingIcon,
+        title: AppString.prayerWall,
+        hasArrow: true,
+        onTap: () {},
+      ),
+    ],
     MenuItemModel(
       icon: AppImage.noteIcon,
       title: AppString.notes,
@@ -87,71 +91,134 @@ class _MoreViewState extends ConsumerState<MoreView> {
                 SizedBox(width: 16.w),
                 Expanded(
                   child: Text(
-                    user?.name ?? '',
+                    user?.name ?? 'Anonymous',
                     style: context.headlineMedium?.copyWith(fontSize: 16.sp),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.left,
                   ),
                 ),
-              ],
-            ),
-          ),
 
-          SizedBox(height: 16.h),
-
-          // Friends Card
-          CardContainer(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  AppString.friends,
-                  style: context.headlineMedium?.copyWith(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        AppString.friendCount,
-                        style: context.headlineMedium?.copyWith(
-                          fontSize: 20.sp,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.left,
+                if (ref.watch(keycloakManagerProvider).value?.isAuthenticated ??
+                    false) ...[
+                  SizedBox(width: 16.w),
+                  GestureDetector(
+                    onTap: () async {
+                      final manager = ref.read(keycloakManagerProvider).value;
+                      if (manager != null) {
+                        await manager.logout();
+                        if (mounted) setState(() {});
+                      }
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.r),
+                        color: AppColors.grey500,
                       ),
-                    ),
-                    Container(
                       padding: EdgeInsets.symmetric(
                         horizontal: 8.w,
                         vertical: 4.h,
                       ),
-                      decoration: BoxDecoration(
-                        color: AppColors.purple,
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
                       child: Text(
-                        AppString.inviteFriends,
+                        'Log out',
                         style: context.headlineMedium?.copyWith(
-                          fontSize: 12.sp,
+                          fontSize: 14.sp,
                           color: AppColors.white,
+                          fontWeight: FontWeight.w500,
                         ),
                         textAlign: TextAlign.center,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ] else ...[
+                  SizedBox(width: 16.w),
+                  GestureDetector(
+                    onTap: () async {
+                      final manager = ref.read(keycloakManagerProvider).value;
+                      if (manager != null) {
+                        final success = await manager.login();
+                        if (mounted && success) setState(() {});
+                      }
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.r),
+                        color: AppColors.color1,
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 8.w,
+                        vertical: 4.h,
+                      ),
+                      child: Text(
+                        'Log in',
+                        style: context.headlineMedium?.copyWith(
+                          fontSize: 14.sp,
+                          color: AppColors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
 
           SizedBox(height: 16.h),
+
+          // Friends Card TODO: Add back when it is ready
+          // CardContainer(
+          //   child: Column(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     mainAxisSize: MainAxisSize.min,
+          //     children: [
+          //       Text(
+          //         AppString.friends,
+          //         style: context.headlineMedium?.copyWith(
+          //           fontSize: 16.sp,
+          //           fontWeight: FontWeight.w600,
+          //         ),
+          //       ),
+          //       SizedBox(height: 8.h),
+          //       Row(
+          //         children: [
+          //           Expanded(
+          //             child: Text(
+          //               AppString.friendCount,
+          //               style: context.headlineMedium?.copyWith(
+          //                 fontSize: 20.sp,
+          //               ),
+          //               maxLines: 1,
+          //               overflow: TextOverflow.ellipsis,
+          //               textAlign: TextAlign.left,
+          //             ),
+          //           ),
+          //           Container(
+          //             padding: EdgeInsets.symmetric(
+          //               horizontal: 8.w,
+          //               vertical: 4.h,
+          //             ),
+          //             decoration: BoxDecoration(
+          //               color: AppColors.purple,
+          //               borderRadius: BorderRadius.circular(8.r),
+          //             ),
+          //             child: Text(
+          //               AppString.inviteFriends,
+          //               style: context.headlineMedium?.copyWith(
+          //                 fontSize: 12.sp,
+          //                 color: AppColors.white,
+          //               ),
+          //               textAlign: TextAlign.center,
+          //             ),
+          //           ),
+          //         ],
+          //       ),
+          //     ],
+          //   ),
+          // ),
+
+          // SizedBox(height: 16.h),
 
           // Quick Links Card
           CardContainer(
@@ -186,7 +253,6 @@ class _MoreViewState extends ConsumerState<MoreView> {
 
           SizedBox(height: 16.h),
 
-          // Manage Account Card
           CardContainer(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,17 +268,19 @@ class _MoreViewState extends ConsumerState<MoreView> {
                 ),
                 SizedBox(height: 20.h),
                 // Using ListView.separated for better performance
-                ListView.separated(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  padding: EdgeInsets.zero,
-                  itemCount: accountSettings.length,
-                  separatorBuilder: (context, index) => const Divider(),
-                  itemBuilder: (context, index) => MenuItemTile(
-                    item: accountSettings[index],
-                    key: ValueKey('account_setting_$index'),
-                  ),
-                ),
+                AppConfig.isComingSoon
+                    ? const ComingSoonWidget()
+                    : ListView.separated(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        itemCount: accountSettings.length,
+                        separatorBuilder: (context, index) => const Divider(),
+                        itemBuilder: (context, index) => MenuItemTile(
+                          item: accountSettings[index],
+                          key: ValueKey('account_setting_$index'),
+                        ),
+                      ),
               ],
             ),
           ),

@@ -2,7 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
-import 'package:disciple/app/utils/extension.dart';
+import 'package:disciple/app/core/routes/page_navigator.dart';
 import 'package:disciple/features/community/data/model/church.dart';
 import 'package:disciple/features/community/presentation/notifier/church_notifier.dart';
 import 'package:disciple/features/community/presentation/tabs/channel_tabs/prayer_wall_tabs.dart';
@@ -10,7 +10,6 @@ import 'package:disciple/features/community/presentation/tabs/church_tabs/overvi
 import 'package:disciple/features/community/presentation/tabs/church_tabs/posts_tab.dart';
 import 'package:disciple/features/community/presentation/widget/background_image.dart';
 import 'package:disciple/widgets/delegate/sticky_appbar_delegate.dart';
-import 'package:disciple/widgets/elevated_button_widget.dart';
 import 'package:disciple/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -57,23 +56,28 @@ class _ChurchViewState extends ConsumerState<ChurchView>
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      leading: const ImageWidget(imageUrl: AppImage.backIcon, fit: BoxFit.none),
+      leading: ImageWidget(
+        imageUrl: AppImage.backIcon,
+        fit: BoxFit.none,
+        onTap: () => PageNavigator.pop(),
+      ),
       actions: [
-        Container(
-          margin: EdgeInsets.only(top: 20.h),
-          child: ElevatedButtonIconWidget(
-            height: 26.h,
-            width: null,
-            backgroundColor: AppColors.purple50,
-            textStyle: context.headlineLarge?.copyWith(
-              color: AppColors.purple,
-              fontSize: 12.sp,
-            ),
-            title: 'Follow Church',
-            onPressed: () {},
-          ),
-        ),
-        SizedBox(width: 16.w),
+        /// TODO: Add follow church button
+        // Container(
+        //   margin: EdgeInsets.only(top: 20.h),
+        //   child: ElevatedButtonIconWidget(
+        //     height: 26.h,
+        //     width: null,
+        //     backgroundColor: AppColors.purple50,
+        //     textStyle: context.headlineLarge?.copyWith(
+        //       color: AppColors.purple,
+        //       fontSize: 12.sp,
+        //     ),
+        //     title: 'Follow Church',
+        //     onPressed: () {},
+        //   ),
+        // ),
+        // SizedBox(width: 16.w),
       ],
     ),
     body: NestedScrollView(
@@ -92,6 +96,9 @@ class _ChurchViewState extends ConsumerState<ChurchView>
                   builder: (context, ref, child) {
                     final state = ref.watch(churchProvider);
                     final galleries = state.galleries;
+
+                    if (galleries.isEmpty) return const SizedBox.shrink();
+
                     return Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -150,7 +157,7 @@ class _ChurchViewState extends ConsumerState<ChurchView>
         controller: _tabController,
         children: [
           OverviewTab(church: _church),
-          const PostTab(),
+          PostTab(church: _church),
           const PrayerWallTabs(),
         ],
       ),

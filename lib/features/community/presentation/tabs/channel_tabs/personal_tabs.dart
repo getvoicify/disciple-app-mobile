@@ -1,4 +1,6 @@
+import 'package:disciple/app/config/app_config.dart';
 import 'package:disciple/features/community/presentation/widget/community_tile_widget.dart';
+import 'package:disciple/widgets/coming_soon_widget.dart';
 import 'package:disciple/widgets/floating_side_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,15 +14,21 @@ class PersonalTabs extends StatefulWidget {
 
 class _PersonalTabsState extends State<PersonalTabs> {
   @override
-  Widget build(BuildContext context) => Stack(
-    children: [
-      ListView.separated(
-        itemCount: 20,
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
-        itemBuilder: (_, index) => const CommuityTIleWidget(),
-        separatorBuilder: (context, index) => SizedBox(height: 12.h),
-      ),
-      const FloatingSideButtonWidget(title: 'Create New'),
-    ],
-  );
+  Widget build(BuildContext context) {
+    if (AppConfig.isComingSoon) {
+      return const ComingSoonWidget();
+    }
+
+    return Stack(
+      children: [
+        ListView.separated(
+          itemCount: 20,
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          itemBuilder: (_, index) => const CommuityTIleWidget(),
+          separatorBuilder: (context, index) => SizedBox(height: 12.h),
+        ),
+        const FloatingSideButtonWidget(title: 'Create New'),
+      ],
+    );
+  }
 }

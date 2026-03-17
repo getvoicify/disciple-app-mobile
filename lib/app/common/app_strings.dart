@@ -69,6 +69,13 @@ class AppString {
   static String locationFilter = 'Location Filter';
   static String searchScriptureByWords = 'Search scripture by words';
   static String bookmarkAddedSuccessfully = 'Bookmark added successfully';
+  static String bookmarkRemovedSuccessfully = 'Bookmark removed successfully';
+  static String bookmarkAddFailed = 'Failed to add bookmark';
+  static String bookmarkRemoveFailed = 'Failed to remove bookmark';
+  static String removeBookmark = 'Remove';
+  static String removeBookmarkConfirm = 'Remove this bookmark?';
+  static String noBookmarksYet = 'No bookmarks yet.';
+  static String noBookmarksFound = 'No bookmarks match your search.';
   static String dailyScripture = 'Daily Scripture';
   static String seletBiblePassage = "Select Bible Passage";
   static String goToPassage = 'Go to Passage';
@@ -77,4 +84,6 @@ class AppString {
       'Our friendly team would love to hear from you.';
   static String sendEmail = 'Send Email';
   static String connectWithUsOnOurSocials = 'Connect with us on our socials';
+  static String areYouSureYouWantToRemoveThisBookmark =
+      'Are you sure you want to remove this bookmark?';
 }

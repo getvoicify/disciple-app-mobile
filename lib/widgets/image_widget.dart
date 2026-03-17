@@ -1,3 +1,4 @@
+import 'package:disciple/app/common/app_colors.dart';
 import 'package:disciple/app/common/app_images.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -53,18 +54,23 @@ class ImageWidget extends StatelessWidget {
       );
     }
 
-    if (!isAsset && imageUrl.startsWith('https://')) {
-      return InkWell(
-        onTap: onTap,
-        child: CachedNetworkImage(
-          imageUrl: imageUrl,
-          width: width,
-          height: height,
-          fit: fit,
-        ),
-      );
-    }
-
-    return const Placeholder();
+    return InkWell(
+      onTap: onTap,
+      child: CachedNetworkImage(
+        imageUrl: imageUrl,
+        width: width,
+        height: height,
+        fit: fit,
+        errorWidget: (context, url, error) => _buildErrorWidget(),
+        progressIndicatorBuilder: (context, url, progress) =>
+            _buildErrorWidget(),
+      ),
+    );
   }
+
+  Widget _buildErrorWidget() => Container(
+    color: AppColors.grey750,
+    width: width ?? double.infinity,
+    height: height ?? double.infinity,
+  );
 }

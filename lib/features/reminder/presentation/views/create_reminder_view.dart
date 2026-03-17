@@ -203,6 +203,7 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
 
   void _discardChanges() {
     _calendarNotifier.reset();
+    _enableAlert = false;
     _hourController.clear();
     _minuteController.clear();
     _titleController.clear();
@@ -221,56 +222,65 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
         elevation: 0,
         title: Text(updating ? 'Update Reminder' : 'Create Reminder'),
         actions: [
-          PopupMenuWidget<String>(
-            items: menus
-                .map(
-                  (menu) => PopupMenuItemData(
-                    icon: menu.icon,
-                    value: menu.value,
-                    label: menu.label,
-                  ),
-                )
-                .toList(),
-            onSelected: (value) => _handleMenuSelection(value),
-            icon: AppImage.dotsIcon,
-          ),
+          if (updating) ...[
+            PopupMenuWidget<String>(
+              items: menus
+                  .map(
+                    (menu) => PopupMenuItemData(
+                      icon: menu.icon,
+                      value: menu.value,
+                      label: menu.label,
+                    ),
+                  )
+                  .toList(),
+              onSelected: (value) => _handleMenuSelection(value),
+              icon: AppImage.dotsIcon,
+            ),
+          ],
         ],
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildDateSelector(context),
-              SizedBox(height: 24.h),
-              const CalendarWidget(),
-              SizedBox(height: 32.h),
-              _buildDetailsSection(context),
-              SizedBox(height: 60.h),
-              ElevatedButtonIconWidget(
-                onPressed: _isFormValid ? _addReminder : null,
-                title: updating ? 'Update Reminder' : 'Save Reminder',
-              ),
-              if (!updating) ...[
-                SizedBox(height: 18.h),
-                ElevatedButtonIconWidget(
-                  onPressed: _discardChanges,
-                  backgroundColor: AppColors.purple50,
-                  textStyle: context.bodyLarge?.copyWith(
-                    color: AppColors.purple,
-                  ),
-                  title: 'Discard Changes',
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildDateSelector(),
+                    SizedBox(height: 24.h),
+                    const CalendarWidget(),
+                    SizedBox(height: 32.h),
+                    _buildDetailsSection(),
+                    SizedBox(height: 16.h),
+                  ],
                 ),
-              ],
+              ),
+            ),
+
+            SizedBox(height: 16.h),
+            ElevatedButtonIconWidget(
+              onPressed: _isFormValid ? _addReminder : null,
+              title: updating ? 'Update Reminder' : 'Save Reminder',
+            ),
+            if (updating) ...[
+              SizedBox(height: 18.h),
+              ElevatedButtonIconWidget(
+                onPressed: _discardChanges,
+                backgroundColor: AppColors.purple50,
+                textStyle: context.bodyLarge?.copyWith(color: AppColors.purple),
+                title: 'Discard Changes',
+              ),
             ],
-          ),
+            SizedBox(height: 16.h),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildDateSelector(BuildContext context) => Row(
+  Widget _buildDateSelector() => Row(
     children: [
       Expanded(
         child: Text(
@@ -312,7 +322,7 @@ class _CreateReminderViewState extends ConsumerState<CreateReminderView>
     ],
   );
 
-  Widget _buildDetailsSection(BuildContext context) => Column(
+  Widget _buildDetailsSection() => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Text('Details', style: context.headlineLarge?.copyWith(fontSize: 20.sp)),
