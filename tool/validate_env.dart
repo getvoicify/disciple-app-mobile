@@ -34,14 +34,18 @@ Map<String, String> _parseEnv(File file) {
   return out;
 }
 
-String? _androidApplicationId() {
+String? _appAuthRedirectScheme() {
   final gradle = File('android/app/build.gradle');
   if (!gradle.existsSync()) return null;
   final match = RegExp(
-    r'''applicationId\s+["']([^"']+)["']''',
+    r'''["']appAuthRedirectScheme["']\s*:\s*["']([^"']+)["']''',
   ).firstMatch(gradle.readAsStringSync());
   return match?.group(1);
 }
+
+// RFC 3986 scheme: ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
+// Keycloak's URI parser rejects schemes containing other characters (notably underscore).
+final _rfc3986Scheme = RegExp(r'^[A-Za-z][A-Za-z0-9+\-.]*$');
 
 int _validate(String path) {
   final file = File(path);
@@ -82,10 +86,18 @@ int _validate(String path) {
           warnings.add('$key is not https: $value');
         }
       case _KeyKind.bundleId:
-        final appId = _androidApplicationId();
-        if (appId != null && appId != value) {
+        if (!_rfc3986Scheme.hasMatch(value)) {
           errors.add(
-            '$key ($value) does not match android applicationId ($appId)',
+            '$key ($value) contains characters not allowed in a URI scheme '
+            '(RFC 3986: ALPHA / DIGIT / "+" / "-" / "." only) — '
+            "Keycloak's URI parser will reject this",
+          );
+        }
+        final scheme = _appAuthRedirectScheme();
+        if (scheme != null && scheme != value) {
+          errors.add(
+            '$key ($value) does not match appAuthRedirectScheme ($scheme) '
+            'in android/app/build.gradle',
           );
         }
       case _KeyKind.text:
