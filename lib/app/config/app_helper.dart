@@ -11,10 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 class AppHelper {
   static final logger = getLogger("AppHelper");
 
-  static Future<void> openUrl(
-    String url, {
-    LaunchMode? mode,
-  }) async {
+  static Future<void> openUrl(String url, {LaunchMode? mode}) async {
     if (url.isEmpty) return;
 
     try {
@@ -23,8 +20,11 @@ class AppHelper {
 
       // mailto, tel, sms must use external app – canLaunchUrl often returns false
       final useExternalMode = ['mailto', 'tel', 'sms'].contains(scheme);
-      final launchMode = mode ??
-          (useExternalMode ? LaunchMode.externalApplication : LaunchMode.inAppWebView);
+      final launchMode =
+          mode ??
+          (useExternalMode
+              ? LaunchMode.externalApplication
+              : LaunchMode.inAppWebView);
 
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: launchMode);

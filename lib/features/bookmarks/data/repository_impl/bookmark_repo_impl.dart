@@ -24,9 +24,9 @@ class BookmarkRepoImpl implements IBookmarkRepository {
     if (bookmark.bibleVerseId == null) return 0;
 
     // Remove any existing bookmarks for this verse (idempotent, prevents duplicates)
-    await (_database.delete(_database.bookmarks)
-          ..where((tbl) => tbl.bibleVerseId.equals(bookmark.bibleVerseId!)))
-        .go();
+    await (_database.delete(
+      _database.bookmarks,
+    )..where((tbl) => tbl.bibleVerseId.equals(bookmark.bibleVerseId!))).go();
 
     final database = _database.into(_database.bookmarks);
     return await database.insert(
@@ -75,9 +75,9 @@ class BookmarkRepoImpl implements IBookmarkRepository {
   }) async {
     if (bookmark.bibleVerseId == null) return false;
 
-    final existing = await (_database.select(_database.bookmarks)
-          ..where((tbl) => tbl.bibleVerseId.equals(bookmark.bibleVerseId!)))
-        .get();
+    final existing = await (_database.select(
+      _database.bookmarks,
+    )..where((tbl) => tbl.bibleVerseId.equals(bookmark.bibleVerseId!))).get();
 
     return existing.isNotEmpty;
   }
@@ -89,8 +89,8 @@ class BookmarkRepoImpl implements IBookmarkRepository {
   }) async {
     if (bookmark.bibleVerseId == null) return;
 
-    await (_database.delete(_database.bookmarks)
-          ..where((tbl) => tbl.bibleVerseId.equals(bookmark.bibleVerseId!)))
-        .go();
+    await (_database.delete(
+      _database.bookmarks,
+    )..where((tbl) => tbl.bibleVerseId.equals(bookmark.bibleVerseId!))).go();
   }
 }
