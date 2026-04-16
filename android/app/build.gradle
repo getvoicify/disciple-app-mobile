@@ -26,7 +26,7 @@ android {
         versionName flutter.versionName
 
         manifestPlaceholders += [
-                "appAuthRedirectScheme": "church.pottersville.disciple_mobile"
+                "appAuthRedirectScheme": "church.pottersville.disciple"
         ]
     }
 
