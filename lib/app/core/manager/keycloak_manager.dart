@@ -34,16 +34,12 @@ class KeycloakManager {
 
     final service = KeycloakManager._(wrapper);
 
-    wrapper.onError = (message, error, stackTrace) async {
-      if (message == 'Failed to fetch user info.') {
-        await service._logout();
-      }
-    };
-    // 👇 get user info and start proactive refresh
-    await Future.wait([
-      service._getUserInfo(),
-      service._scheduleTokenRefresh(),
-    ]);
+    if (wrapper.accessToken != null) {
+      await Future.wait([
+        service._getUserInfo(),
+        service._scheduleTokenRefresh(),
+      ]);
+    }
     return service;
   }
 

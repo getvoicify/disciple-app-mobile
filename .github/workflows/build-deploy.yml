@@ -243,6 +243,9 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Validate env files
+        run: dart run tool/validate_env.dart .env .env_development
+
       - name: Build generated files
         run:  dart run build_runner build
 
