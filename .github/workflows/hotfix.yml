@@ -34,7 +34,7 @@ env:
 jobs:
   validate:
     name: Validate Hotfix
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     outputs:
       version: ${{ steps.version.outputs.version }}
       version_code: ${{ steps.version.outputs.version_code }}
@@ -95,7 +95,7 @@ jobs:
 
   test:
     name: Quick Tests
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: validate
     if: needs.validate.outputs.proceed == 'true' && github.event.inputs.skip_tests != 'true'
     timeout-minutes: 10
@@ -128,7 +128,7 @@ jobs:
 
   build:
     name: Emergency Build
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: [validate, test]
     if: always() && needs.validate.outputs.proceed == 'true'
     timeout-minutes: 20
@@ -179,7 +179,7 @@ jobs:
 
   deploy:
     name: Deploy Hotfix
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: [validate, build]
     environment:
       name: hotfix-${{ github.event.inputs.target_track }}
@@ -301,7 +301,7 @@ jobs:
 
   monitor:
     name: Create Monitoring Issue
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: [validate, deploy]
     if: success()
     

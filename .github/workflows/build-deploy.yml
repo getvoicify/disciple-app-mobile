@@ -36,7 +36,7 @@ env:
 jobs:
   version:
     name: Bump Version
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     outputs:
       version: ${{ steps.version.outputs.version }}
       version_code: ${{ steps.version.outputs.version_code }}
@@ -183,7 +183,7 @@ jobs:
 
   build:
     name: Build Release
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: version
     timeout-minutes: 30
     
@@ -295,7 +295,7 @@ jobs:
 
   deploy:
     name: Deploy to Play Store
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: [version, build]
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     environment:

@@ -17,7 +17,7 @@ env:
 jobs:
   analyze:
     name: Analyze & Format
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 10
 
     steps:
@@ -156,7 +156,7 @@ jobs:
 
   build-test:
     name: Build Test APK
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 20
     needs: analyze
 
