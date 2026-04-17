@@ -37,7 +37,7 @@ env:
 jobs:
   validate:
     name: Validate Promotion
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     outputs:
       can_promote: ${{ steps.validate.outputs.can_promote }}
       artifact_exists: ${{ steps.check.outputs.exists }}
@@ -83,7 +83,7 @@ jobs:
 
   promote:
     name: Promote to ${{ github.event.inputs.target_track }}
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: validate
     if: needs.validate.outputs.can_promote == 'true' && needs.validate.outputs.artifact_exists == 'true'
     environment:
@@ -199,7 +199,7 @@ jobs:
 
   rollout-control:
     name: Rollout Control
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: promote
     if: github.event.inputs.target_track == 'production'
     
